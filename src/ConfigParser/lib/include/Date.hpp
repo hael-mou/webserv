@@ -2,13 +2,13 @@
 //          ####################                                                
 //        ########################                                              
 //       #############+########### #                                            
-//       ######-..        .+########   < Directive.cpp >                        
+//       ######-..        .+########          < Date.h >                        
 //       ####-..            ..+####                                             
 //       ###-...             .-####                                             
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
-//        #....  ...   .-.  ....##       Created: 2024/05/15 12:58:37 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 21:25:31 by oezzaou
+//        #....  ...   .-.  ....##       Created: 2024/03/31 01:26:25 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/03/31 01:26:26 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -19,53 +19,46 @@
 //        ###-+--.... ....--+#####                                              
 //  ##########--#-.......-#-###########      Made By Oussama Ezzaou <OEZZAOU> :)
 
-# include "Directive.hpp"
+#ifndef __DATE_HPP__
+# define __DATE_HPP__
 
+# include <iostream>
+# include <ctime>
+# include <sstream>
+# include "FSM.hpp"
+# include "Exception.hpp"
 
-Directive::Directive(void)
+typedef enum	cmp
 {
-}
+	GREATER,
+	LESS,
+	EQUAL
+}				Cmp;
 
-Directive::~Directive(void)
+struct	Date
 {
-}
+	int			year;
+	int			month;
+	int			day;
 
-int	Directive::getType(void) const
-{
-	return (this->type);
-}
+	Date(void);
+	Date(int y, int m, int d);
+};
 
-void	Directive::setType(int type)
+namespace prs
 {
-	this->type = type;
-}
 
-int	Directive::getLevel(void) const
-{
-	return (this->level);
-}
+	std::string	trim(std::string str);
 
-void	Directive::setLevel(int level)
-{
-	this->level = level;
-}
+	Date		parseDate(std::string sDate);
+	
+	bool		isValidDate(Date date);
+	
+	bool		isValidDate(std::string sDate);
+	
+	Date		getCurrentDate(void);
+	
+	int			dateCmp(Date d1, Date d2);
+};
 
-std::string	Directive::getKey(void) const
-{
-	return (this->key);
-}
-
-void		Directive::setKey(const std::string key)
-{
-	this->key = key;
-}
-
-std::string Directive::getRest(void) const
-{
-	return (this->rest);
-}
-
-void	Directive::setRest(const std::string rest)
-{
-	this->rest = rest;
-}
+#endif /*__DATE_HPP__*/

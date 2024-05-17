@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 11:53:26 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/15 20:53:39 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 22:39:11 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -40,12 +40,13 @@ ConfigParser::~ConfigParser(void)
 //====< detecDirtType >=========================================================
 int	ConfigParser::getDirType(std::string line)
 {
-	int			position;
+	int				position;
 
-	position = line.find(":");
-	if (position == -1)
+	line = prs::trim(line);
+	position = line.find(':');
+	if (position <= 0 || std::count(line.begin(), line.end(), ':') > 1)
 		throw (std::out_of_range("Invalid Directive: " + line));
-	return ((position == line.length() - 1) ? NON_TERMINAL : TERMINAL);
+	return ((position == (int) line.length() - 1) ? NON_TERMINAL : TERMINAL);
 }
 
 //====< isAligned >=============================================================
@@ -71,7 +72,7 @@ int ConfigParser::getAlignment(std::string line)
 	{
 		element = std::find(level.begin(), level.end(), column); 
 		if (element == level.end())
-			throw (std::out_of_range("Invalid level"));
+			throw (std::out_of_range("Invalid level : " + line));
 		return (element - level.begin());
 	}
 	return (static_cast<int>(level.size() - 1));
@@ -80,24 +81,24 @@ int ConfigParser::getAlignment(std::string line)
 //====< parseLine >=============================================================
 Directive ConfigParser::parseLine(std::string line, v_dir dirs, int level)
 {
-	Directive	dir;
+	Directive							dir;
+	std::pair<std::string, std::string>	pair;
 
 	dir.setType(getDirType(line));
 	dir.setLevel(level);
 	if (dir.getType() == TERMINAL && dirs.size() > 0)
 		isAligned(dirs.back(), dir);
+	pair = prs::lineToPair(line, ':');
+	dir.setKey(pair.first);
+	dir.setRest(pair.second);
 	return (dir);
 }
 
 //====< parseBlock >============================================================
 IExpression	*ConfigParser::parseBlock(std::vector<Directive> dir)
 {
-	int	index = 0;
-
-	// This look is just for debuging 
-	for (std::vector<Directive>::iterator i = dir.begin(); i != dir.end(); ++i)
-		std::cout	<< "Directive level : " << i->getLevel() << std::endl;
-
+	unsigned int	index = 0;
+	
 	if (dir.size() == 1)
 		throw (std::out_of_range("Incomplete block"));
 	return ((new NonTerminal())->clone(dir, index));

@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 12:54:33 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/15 16:55:06 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 16:21:46 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -36,7 +36,7 @@ class	Directive
 		int			type;
 		int			level;
 		std::string	key;
-		std::string	left;
+		std::string	rest;
 	
 	public:
 		Directive(void);
@@ -50,6 +50,9 @@ class	Directive
 
 		std::string	getKey(void) const;
 		void		setKey(std::string key);
+
+		std::string getRest(void) const;
+		void		setRest(std::string key);
 };
 
 #endif /*__DIRECTIVE_HPP__*/

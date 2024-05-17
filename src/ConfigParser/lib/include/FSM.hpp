@@ -2,13 +2,13 @@
 //          ####################                                                
 //        ########################                                              
 //       #############+########### #                                            
-//       ######-..        .+########   < Directive.cpp >                        
+//       ######-..        .+########         < FSM.hpp >                        
 //       ####-..            ..+####                                             
 //       ###-...             .-####                                             
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
-//        #....  ...   .-.  ....##       Created: 2024/05/15 12:58:37 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 21:25:31 by oezzaou
+//        #....  ...   .-.  ....##       Created: 2024/03/31 01:14:33 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/03/31 01:14:45 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -18,54 +18,33 @@
 //          #---..----+--.---+##                                                
 //        ###-+--.... ....--+#####                                              
 //  ##########--#-.......-#-###########      Made By Oussama Ezzaou <OEZZAOU> :)
+//====< FSM Class >=============================================================
 
-# include "Directive.hpp"
+# ifndef __FSM_HPP__
+# define __FSM_HPP__
+# include <iostream>
 
-
-Directive::Directive(void)
+typedef enum	e_state
 {
-}
+	START,
+	CHAR,
+	INT,
+	OPERATOR,
+	DOUBLE,
+	FUTURE_DOUBLE,
+	FLOAT,
+	STRING,
+	END,
+}				t_state;
 
-Directive::~Directive(void)
+class	FSM
 {
-}
+	private:
+		FSM(void);
+		static int	getNextState(int prv, char input);
 
-int	Directive::getType(void) const
-{
-	return (this->type);
-}
+	public:
+		static int	detectType(std::string str);
+};
 
-void	Directive::setType(int type)
-{
-	this->type = type;
-}
-
-int	Directive::getLevel(void) const
-{
-	return (this->level);
-}
-
-void	Directive::setLevel(int level)
-{
-	this->level = level;
-}
-
-std::string	Directive::getKey(void) const
-{
-	return (this->key);
-}
-
-void		Directive::setKey(const std::string key)
-{
-	this->key = key;
-}
-
-std::string Directive::getRest(void) const
-{
-	return (this->rest);
-}
-
-void	Directive::setRest(const std::string rest)
-{
-	this->rest = rest;
-}
+#endif /*__FSM_HPP__*/

@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 17:27:40 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/15 18:03:30 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 22:36:14 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -33,7 +33,7 @@ class	Terminal : public IExpression
 	public:
 		~Terminal(void);
 
-		IExpression *clone(std::vector<Directive> dir, int & index);
+		IExpression *clone(std::vector<Directive> dir, unsigned int & index);
 };
 
 #endif /*__TERMINAL_HPP__*/

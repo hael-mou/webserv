@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 11:58:00 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/15 17:43:40 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 20:00:46 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -24,6 +24,7 @@
 # define __CONFIGPARSER_HPP__
 
 # include <fstream>
+# include <sstream>
 # include "Directive.hpp"
 # include "NonTerminal.hpp"
 # include "Terminal.hpp"
