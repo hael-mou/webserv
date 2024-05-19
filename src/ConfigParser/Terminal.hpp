@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 17:27:40 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 22:36:14 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 22:24:19 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -19,10 +19,12 @@
 //        ###-+--.... ....--+#####                                              
 //  ##########--#-.......-#-###########      Made By Oussama Ezzaou <OEZZAOU> :)
 
+//====< Terminal >==============================================================
 #ifndef __TERMINAL_HPP__
 # define __TERMINAL_HPP__
 
 # include "IExpression.hpp"
+# include "Parser.hpp"
 
 class	Terminal : public IExpression
 {
@@ -33,7 +35,9 @@ class	Terminal : public IExpression
 	public:
 		~Terminal(void);
 
-		IExpression *clone(std::vector<Directive> dir, unsigned int & index);
+		bool		isEmpty(std::vector<Directive> dir, unsigned int index);
+
+		IExpression	*interpret(std::vector<Directive> dir, unsigned int & index);
 };
 
-#endif /*__TERMINAL_HPP__*/
+#endif /*__TERMINAL_HPP__*///===================================================

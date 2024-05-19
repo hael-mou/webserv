@@ -2,13 +2,13 @@
 //          ####################                                                
 //        ########################                                              
 //       #############+########### #                                            
-//       ######-..        .+########        < main.cpp >                        
+//       ######-..        .+########     < Grammar.cpp >                        
 //       ####-..            ..+####                                             
 //       ###-...             .-####                                             
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
-//        #....  ...   .-.  ....##       Created: 2024/05/15 20:50:27 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 22:25:11 by oezzaou
+//        #....  ...   .-.  ....##       Created: 2024/05/19 22:46:44 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 22:51:02 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -19,19 +19,24 @@
 //        ###-+--.... ....--+#####                                              
 //  ##########--#-.......-#-###########      Made By Oussama Ezzaou <OEZZAOU> :)
 
-# include "ConfigParser.hpp"
+//====< Grammar >===============================================================
+#ifndef __GRAMMAR_HPP__
+# define __GRAMMAR_HPP__
 
-//====< main >==================================================================
-int	main(void)
+# include <iostream>
+# include <map>
+
+class	Grammar
 {
-	ConfigParser				parser("test.yaml");
-	std::vector<IExpression *>	list;
+	private:
+		std::map<std::string, std::vector<std::string> > grammar;
+	
+	public:
+		static Grammar & getInstance(void);
+		// add Directive
+		// add SubDir
+		// SearchDir
+		// SearchSubDir
+};
 
-	try
-	{
-		list = parser.parse();
-	} catch (std::exception & e) {
-		std::cout << e.what() << std::endl; 
-	}
-	return (EXIT_SUCCESS);
-}
+#endif /*__GRAMMAR_HPP__*///====================================================

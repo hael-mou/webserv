@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 11:53:26 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/17 22:39:11 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 22:36:19 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -21,10 +21,12 @@
 
 # include "ConfigParser.hpp"
 
+//====< constructor >===========================================================
 ConfigParser::ConfigParser(void)
 {
 }
 
+//====< constructor >===========================================================
 ConfigParser::ConfigParser(std::string fileName)
 {
 	this->fileName = fileName;
@@ -35,59 +37,44 @@ ConfigParser::ConfigParser(std::string fileName)
 ConfigParser::~ConfigParser(void)
 {
 	fileStream.close();
+	for (vii i = list.begin(); i != list.end(); ++i)
+		delete *i;
 }
 
 //====< detecDirtType >=========================================================
-int	ConfigParser::getDirType(std::string line)
+int	ConfigParser::getDirectiveType(std::string line)
 {
 	int				position;
 
 	line = prs::trim(line);
 	position = line.find(':');
 	if (position <= 0 || std::count(line.begin(), line.end(), ':') > 1)
-		throw (std::out_of_range("Invalid Directive: " + line));
+		throw (Exception("Syntax Error: Invalid Directive: " + line));
 	return ((position == (int) line.length() - 1) ? NON_TERMINAL : TERMINAL);
 }
 
-//====< isAligned >=============================================================
-bool	ConfigParser::isAligned(Directive prev, Directive curr)
+//====< getLevel >==========================================================
+int ConfigParser::getLevel(std::string line)
 {
-	if (prev.getType() == NON_TERMINAL && prev.getLevel() > curr.getLevel())
-		throw (std::out_of_range("not aligned"));
-	if (prev.getType() == TERMINAL && prev.getLevel() != curr.getLevel())
-		throw (std::out_of_range("not aligned"));
-	return (true);
-};
-
-//====< getAlignment >==========================================================
-int ConfigParser::getAlignment(std::string line)
-{
+	std::vector<int>::iterator	iter;
 	int							column;
-	std::vector<int>::iterator	element;
 
 	column = line.find_first_not_of(' ');
-	if (level.size() == 0 || column > level.back())
-		level.push_back(column);
-	if (level.size() != 0 && column < level.back())
-	{
-		element = std::find(level.begin(), level.end(), column); 
-		if (element == level.end())
-			throw (std::out_of_range("Invalid level : " + line));
-		return (element - level.begin());
-	}
-	return (static_cast<int>(level.size() - 1));
+	iter = find(level.begin(), level.end(), column);
+	if (!level.empty() && iter != level.end())
+		return (iter - level.begin());
+	level.push_back(column); 
+	return (static_cast<int>(level.size()) - 1);
 }
 
 //====< parseLine >=============================================================
-Directive ConfigParser::parseLine(std::string line, v_dir dirs, int level)
+Directive ConfigParser::parseLine(std::string line, int level)
 {
-	Directive							dir;
 	std::pair<std::string, std::string>	pair;
+	Directive							dir;
 
-	dir.setType(getDirType(line));
+	dir.setType(getDirectiveType(line));
 	dir.setLevel(level);
-	if (dir.getType() == TERMINAL && dirs.size() > 0)
-		isAligned(dirs.back(), dir);
 	pair = prs::lineToPair(line, ':');
 	dir.setKey(pair.first);
 	dir.setRest(pair.second);
@@ -99,30 +86,65 @@ IExpression	*ConfigParser::parseBlock(std::vector<Directive> dir)
 {
 	unsigned int	index = 0;
 	
-	if (dir.size() == 1)
-		throw (std::out_of_range("Incomplete block"));
-	return ((new NonTerminal())->clone(dir, index));
+	if (dir.empty() == true)
+		throw (Exception("Error: Empty config file"));
+	return (clone(dir[index].getType())->interpret(dir, index));
 }
 
 //====< parse >=================================================================
 std::vector<IExpression *> ConfigParser::parse(void)
 {
-	std::string		line;
-	int				level;
-	v_dir			dir;
+	std::vector<Directive>		dir;
+	std::string					line;
+	int							level;
 
 	while (getline(fileStream, line))
 	{
 		if (line.empty() == true)
 			continue ;
-		level = getAlignment(line);
-		if (dir.size() > 0 && level == 0)
+		level = getLevel(line);
+		if (!dir.empty() && level == 0)
 		{
 			list.push_back(parseBlock(dir));
 			dir = std::vector<Directive>();
 		}
-		dir.push_back(parseLine(line, dir, level));
+		dir.push_back(parseLine(line, level));
 	}
 	list.push_back(parseBlock(dir));
 	return (list);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//=============================
+IExpression	*clone(int dirType)
+{
+	if (dirType == TERMINAL)
+		return (new Terminal());
+	if (dirType == NON_TERMINAL)
+		return (new NonTerminal());
+	return (NULL);
 }

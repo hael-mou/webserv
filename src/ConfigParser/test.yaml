@@ -1,10 +1,6 @@
 server:
-        listen: 30              
-        listen: ,
-        server:
-              listen: 70
+      listen: 20
+      server: 30
+
 server:
-        listen: 30
-
-
-
+      listen: 15

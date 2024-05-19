@@ -8,7 +8,7 @@
 #        ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 #         #-.++###.      -###+..##                                              
 #         #....  ...   .-.  ....##       Created: 2024/03/19 17:19:49 by oezzaou
-#      --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/04/05 17:08:07 by oezzaou
+#      --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 10:22:23 by oezzaou
 #       ---....... ..  ........... -                                            
 #       -+#..     ..   .       .+-.                                             
 #        .--.     .     .     ..+.                                              
@@ -20,7 +20,7 @@
 #   ##########--#-.......-#-###########      Made By Oussama Ezzaou <OEZZAOU> :)
 
 #====< Variables >==============================================================
-NAME		:= btc
+NAME		:= configParser
 CC			:= c++
 CPPFLAGS	:= -std=c++98 -Wall -Wextra -Werror
 OBJ_DIR		:= objs
