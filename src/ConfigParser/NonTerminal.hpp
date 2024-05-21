@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 17:25:36 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 19:47:23 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 15:16:24 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -36,7 +36,10 @@ class	NonTerminal : public IExpression
 	public:
 		~NonTerminal(void);
 
-		IExpression *interpret(std::vector<Directive> dir, unsigned int & index);
+		std::string					getKey(void) const;
+		std::vector<IExpression *>	getList(void) const;
+
+		IExpression *interpret(std::vector<Directive> dir, uint & index);
 };
 
 #endif /*__NONTERMINAL_HPP__*///================================================

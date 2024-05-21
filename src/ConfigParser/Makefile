@@ -8,7 +8,7 @@
 #        ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 #         #-.++###.      -###+..##                                              
 #         #....  ...   .-.  ....##       Created: 2024/03/19 17:19:49 by oezzaou
-#      --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 10:22:23 by oezzaou
+#      --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 21:29:37 by oezzaou
 #       ---....... ..  ........... -                                            
 #       -+#..     ..   .       .+-.                                             
 #        .--.     .     .     ..+.                                              
@@ -22,7 +22,7 @@
 #====< Variables >==============================================================
 NAME		:= configParser
 CC			:= c++
-CPPFLAGS	:= -std=c++98 -Wall -Wextra -Werror
+CPPFLAGS	:= -std=c++98 -Wall -Wextra -Werror -fsanitize=address -g
 OBJ_DIR		:= objs
 SRC_DIR		:= src
 INCLUDE		:= -Iinclude -Ilib/include

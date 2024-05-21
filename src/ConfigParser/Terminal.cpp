@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 17:27:00 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 19:35:27 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 21:39:48 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -26,23 +26,33 @@ Terminal::~Terminal(void)
 {
 }
 
-//====< interpret >=============================================================
-IExpression	*Terminal::interpret(std::vector<Directive> dir, unsigned int & index)
+//====< getKey >================================================================
+std::string	Terminal::getKey(void) const
 {
-	std::vector<std::string>		 val;
+	return (this->key);
+}
 
-	std::cout << "Terminal : " << dir[index].getRest() << std::endl;
+//====< getList >===============================================================
+std::vector<std::string>	Terminal::getList(void) const
+{
+	return (this->list);
+}
+
+//====< interpret >=============================================================
+IExpression	*Terminal::interpret(std::vector<Directive> dir,  uint & index)
+{
+	std::vector<std::string>		val;
+
 	this->key = dir[index].getKey();
 	if (Grammar::getInstance().isDirKnown(this->key) == true)
 		throw (Exception("Error: Terminal Expression: " + key));
 	val = prs::split(dir[index].getRest(), ',');
-	/*for (unsigned int i = 0; i < val.size(); i++)
+	for (unsigned int index = 0; index < val.size(); index++)
 	{
-		val[i] = prs::trim(val[i]);
-		if (val[i].empty() == true)
+		val[index] = prs::trim(val[index]);
+		if (val[index].empty() == true)
 			throw (Exception("Error: Empty Value: " + key));
-		std::cout << "val : " << val[i] << std::endl;
-		list.push_back(val[i]);
-	}*/
+		list.push_back(val[index]);
+	}
 	return (this);
 }

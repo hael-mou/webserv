@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 17:28:34 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 19:32:33 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 15:25:44 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -26,14 +26,17 @@
 # include "Grammar.hpp"
 # include "Directive.hpp"
 # include "Exception.hpp"
-# include <vector>
+
+typedef unsigned int	uint;
 
 class	IExpression
 {
 	public:
 	virtual ~IExpression(void) {};
 
-	virtual IExpression	*interpret(std::vector<Directive> dir, unsigned int & index) = 0;
+	virtual	std::string	getKey(void) const = 0;
+
+	virtual IExpression	*interpret(std::vector<Directive> dir, uint& index) = 0;
 };
 
 IExpression	*clone(int dirType);

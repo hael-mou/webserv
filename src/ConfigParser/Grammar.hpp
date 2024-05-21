@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/19 22:46:44 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 22:51:02 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 14:25:37 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -28,16 +28,18 @@
 # include <map>
 # include "Exception.hpp"
 
+typedef std::pair<std::string, std::vector<std::string> >	g_pair;
+
 class	Grammar
 {
 	private:
 		Grammar(void);
 		
-		static Grammar	*instance;
-		std::map<std::string, std::vector<std::string> > grammar;
+		static Grammar										*instance;
+		std::map<std::string, std::vector<std::string> >	grammar;
 
 	public:
-		static Grammar & getInstance(void);
+		static	Grammar & getInstance(void);
 	
 		bool	addDirective(std::string dir);
 		bool	addSubDirective(std::string dir, std::string subDir);

@@ -1,20 +1,38 @@
+//            ################                                                  
+//          ####################                                                
+//        ########################                                              
+//       #############+########### #                                            
+//       ######-..        .+########     < Grammar.cpp >                        
+//       ####-..            ..+####                                             
+//       ###-...             .-####                                             
+//       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
+//        #-.++###.      -###+..##                                              
+//        #....  ...   .-.  ....##       Created: 2024/05/21 10:08:48 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 16:10:43 by oezzaou
+//      ---....... ..  ........... -                                            
+//      -+#..     ..   .       .+-.                                             
+//       .--.     .     .     ..+.                                              
+//         -..    .+--.-.     ...                                               
+//         +.... .-+#.#+.    ..-                                                
+//          +...#####-++###-..-                                                 
+//          #---..----+--.---+##                                                
+//        ###-+--.... ....--+#####                                              
+//  ##########--#-.......-#-###########      Made By Oussama Ezzaou <OEZZAOU> :)
+
 # include "Grammar.hpp"
 
-//====< instance >=======================================
+//====< instance >==============================================================
 Grammar *Grammar::instance = NULL;
 
-//====< constructor >====================================
+//====< constructor >===========================================================
 Grammar::Grammar(void)
 {
-	bool re = this->addSubDirective("http", "server");
-	std::cout << "re : " << re << std::endl;
-	re = this->addSubDirective("http", "listen");
-	std::cout << "re : " << re << std::endl;
-	re = this->addSubDirective("server", "listen");
-	std::cout << "re : " << re << std::endl;
+	this->addSubDirective("http", "server");
+	this->addSubDirective("http", "listen");
+	this->addSubDirective("server", "listen");
 }
 
-//====< getInstance >====================================
+//====< getInstance >===========================================================
 Grammar & Grammar::getInstance(void)
 {
 	if (instance == NULL)
@@ -22,35 +40,30 @@ Grammar & Grammar::getInstance(void)
 	return (*instance);
 }
 
-//====< addDirective >===================================
+//====< addDirective >==========================================================
 bool	Grammar::addDirective(std::string dir)
 {
-	std::pair<std::string, std::vector<std::string> > pair;
-
-	if (!grammar.empty() && grammar.find(dir) != grammar.end())
+	if (grammar.find(dir) != grammar.end())
 		return (false);
-	pair.first = dir;
-	pair.second = std::vector<std::string>();
-	grammar.insert(pair);
+	grammar.insert(g_pair(dir, std::vector<std::string>()));
 	return (true);
 }
 
-//====< addSubDirective >===================================
+//====< addSubDirective >=======================================================
 bool	Grammar::addSubDirective(std::string dir, std::string subDir)
 {
-	std::map<std::string, std::vector<std::string> >::iterator iter;
-	std::vector<std::string>		tmp;
+	std::map<std::string, std::vector<std::string> >::iterator	iter;
+	std::vector<std::string>									tmp;
 
 	this->addDirective(dir);
 	iter = grammar.find(dir);
 	tmp = iter->second;
-	if (!tmp.empty() && find(tmp.begin(), tmp.end(), subDir) != tmp.end())
+	if (find(tmp.begin(), tmp.end(), subDir) != tmp.end())
 		return (false);
-	iter->second.push_back(subDir);	
-	return (true);
+	return (iter->second.push_back(subDir), true);
 }
 
-//====< isDirKnown >===================================================================
+//====< isDirKnown >============================================================
 bool	Grammar::isDirKnown(std::string dir)
 {
 	if (grammar.find(dir) == grammar.end())
@@ -58,10 +71,10 @@ bool	Grammar::isDirKnown(std::string dir)
 	return (true);
 }
 
-//====< isSubDirKnown >================================================================
+//====< isSubDirKnown >=========================================================
 bool	Grammar::isSubDirKnown(std::string dir, std::string subDir)
 {
-	std::vector<std::string>	tmp;
+	std::vector<std::string>		tmp;
 
 	if (this->isDirKnown(dir) == false)
 		throw (Exception("Error: Unknown Directive: " + dir));

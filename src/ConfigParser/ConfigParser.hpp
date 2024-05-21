@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 11:58:00 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 20:02:02 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 14:05:50 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -26,11 +26,8 @@
 # include "NonTerminal.hpp"
 # include "Terminal.hpp"
 # include "Directive.hpp"
-# include "Exception.hpp"
 # include "Parser.hpp"
 
-typedef std::vector<IExpression *>::iterator	vii;
-typedef std::vector<Directive>					vd;
 
 class	ConfigParser
 {
@@ -40,8 +37,9 @@ class	ConfigParser
 		std::vector<int>			level;
 		std::vector<IExpression *>	list;
 
-		int							getDirectiveType(std::string line);
-		int							getLevel(std::string line);
+		int					getDirectiveType(std::string line);
+		int					getLevel(std::string line);
+		bool				isValidBlock(std::vector<Directive> dir, int next);
 	
 	public:
 		ConfigParser(void);
@@ -49,7 +47,7 @@ class	ConfigParser
 		~ConfigParser(void);
 
 		Directive					parseLine(std::string line, int level);
-		IExpression					*parseBlock(std::vector<Directive> dir, int scope);
+		IExpression					*parseBlock(std::vector<Directive> dir);
 
 		std::vector<IExpression *>	parse(void);
 };

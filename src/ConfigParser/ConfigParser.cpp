@@ -8,7 +8,7 @@
 //       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
 //        #-.++###.      -###+..##                                              
 //        #....  ...   .-.  ....##       Created: 2024/05/15 11:53:26 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 22:36:19 by oezzaou
+//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 16:47:09 by oezzaou
 //      ---....... ..  ........... -                                            
 //      -+#..     ..   .       .+-.                                             
 //       .--.     .     .     ..+.                                              
@@ -37,11 +37,11 @@ ConfigParser::ConfigParser(std::string fileName)
 ConfigParser::~ConfigParser(void)
 {
 	fileStream.close();
-	for (vii i = list.begin(); i != list.end(); ++i)
-		delete *i;
+	for (unsigned int index = 0; index < list.size(); index++)
+		delete list[index];
 }
 
-//====< detecDirtType >=========================================================
+//====< getDirectiveType >======================================================
 int	ConfigParser::getDirectiveType(std::string line)
 {
 	int				position;
@@ -49,11 +49,11 @@ int	ConfigParser::getDirectiveType(std::string line)
 	line = prs::trim(line);
 	position = line.find(':');
 	if (position <= 0 || std::count(line.begin(), line.end(), ':') > 1)
-		throw (Exception("Syntax Error: Invalid Directive: " + line));
+		throw (Exception("Error: Invalid Directive: " + line));
 	return ((position == (int) line.length() - 1) ? NON_TERMINAL : TERMINAL);
 }
 
-//====< getLevel >==========================================================
+//====< getLevel >==============================================================
 int ConfigParser::getLevel(std::string line)
 {
 	std::vector<int>::iterator	iter;
@@ -65,6 +65,16 @@ int ConfigParser::getLevel(std::string line)
 		return (iter - level.begin());
 	level.push_back(column); 
 	return (static_cast<int>(level.size()) - 1);
+}
+
+//====< isValidBlock >==========================================================
+bool	ConfigParser::isValidBlock(std::vector<Directive> dir, int next)
+{
+	if (dir.size() == 1 && dir.begin()->getType() == TERMINAL)
+		return (true);
+	if (dir.empty() == false && level[next] <= level[0])
+		return (true);
+	return (false);
 }
 
 //====< parseLine >=============================================================
@@ -82,18 +92,14 @@ Directive ConfigParser::parseLine(std::string line, int level)
 }
 
 //====< parseBlock >============================================================
-IExpression	*ConfigParser::parseBlock(std::vector<Directive> dir, int scope)
+IExpression	*ConfigParser::parseBlock(std::vector<Directive> dir)
 {
 	unsigned int	index = 0;
 
-	(void) scope;	
 	if (dir.empty() == true)
 		throw (Exception("Error: Empty config file"));
 	if (dir[index].getLevel() > 0)
-	{
-		std::cout << "kkkkkkkkkkkkkk" << std::endl;
-		throw (Exception("Error: Not aligned|: " + dir[index].getKey()));
-	}
+		throw (Exception("Error: Not aligned: " + dir[index].getKey()));
 	return (clone(dir[index].getType())->interpret(dir, index));
 }
 
@@ -106,17 +112,17 @@ std::vector<IExpression *> ConfigParser::parse(void)
 
 	while (getline(fileStream, line))
 	{
-		if (line.empty() == true)
+		if (prs::trim(line).empty() == true)
 			continue ;
 		level = getLevel(line);
-		if (!dir.empty() && level == 0)
+		if (isValidBlock(dir, level) == true)
 		{
-			list.push_back(parseBlock(dir, -1));
+			list.push_back(parseBlock(dir));
 			dir = std::vector<Directive>();
 		}
 		dir.push_back(parseLine(line, level));
 	}
-	list.push_back(parseBlock(dir, -1));
+	list.push_back(parseBlock(dir));
 	return (list);
 }
 
