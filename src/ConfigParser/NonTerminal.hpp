@@ -36,8 +36,6 @@ class	NonTerminal : public IExpression
 	public:
 		~NonTerminal(void);
 
-		bool		isEmpty(std::vector<Directive> dir, unsigned int index);
-
 		IExpression *interpret(std::vector<Directive> dir, unsigned int & index);
 };
 

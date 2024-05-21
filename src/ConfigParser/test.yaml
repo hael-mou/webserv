@@ -1,6 +1,8 @@
-server:
-      listen: 20
-      server: 30
+ listen: 20
 
-server:
-      listen: 15
+http:
+   server:
+     listen: 30
+     listen: 15
+   server:
+     listen: 50

@@ -26,25 +26,23 @@ Terminal::~Terminal(void)
 {
 }
 
-//====< isEmpty >===============================================================
-bool	Terminal::isEmpty(std::vector<Directive> dir, unsigned int index)
-{
-	(void) index;
-	(void) dir;
-	return (false);
-}
-
 //====< interpret >=============================================================
 IExpression	*Terminal::interpret(std::vector<Directive> dir, unsigned int & index)
 {
-	std::vector<std::string> val;
+	std::vector<std::string>		 val;
 
+	std::cout << "Terminal : " << dir[index].getRest() << std::endl;
 	this->key = dir[index].getKey();
-	std::cout << "Terminal : " << key << std::endl;
+	if (Grammar::getInstance().isDirKnown(this->key) == true)
+		throw (Exception("Error: Terminal Expression: " + key));
 	val = prs::split(dir[index].getRest(), ',');
-	if (val.empty() == true)
-		throw (std::out_of_range("Error: " + key + " has no value"));
-	for (unsigned int i = 0; i < val.size(); ++i)
-		list.push_back(prs::trim(val[i]));
+	/*for (unsigned int i = 0; i < val.size(); i++)
+	{
+		val[i] = prs::trim(val[i]);
+		if (val[i].empty() == true)
+			throw (Exception("Error: Empty Value: " + key));
+		std::cout << "val : " << val[i] << std::endl;
+		list.push_back(val[i]);
+	}*/
 	return (this);
 }

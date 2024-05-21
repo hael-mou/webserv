@@ -35,8 +35,6 @@ class	Terminal : public IExpression
 	public:
 		~Terminal(void);
 
-		bool		isEmpty(std::vector<Directive> dir, unsigned int index);
-
 		IExpression	*interpret(std::vector<Directive> dir, unsigned int & index);
 };
 

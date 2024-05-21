@@ -24,19 +24,26 @@
 # define __GRAMMAR_HPP__
 
 # include <iostream>
+# include <vector>
 # include <map>
+# include "Exception.hpp"
 
 class	Grammar
 {
 	private:
+		Grammar(void);
+		
+		static Grammar	*instance;
 		std::map<std::string, std::vector<std::string> > grammar;
-	
+
 	public:
 		static Grammar & getInstance(void);
-		// add Directive
-		// add SubDir
-		// SearchDir
-		// SearchSubDir
+	
+		bool	addDirective(std::string dir);
+		bool	addSubDirective(std::string dir, std::string subDir);
+	
+		bool	isDirKnown(std::string dir);	
+		bool	isSubDirKnown(std::string dir, std::string subDir);
 };
 
 #endif /*__GRAMMAR_HPP__*///====================================================

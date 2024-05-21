@@ -82,12 +82,18 @@ Directive ConfigParser::parseLine(std::string line, int level)
 }
 
 //====< parseBlock >============================================================
-IExpression	*ConfigParser::parseBlock(std::vector<Directive> dir)
+IExpression	*ConfigParser::parseBlock(std::vector<Directive> dir, int scope)
 {
 	unsigned int	index = 0;
-	
+
+	(void) scope;	
 	if (dir.empty() == true)
 		throw (Exception("Error: Empty config file"));
+	if (dir[index].getLevel() > 0)
+	{
+		std::cout << "kkkkkkkkkkkkkk" << std::endl;
+		throw (Exception("Error: Not aligned|: " + dir[index].getKey()));
+	}
 	return (clone(dir[index].getType())->interpret(dir, index));
 }
 
@@ -105,12 +111,12 @@ std::vector<IExpression *> ConfigParser::parse(void)
 		level = getLevel(line);
 		if (!dir.empty() && level == 0)
 		{
-			list.push_back(parseBlock(dir));
+			list.push_back(parseBlock(dir, -1));
 			dir = std::vector<Directive>();
 		}
 		dir.push_back(parseLine(line, level));
 	}
-	list.push_back(parseBlock(dir));
+	list.push_back(parseBlock(dir, -1));
 	return (list);
 }
 

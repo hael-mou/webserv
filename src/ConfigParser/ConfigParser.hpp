@@ -49,7 +49,7 @@ class	ConfigParser
 		~ConfigParser(void);
 
 		Directive					parseLine(std::string line, int level);
-		IExpression					*parseBlock(std::vector<Directive> dir);
+		IExpression					*parseBlock(std::vector<Directive> dir, int scope);
 
 		std::vector<IExpression *>	parse(void);
 };

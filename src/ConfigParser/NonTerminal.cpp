@@ -26,26 +26,18 @@ NonTerminal::~NonTerminal(void)
 {
 }
 
-//====< isEmpty >===============================================================
-bool	NonTerminal::isEmpty(std::vector<Directive> dir, unsigned int index)
-{
-	if (dir[index].getLevel() >= dir[index + 1].getLevel())
-		throw (Exception("Error: Empty Block: " + dir[index].getKey()));
-	return (false);
-}
-
 //====< interpret >=============================================================
 IExpression	*NonTerminal::interpret(std::vector<Directive> dir, unsigned int& index)
 {
 	int						scope;
 
-	this->isEmpty(dir, index);
-	this->key = dir[index].getKey();
 	scope = dir[index].getLevel();
-	while (++index < dir.size() && dir[index].getLevel() > scope)
+	this->key = dir[index].getKey();
+	if (index >= dir.size() - 1 || scope >= dir[index + 1].getLevel())
+		throw (Exception("Error: Empty Block: " + dir[index].getKey()));
+	while (index + 1 < dir.size() && dir[index + 1].getLevel() > scope)
 	{
-		// check if it is a valid non_terminal
-		// check if this directive can be in this scope
+		Grammar::getInstance().isSubDirKnown(key, dir[++index].getKey());
 		if (dir[index].getLevel() - scope > 1)
 			throw (Exception("Error: Not Aligned: " + dir[index].getKey()));
 		list.push_back(clone(dir[index].getType())->interpret(dir, index));

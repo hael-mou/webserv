@@ -23,6 +23,7 @@
 #ifndef __IEXPRESSION_HPP__
 # define __IEXPRESSION_HPP__
 
+# include "Grammar.hpp"
 # include "Directive.hpp"
 # include "Exception.hpp"
 # include <vector>
@@ -31,8 +32,6 @@ class	IExpression
 {
 	public:
 	virtual ~IExpression(void) {};
-
-	virtual	bool		isEmpty(std::vector<Directive> dir, unsigned int index) = 0;
 
 	virtual IExpression	*interpret(std::vector<Directive> dir, unsigned int & index) = 0;
 };
