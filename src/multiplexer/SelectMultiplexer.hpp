@@ -5,36 +5,39 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IReactor Interface ]                                                #
+#      | [ SelectMultiplexer header file ]                                      #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-18                                                   #
+#      | Created: 2024-05-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IREACTOR_HPP__
-# define   __IREACTOR_HPP__
+#ifndef   __SELECTMULTIPLEXER_HPP__
+#define    __SELECTMULTIPLEXER_HPP__
 
 /*******************************************************************************
-	* Includes :
+	* Includes
 *******************************************************************************/
-# include "ISocket.hpp"
-# include "IEventHandler.hpp"
+# include "IMultiplexer.hpp"
+# include <sys/select.h>
 
 /*******************************************************************************
-	* IReactor Interface :
+	* Class SelectMultiplexer
 *******************************************************************************/
-class IReactor
+class SelectMultiplexer : public IMultiplexer
 {
 public:
-	typedef ISocket::Handle					Handle;
-	typedef IEventHandler::HandlerQueue		HandlerQueue;
+	SelectMultiplexer(void);
+	virtual ~SelectMultiplexer(void);
 
-	virtual ~IReactor(void) {};
+	void		 registerHandle(const Handle& aHandle, const Mode& aMode);
+	void		 removeHandle(const Handle& aHandle, const Mode& aMode);
+	int			 waitEvent(long long aTimeout_ms);
+	HandleQueue	 getReadyHandles(void) const;
 
-	virtual void  			registerHandler(const Handle& aHandle, IEventHandler* aHandler) = 0;
-	virtual void			registerQueueOfHandlers(HandlerQueue& aHandlers) = 0;
-	virtual IEventHandler*	unregisterHandler(const Handle& aHandle) = 0;
-	virtual void  			handleEvents(long long aTimeout_ms) = 0;
+private:
+	int			mMaxHandle;
+	fd_set		mReadSet, mReadSetTmp;
+	fd_set		mWriteSet, mWriteSetTmp;
 };
 
-#endif	/* __IREACTOR_HPP__ */
+#endif /* __SELECTMULTIPLEXER_HPP__ */

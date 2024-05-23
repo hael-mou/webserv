@@ -5,28 +5,35 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IDemultiplexer Interface ]                                          #
+#      | [ ISocket Interface ]                                                #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IDEMULTIPLEXER_HPP__
-#define    __IDEMULTIPLEXER_HPP__
+#ifndef   __ISOCKET_HPP__
+#define    __ISOCKET_HPP__
 
-//==[ Includes : ]==============================================================
-# include "Types.hpp"
-# include <vector>
- 
-//===[ IDemultiplexer Interface ]===============================================
-class IDemultiplexer
+/*******************************************************************************
+	* Includes :
+*******************************************************************************/
+# include <string>
+
+/******************************************************************************
+	*  ISocket Interface :
+*******************************************************************************/
+class ISocket
 {
 public:
-	virtual ~IDemultiplexer(void){};
+	typedef int				Handle;
+	typedef std::string		Host;
+	typedef std::string		Port;
 
-	virtual std::vector<Socketfd>	select(long timeout = 20) = 0;
-	virtual void 					registerSocket(Socketfd fd, Mode mode) = 0;
-	virtual void					clearSets(void) = 0;
+	virtual ~ISocket(void) {};
+
+	virtual const Handle&	getHandle(void) const = 0;
+	virtual const Host&		getHost(void) const = 0;
+	virtual const Port&		getPort(void) const = 0;
 };
 
-#endif /* __IDEMULTIPLEXER_HPP__ */
+#endif	/* __ISOCKET_HPP__ */

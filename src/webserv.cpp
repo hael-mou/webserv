@@ -5,35 +5,21 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IDemultiplexer Interface ]                                          #
+#      | [ WebServer Main File ]                                               #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-18                                                   #
+#      | Created: 2024-05-21                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __HANDLER_HPP__
-#define   __HANDLER_HPP__
+# include <iostream>
 
-//==[ Includes : ]==============================================================
-# include "Types.hpp"
-# include "IDemultiplexer.hpp"
-# include "SelectDemultiplexer.hpp"
-# include "IEventHandler.hpp"
-# include "IReactor.hpp"
-# include "Reactor.hpp"
-
-
-//==[ Handler class : ]=========================================================
-class Handler : public IEventHandler
+int main(int  argc, char const *argv[])
 {
-	public:
-		Handler(Socketfd fd);
-		virtual HandlerState	handleEvent(void);
-		virtual Mode			getMode(void);
-
-	private:
-		Socketfd	server_fd;
-		Mode		mode;
-};
-
-#endif	/* __HANDLER_HPP__ */
+	if (argc == 2)
+	{
+		(void)argv;
+		//std::cout << argv[1] << std::endl;
+	}
+	while (1);
+	return 0;
+}

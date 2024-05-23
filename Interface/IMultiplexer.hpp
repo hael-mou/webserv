@@ -5,36 +5,37 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IReactor Interface ]                                                #
+#      | [ IMultiplexer Interface ]                                            #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IREACTOR_HPP__
-# define   __IREACTOR_HPP__
+#ifndef   __IMULTIPLEXER_HPP__
+#define    __IMULTIPLEXER_HPP__
 
 /*******************************************************************************
 	* Includes :
 *******************************************************************************/
 # include "ISocket.hpp"
-# include "IEventHandler.hpp"
+# include <queue>
 
 /*******************************************************************************
-	* IReactor Interface :
+	* Imultiplexer Interface :
 *******************************************************************************/
-class IReactor
+class IMultiplexer
 {
 public:
-	typedef ISocket::Handle					Handle;
-	typedef IEventHandler::HandlerQueue		HandlerQueue;
+	typedef ISocket::Handle			Handle;
+	typedef enum {Read, Write}		Mode;
+	typedef std::queue<Handle>		HandleQueue;
 
-	virtual ~IReactor(void) {};
+	virtual ~IMultiplexer(void) {};
 
-	virtual void  			registerHandler(const Handle& aHandle, IEventHandler* aHandler) = 0;
-	virtual void			registerQueueOfHandlers(HandlerQueue& aHandlers) = 0;
-	virtual IEventHandler*	unregisterHandler(const Handle& aHandle) = 0;
-	virtual void  			handleEvents(long long aTimeout_ms) = 0;
+	virtual int			waitEvent(long long aTimeout_ms) = 0;
+	virtual void		registerHandle(const Handle& aHandle,const Mode& aMode) = 0;
+	virtual void		removeHandle(const Handle& aHandle, const Mode& aMode) = 0;
+	virtual HandleQueue	getReadyHandles(void) const = 0;
 };
 
-#endif	/* __IREACTOR_HPP__ */
+#endif /* __IMULTIPLEXER_HPP__ */

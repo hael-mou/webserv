@@ -14,17 +14,27 @@
 #ifndef   __IEVENTHANDLER_HPP__
 # define   __IEVENTHANDLER_HPP__
 
-//==[ Includes : ]==============================================================
-# include "Types.hpp"
+/*******************************************************************************
+	* Includes :
+*******************************************************************************/
+# include "ISocket.hpp"
+# include "IMultiplexer.hpp"
 
-//==[ IEventHandler Interface : ]===============================================
+/*******************************************************************************
+	* IEventHandler Interface :
+*******************************************************************************/
 class IEventHandler
 {
 public:
-	virtual ~IEventHandler(void){};
-
-	virtual HandlerState	handleEvent(void) = 0;
-	virtual Mode			getMode(void) = 0;
+	typedef ISocket::Handle					Handle;
+	typedef IMultiplexer::Mode				Mode;
+	typedef std::queue<IEventHandler*>		HandlerQueue;
+	
+	virtual ~IEventHandler(void) {};
+	
+	virtual const Handle&	getHandle(void) const = 0;
+	virtual const Mode&		getMode(void) const = 0;
+	virtual HandlerQueue	handleEvent(void) = 0;
 };
 
 #endif /* __IEVENTHANDLER_HPP__ */

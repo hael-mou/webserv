@@ -14,31 +14,34 @@
 #ifndef   __REACTOR_HPP__
 # define   __REACTOR_HPP__
 
-//==[ Includes : ]==============================================================
-# include "IDemultiplexer.hpp"
-# include "IEventHandler.hpp"
+/*******************************************************************************
+	* Includes :
+*******************************************************************************/
 # include "IReactor.hpp"
-# include <vector>
+# include "IMultiplexer.hpp"
 # include <map>
-# include "SelectDemultiplexer.hpp"
 
-//==[ Reactor class : ]=========================================================
+/*******************************************************************************
+	* Class Reactor :
+*******************************************************************************/
 class Reactor : public IReactor
 {
-public:	
-	Reactor(void);
-	virtual	~Reactor(void);
+public:
+	typedef std::map<Handle, IEventHandler*>		HandlerMap;
+	typedef IMultiplexer::HandleQueue				HandleQueue;
+	typedef IEventHandler::HandlerQueue				HandlerQueue;
 
-	void	registerHandler(Socketfd fd, IEventHandler* Handler);
-	void	removeHandler(Socketfd fd);
-	void	handleEvents(void);
+	Reactor(IMultiplexer* aMultiplexer);
+	virtual ~Reactor(void);
+
+	void  			registerHandler(const Handle& aHandle, IEventHandler* aHandler);
+	void			registerQueueOfHandlers(HandlerQueue& aHandlers);
+	IEventHandler*	unregisterHandler(const Handle& aHandle);
+	void  			handleEvents(long long aTimeout_ms);
 
 private:
-	typedef std::map<Socketfd, IEventHandler*>	EventMap;
-	typedef std::vector<Socketfd>				readyFd;
-	
-	EventMap		handlers;
-	IDemultiplexer*	demux;
+	HandlerMap		mHandlers;
+	IMultiplexer*	mMultiplexer;
 };
 
 #endif /* __REACTOR_HPP__ */
