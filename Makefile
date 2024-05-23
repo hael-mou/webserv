@@ -18,11 +18,13 @@ SRC_DIR		:=	src
 OBJ_DIR		:=	build
 INC_DIR		:=	$(SRC_DIR)/multiplexer\
 				$(SRC_DIR)/reactor\
+				$(SRC_DIR)/testHandler\
 				interface
 
 #=== Files : =================================================================
 SRC_FILES	:=	$(SRC_DIR)/multiplexer/SelectMultiplexer.cpp\
 				$(SRC_DIR)/reactor/Reactor.cpp\
+				$(SRC_DIR)/testHandler/handler.cpp\
 				$(SRC_DIR)/webserv.cpp
 
 INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))	

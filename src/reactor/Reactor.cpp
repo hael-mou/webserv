@@ -35,6 +35,7 @@ Reactor::~Reactor(void)
 		++it;
 	}
 	mHandlers.clear();
+	delete (mMultiplexer);
 }
 
 /*******************************************************************************
@@ -44,7 +45,7 @@ Reactor::~Reactor(void)
 //===[ registerHandler : ]===================================================
 void Reactor::registerHandler(const Handle& aHandle, IEventHandler* aHandler)
 {
-	if (aHandler == NULL)
+	if (aHandler != NULL)
 	{
 		mHandlers[aHandle] = aHandler;
 		mMultiplexer->registerHandle(aHandle, aHandler->getMode());
