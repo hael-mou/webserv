@@ -1,8 +1,0 @@
-http:
-   server:
-     listen: 30
-
-   server:
-     listen: 20
-     listen: 10
-

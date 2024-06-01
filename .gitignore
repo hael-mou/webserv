@@ -37,3 +37,13 @@ Thumbs.db
 *.tlb
 *.tlh
 *.tli
+
+# Ignore Vim-specific files
+*.swp
+*.bak
+*.tmp
+*.lock
+*.undo
+
+# Program-specific files
+webserv
