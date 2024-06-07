@@ -26,16 +26,15 @@
 class IMultiplexer
 {
 public:
-	typedef ISocket::Handle			Handle;
-	typedef enum {Read, Write}		Mode;
-	typedef std::queue<Handle>		HandleQueue;
+	typedef ISocket::Handle					Handle;
+	typedef std::queue<ISocket::Handle>		HandleQueue;
+	typedef enum {Read, Write}				Mode;
 
 	virtual ~IMultiplexer(void) {};
 
-	virtual int			waitEvent(long long aTimeout_ms) = 0;
-	virtual void		registerHandle(const Handle& aHandle,const Mode& aMode) = 0;
-	virtual void		removeHandle(const Handle& aHandle, const Mode& aMode) = 0;
-	virtual HandleQueue	getReadyHandles(void) const = 0;
+	virtual HandleQueue	 waitEvent(long long aTimeout_ms) = 0;
+	virtual void  registerHandle(const Handle& aHandle, const Mode& aMode) = 0;
+	virtual void  removeHandle(const Handle& aHandle, const Mode& aMode) = 0;
 };
 
 #endif /* __IMULTIPLEXER_HPP__ */

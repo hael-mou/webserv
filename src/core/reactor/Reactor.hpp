@@ -5,36 +5,43 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IReactor Interface ]                                                #
+#      | [ Reactor header file ]                                                #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-18                                                   #
+#      | Created: 2024-05-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IREACTOR_HPP__
-# define   __IREACTOR_HPP__
+#ifndef   __REACTOR_HPP__
+# define   __REACTOR_HPP__
 
 /*******************************************************************************
 	* Includes :
 *******************************************************************************/
-# include "ISocket.hpp"
-# include "IEventHandler.hpp"
+# include "IReactor.hpp"
+# include "IMultiplexer.hpp"
+# include <map>
 
 /*******************************************************************************
-	* IReactor Interface :
+	* Class Reactor :
 *******************************************************************************/
-class IReactor
+class Reactor : public IReactor
 {
 public:
-	typedef ISocket::Handle						Handle;
-	typedef IEventHandler::EventHandlerQueue	EventHandlerQueue;
+	typedef std::map<Handle, IEventHandler*>	EventHandlerMap;
+	typedef IMultiplexer::HandleQueue			HandleQueue;
 
-	virtual ~IReactor(void) {};
-	
-	virtual void			registerEventHandler(IEventHandler* aHandler) = 0;
-	virtual void			registerEventHandler(EventHandlerQueue& aHandlers) = 0;
-	virtual IEventHandler*	unregisterEventHandler(IEventHandler* aHandler) = 0;
-	virtual void			handleEvents(long long aTimeout_ms) = 0;
+	Reactor(IMultiplexer* aMultiplexer);
+	virtual ~Reactor(void);
+
+	void			registerEventHandler(IEventHandler* aHandler);
+	void			registerEventHandler(EventHandlerQueue& aHandlers);
+	IEventHandler*	unregisterEventHandler(IEventHandler* aHandler);
+	void			handleEvents(long long aTimeout_ms);
+	void			cleanupTerminatedHandlers(void);
+
+private:
+	IMultiplexer*		mMultiplexer;
+	EventHandlerMap		mEventHandlers;
 };
 
-#endif	/* __IREACTOR_HPP__ */
+#endif /* __REACTOR_HPP__ */

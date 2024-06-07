@@ -5,39 +5,38 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ SelectMultiplexer header file ]                                      #
+#      | [ AcceptHandler header file ]                                          #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-16                                                   #
+#      | Created: 2024-06-06                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __SELECTMULTIPLEXER_HPP__
-#define    __SELECTMULTIPLEXER_HPP__
+#ifndef   __HTTPACCEPTHANDLER_HPP__
+# define   __HTTPACCEPTHANDLER_HPP__
 
 /*******************************************************************************
-	* Includes
+	* Includes :
 *******************************************************************************/
-# include "IMultiplexer.hpp"
-# include <sys/select.h>
+# include "IEventHandler.hpp"
+# include <sys/socket.h>
 
 /*******************************************************************************
-	* Class SelectMultiplexer
+	* Class AcceptHandler :
 *******************************************************************************/
-class SelectMultiplexer : public IMultiplexer
+namespace http {
+class AcceptHandler : public IEventHandler
 {
 public:
-	SelectMultiplexer(void);
-	virtual ~SelectMultiplexer(void);
+	AcceptHandler(const ISocket::Handle& aHandle);
+	// virtual	~AcceptHandler(void);
 
-	void		 registerHandle(const Handle& aHandle, const Mode& aMode);
-	void		 removeHandle(const Handle& aHandle, const Mode& aMode);
-	int			 waitEvent(long long aTimeout_ms);
-	HandleQueue	 getReadyHandles(void) const;
+	EventHandlerQueue			 handleEvent(void);
+	const ISocket::Handle&		 getHandle(void) const;
+	const IMultiplexer::Mode&	 getMode(void) const;
+	bool						 isTerminated(void) const;
 
 private:
-	int			mMaxHandle;
-	fd_set		mReadSet, mReadSetTmp;
-	fd_set		mWriteSet, mWriteSetTmp;
+	const ISocket::Handle		 mHandle;
 };
-
-#endif /* __SELECTMULTIPLEXER_HPP__ */
+}
+#endif /* __HTTPACCEPTHANDLER_HPP__ */

@@ -5,43 +5,41 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Reactor header file ]                                                #
+#      | [ SelectMultiplexer header file ]                                      #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-05-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __REACTOR_HPP__
-# define   __REACTOR_HPP__
+#ifndef   __SELECTMULTIPLEXER_HPP__
+#define    __SELECTMULTIPLEXER_HPP__
 
 /*******************************************************************************
-	* Includes :
+	* Includes
 *******************************************************************************/
-# include "IReactor.hpp"
 # include "IMultiplexer.hpp"
-# include <map>
+# include <sys/select.h>
 
 /*******************************************************************************
-	* Class Reactor :
+	* Class SelectMultiplexer
 *******************************************************************************/
-class Reactor : public IReactor
+class SelectMultiplexer : public IMultiplexer
 {
 public:
-	typedef std::map<Handle, IEventHandler*>		HandlerMap;
-	typedef IMultiplexer::HandleQueue				HandleQueue;
-	typedef IEventHandler::HandlerQueue				HandlerQueue;
+	SelectMultiplexer(void);
+	virtual ~SelectMultiplexer(void);
 
-	Reactor(IMultiplexer* aMultiplexer);
-	virtual ~Reactor(void);
-
-	void  			registerHandler(const Handle& aHandle, IEventHandler* aHandler);
-	void			registerQueueOfHandlers(HandlerQueue& aHandlers);
-	IEventHandler*	unregisterHandler(const Handle& aHandle);
-	void  			handleEvents(long long aTimeout_ms);
+	HandleQueue		waitEvent(long long aTimeout_ms);
+	void			registerHandle(const Handle& aHandle, const Mode& aMode);
+	void			removeHandle(const Handle& aHandle, const Mode& aMode);
 
 private:
-	HandlerMap		mHandlers;
-	IMultiplexer*	mMultiplexer;
+	int				mMaxHandle;
+	fd_set			mReadSet;
+	fd_set			mWriteSet;
+
+	HandleQueue		_collectReadyHandles(fd_set& aReadSet, fd_set& aWriteSet);
+	void			_updateMaxHandleFromSets(void);
 };
 
-#endif /* __REACTOR_HPP__ */
+#endif /* __SELECTMULTIPLEXER_HPP__ */

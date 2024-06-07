@@ -19,6 +19,7 @@
 *******************************************************************************/
 # include "ISocket.hpp"
 # include "IMultiplexer.hpp"
+# include <queue>
 
 /*******************************************************************************
 	* IEventHandler Interface :
@@ -26,15 +27,16 @@
 class IEventHandler
 {
 public:
-	typedef ISocket::Handle					Handle;
-	typedef IMultiplexer::Mode				Mode;
-	typedef std::queue<IEventHandler*>		HandlerQueue;
-	
+	typedef ISocket::Handle				Handle;
+	typedef IMultiplexer::Mode			Mode;
+	typedef std::queue<IEventHandler*>	EventHandlerQueue;
+
 	virtual ~IEventHandler(void) {};
-	
-	virtual const Handle&	getHandle(void) const = 0;
-	virtual const Mode&		getMode(void) const = 0;
-	virtual HandlerQueue	handleEvent(void) = 0;
+
+	virtual EventHandlerQueue	handleEvent(void) = 0;
+	virtual const Handle&		getHandle(void) const = 0;
+	virtual const Mode&			getMode(void) const = 0;
+	virtual bool				isTerminated(void) const = 0;
 };
 
 #endif /* __IEVENTHANDLER_HPP__ */
