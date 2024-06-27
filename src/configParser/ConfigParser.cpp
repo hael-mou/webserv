@@ -1,17 +1,18 @@
-//            ################                                                  
-//          ####################                                                
-//        ########################                                              
-//       #############+########### #                                            
-//       ######-..        .+########< ConfigParser.cpp >                        
-//       ####-..            ..+####                                             
-//       ###-...             .-####                                             
-//       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
-//        #-.++###.      -###+..##                                              
-//        #....  ...   .-.  ....##       Created: 2024/05/15 11:53:26 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/21 16:47:09 by oezzaou
+//  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣦⣴⣶⣾⣿⣶⣶⣶⣶⣦⣤⣄⠀⠀⠀⠀⠀⠀⠀                                              
+//  ⠀⠀⠀⠀⠀⠀⠀⢠⡶⠻⠛⠟⠋⠉⠀⠈⠤⠴⠶⠶⢾⣿⣿⣿⣷⣦⠄⠀⠀⠀          𓐓  ConfigParser.hpp 𓐔           
+//  ⠀⠀⠀⠀⠀⢀⠔⠋⠀⠀⠤⠒⠒⢲⠀⠀⠀⢀⣠⣤⣤⣬⣽⣿⣿⣿⣷⣄⠀⠀                                              
+//  ⠀⠀⠀⣀⣎⢤⣶⣾⠅⠀⠀⢀⡤⠏⠀⠀⠀⠠⣄⣈⡙⠻⢿⣿⣿⣿⣿⣿⣦⠀  Student: oezzaou <oezzaou@student.1337.ma> 
+//  ⢀⠔⠉⠀⠊⠿⠿⣿⠂⠠⠢⣤⠤⣤⣼⣿⣶⣶⣤⣝⣻⣷⣦⣍⡻⣿⣿⣿⣿⡀                                              
+//  ⢾⣾⣆⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠉⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇                                              
+//  ⠀⠈⢋⢹⠋⠉⠙⢦⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇     Created: 2024/05/15 11:58:00 by oezzaou
+//  ⠀⠀⠀⠑⠀⠀⠀⠈⡇⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇     Updated: 2024/05/25 14:05:50 by hael-mou
+//  ⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⢀⣾⣿⣿⠿⠟⠛⠋⠛⢿⣿⣿⠻⣿⣿⣿⣿⡿⠀                                             
+//  ⠀⠀⠀⠀⠀⠀⠀⢀⠇⠀⢠⣿⣟⣭⣤⣶⣦⣄⡀⠀⠀⠈⠻⠀⠘⣿⣿⣿⠇⠀                                            
+//  ⠀⠀⠀⠀⠀⠱⠤⠊⠀⢀⣿⡿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠘⣿⠏⠀⠀                             𓆩♕𓆪      
+//  ⠀⠀⠀⠀⠀⡄⠀⠀⠀⠘⢧⡀⠀⠀⠸⣿⣿⣿⠟⠀⠀⠀⠀⠀⠀⠐⠋⠀⠀⠀                        𓄂 oussama ezzaou𓆃
+//  ⠀⠀⠀⠀⠀⠘⠄⣀⡀⠸⠓⠀⠀⠀⠠⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                                              
 
 #include "ConfigParser.hpp"
-#include "Directive.hpp"
 
 /*******************************************************************************
     * Construction :
@@ -24,7 +25,7 @@ ConfigParser::ConfigParser(void){}
 ConfigParser::~ConfigParser(void)
 {
     while (mFiles.empty() == false) {
-        CloseLastOpenFile();
+        _CloseLastOpenFile();
     }
 }
 
@@ -35,7 +36,7 @@ ConfigParser::~ConfigParser(void)
 //===[ Method: open a new file ]================================================
 void ConfigParser::openFile(const std::string& aFileName, int aStartColumn)
 {
-    if (isFileAlreadyOpen(aFileName) == true)
+    if (_isFileAlreadyOpen(aFileName) == true)
         throw (Exception("File_Already_Open", aFileName));
     
     std::fstream*	stream = new std::fstream(aFileName.c_str(), std::ios::in);
@@ -43,15 +44,63 @@ void ConfigParser::openFile(const std::string& aFileName, int aStartColumn)
         delete (stream);
         throw (Exception("Can't_Open_File", aFileName));
     }
-    mFiles.push_back(file(aFileName, stream));
+    mFiles.push_back(File(aFileName, stream));
     mStartColumn.push_back(aStartColumn);
     mlineCount.push_back(0);
 }
 
-//===[ Method: check if a file is already open ]================================
-bool ConfigParser::isFileAlreadyOpen(const std::string& aFileName) const
+//===[ Method: parse the configuration ]========================================
+mem::shared_ptr<Directive>	ConfigParser::parse(void)
 {
-    std::vector<file>::const_iterator it;
+	mem::shared_ptr<Directive>	globalDir;
+	std::vector<DirectivePart>	dirParts;
+    std::string					line;
+
+	while (!mFiles.empty())
+	{
+		while (std::getline(*(mFiles.back().second), line))
+		{
+            ++mlineCount.back();
+            _processLine(line, globalDir, dirParts);
+        }
+        if (mFiles.size() == 1 && dirParts.empty() == true)
+            throw (Exception("Empty_Configuration", mFiles.back().first));
+        _CloseLastOpenFile();
+    }
+	DirPartSet::iterator iter = dirParts.begin();
+	globalDir->push(iter, dirParts.end());
+	return (globalDir);
+}
+
+/*******************************************************************************
+    * Private Methods :
+*******************************************************************************/
+
+//==[ Method: Process a line ]==================================================
+void	ConfigParser::_processLine(std::string& aLine,
+                                  Dir_ptr& aGlobalDir,
+                                  DirPartSet& aDirParts)
+{
+	aLine = aLine.substr(0, aLine.find_first_of('#'));
+	if (prs::strtrim(aLine).empty())
+		return ;
+	int level = _getLevel(aLine);
+	if (_includeDirective(aLine, level) == true)
+        return ;
+	if (_isValidDirective(aDirParts, level) == true) {
+		DirPartSet::iterator iter = aDirParts.begin();
+		aGlobalDir->push(iter, aDirParts.end());
+		aDirParts.clear();
+	}
+	std::string file = mFiles.back().first;
+	int lineNum = mlineCount.back();
+	aDirParts.push_back(DirectivePart(aLine, file, lineNum, level));
+}
+
+//===[ Method: check if a file is already open ]================================
+bool ConfigParser::_isFileAlreadyOpen(const std::string& aFileName) const
+{
+    std::vector<File>::const_iterator it;
     for (it = mFiles.begin(); it != mFiles.end(); ++it) {
         if (it->first == aFileName)
             return (true);
@@ -59,63 +108,8 @@ bool ConfigParser::isFileAlreadyOpen(const std::string& aFileName) const
     return (false);
 }
 
-//===[ Method: close last open file ]===========================================
-void	ConfigParser::CloseLastOpenFile(void)
-{
-    delete (mFiles.back().second);
-    mFiles.pop_back();
-    mStartColumn.pop_back();
-    mlineCount.pop_back();
-}
-
-//===[ Method: parse the configuration ]========================================
-std::vector<Directive>	ConfigParser::parse(void)
-{
-    std::vector<Directive>		directives;
-    std::vector<DirectivePart>	dirParts;
-    std::string					line;
-
-    while (!mFiles.empty()) {
-        while (std::getline(*(mFiles.back().second), line)) {
-            mlineCount.back()++;
-            _processLine(line, directives, dirParts);
-        }
-        if (mFiles.size() == 1 && dirParts.empty() == true)
-            throw (Exception("Empty_Configuration", mFiles.back().first));
-        CloseLastOpenFile();
-    }
-    dirParts::iterator iter = dirParts.begin();
-    directives.push_back(Directive(iter, dirParts.end()));
-    return (directives);
-}
-
-/*******************************************************************************
-    * Private Methods :
-*******************************************************************************/
-
-//===[ Method: process a line ]=================================================
-void ConfigParser::_processLine(std::string& aLine,
-                               directive& aDirs,
-                               dirParts& aDirParts)
-{
-    aLine = aLine.substr(0, aLine.find_first_of('#'));
-    if (prs::strtrim(aLine).empty())
-        return ;
-    int level = getLevel(aLine);
-    if (includeDirective(aLine, level) == true)
-        return ;
-    if (isValidDirective(aDirParts, level) == true) {
-        dirParts::iterator iter = aDirParts.begin();
-        aDirs.push_back(Directive(iter, aDirParts.end()));
-        aDirParts.clear();
-    }
-    std::string file = mFiles.back().first;
-    int nline = mlineCount.back();
-    aDirParts.push_back(DirectivePart(aLine, file, nline, level));
-}
-
-//===[ Method: get level ]======================================================
-int	ConfigParser::getLevel(const std::string& aLine)
+//===[ Method: get the level of a line ]========================================
+int	ConfigParser::_getLevel(const std::string& aLine)
 {
     std::vector<int>::iterator	iter;
     int							column;
@@ -128,8 +122,8 @@ int	ConfigParser::getLevel(const std::string& aLine)
     return (static_cast<int>(mLevels.size()) - 1);
 }
 
-//===[ Method: is a complete Parts of a directive ]=============================
-bool ConfigParser::isValidDirective(const dirParts &aDirParts, int aLevel) const
+//===[ Method: check if a line is a valid directive ]===========================
+bool ConfigParser::_isValidDirective(const DirPartSet &aDirParts, int aLevel) const
 {
     if (aDirParts.size() == 1 && aDirParts[0].mType == Terminal)
     {
@@ -139,16 +133,30 @@ bool ConfigParser::isValidDirective(const dirParts &aDirParts, int aLevel) const
     return (!aDirParts.empty() && mLevels[aLevel] <= mLevels[0]);
 }
 
-//===[ Method: include directive ]==============================================
-bool ConfigParser::includeDirective(const std::string& aLine, int aLevel)
+//===[ Method: handle an include directive ]====================================
+bool ConfigParser::_includeDirective(const std::string& aLine, int aLevel)
 {
     if (aLine.find("include") == std::string::npos)
         return (false);
     prs::keyValuePair kv = prs::lineToPair(aLine, ':');
     if (kv.first != "include" || kv.second.empty())
         return (false);
+    if (kv.second[0] != '/' || kv.second[0] != '.')
+    {
+        std::string curFile = mFiles.back().first;
+        kv.second = curFile.substr(0, curFile.find_last_of('/') + 1) + kv.second;
+    }
     openFile(kv.second, mLevels[aLevel]);
     return (true);
+}
+
+//===[ Method: close the last open file ]======================================
+void ConfigParser::_CloseLastOpenFile(void)
+{
+    delete (mFiles.back().second);
+    mFiles.pop_back();
+    mStartColumn.pop_back();
+    mlineCount.pop_back();
 }
 
 /*******************************************************************************

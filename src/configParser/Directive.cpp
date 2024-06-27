@@ -1,14 +1,15 @@
-//            ################                                                  
-//          ####################                                                
-//        ########################                                              
-//       #############+########### #                                            
-//       ######-..        .+########   < Directive.cpp >                        
-//       ####-..            ..+####                                             
-//       ###-...             .-####                                             
-//       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
-//        #-.++###.      -###+..##                                              
-//        #....  ...   .-.  ....##       Created: 2024/05/15 12:54:33 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 17:08:02 by oezzaou
+/** ************************************************************************ ***
+#                                                                              #
+#         __ __         __    __  ___                                          #
+#        / // /__ ____ / /   /  |/  /__  __ __                                 #
+#       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
+#      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
+#                                                                              #
+#      | [ Directive Implementation file ]                                      #
+#      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
+#      | Created: 2024-05-25                                                   #
+#                                                                              #
+** ************************************************************************* **/
 
 #include "Directive.hpp"
 
@@ -43,6 +44,9 @@ DirectivePart::DirectivePart(const std::string& aLine,
     mLevel  = aLevel;
 }
 
+//===[ Constructor: Directive Default ] ========================================
+Directive::Directive(void) {}
+
 //===[ Constructor: Directive ] ================================================
 Directive::Directive(DirPartsIter& aDirectiveIter, DirPartsIter aDirectiveEnd)
 {
@@ -67,6 +71,42 @@ Directive::Directive(DirPartsIter& aDirectiveIter, DirPartsIter aDirectiveEnd)
 Directive::~Directive(void){}
 
 /*******************************************************************************
+    * Public methods :
+*******************************************************************************/
+
+//===[ Method: create & push to current directive ]=============================
+void Directive::push(DirPartsIter &aDirectiveIter, DirPartsIter aDirectiveEnd)
+{
+    if (aDirectiveIter->mType == NonTerminal)
+        _processNonTerminalDirective(aDirectiveIter, aDirectiveEnd);
+    else if (aDirectiveIter->mType == Terminal)
+        _processTerminalDirective(aDirectiveIter);
+}
+
+//===[ Method: get terminal directive ]========================================
+std::vector<std::string>
+Directive::getTerminal(const std::string& directiveKey) const
+{
+    std::map<std::string, std::vector<std::string> >::const_iterator it;
+
+    it = mTerminal.find(directiveKey);
+    if (it == mTerminal.end())
+        return (std::vector<std::string>());
+    return (it->second);
+}
+
+//===[ Method: get non terminal directive ]====================================
+std::vector<Directive::SharedDir_ptr>
+Directive::getNonTerminal(const std::string& directiveKey) const
+{
+    std::map<std::string, std::vector<SharedDir_ptr> >::const_iterator it;
+    it = mNonTerminal.find(directiveKey);
+    if (it == mNonTerminal.end())
+        return (std::vector<SharedDir_ptr>());
+    return (it->second);
+}
+
+/*******************************************************************************
     * Private methods :
 *******************************************************************************/
 
@@ -89,8 +129,9 @@ void Directive::_processNonTerminalDirective(DirPartsIter& aDirectiveIter,
                                   aDirectiveIter->mNline);
     }
     sHosts.push_back(directiveKey);
-    mNonTerminal[sHosts.back()].push_back(Directive(++aDirectiveIter,
-                                                    aDirectiveEnd));
+    mNonTerminal[sHosts.back()].push_back(
+                SharedDir_ptr(new Directive(++aDirectiveIter, aDirectiveEnd))
+    );
     --sCurrentLevel;
     sHosts.pop_back();
 }

@@ -12,15 +12,22 @@
 ** ************************************************************************* **/
 
 #include "ConfigParser.hpp"
+#include "Shared_ptr.hpp"
+
 #include <iostream>
 
-int		main(void)
+int		main(int argc, char *argv[])
 {
+	std::string	configFilePath = "config/default.conf";
+	configFilePath = (argc == 2) ? argv[1] : configFilePath;
+
 	try
 	{
-		ConfigParser	configParser;
-		configParser.openFile("config/default.conf");
-		configParser.parse();
+		{
+			ConfigParser	configParser;
+			configParser.openFile(configFilePath);
+			mem::shared_ptr<Directive> globalDir = configParser.parse();
+		}
 	}
 	catch(const std::exception& e)
 	{

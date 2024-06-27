@@ -16,16 +16,15 @@ NAME		:=	webserv
 #=== Directories : ===========================================================
 SRC_DIR		:=	src
 OBJ_DIR		:=	build
-INC_DIR		:=	$(SRC_DIR)/configParser\
-				$(SRC_DIR)/main\
-				interface
+INC_DIR		:=	$(SRC_DIR)/utils\
+				$(SRC_DIR)/configParser
 
 #=== Files : =================================================================
-SRC_FILES	:=	$(SRC_DIR)/configParser/ParserUtils.cpp\
+SRC_FILES	:=	$(SRC_DIR)/utils/ParserUtils.cpp\
 				$(SRC_DIR)/configParser/Dictionary.cpp\
 				$(SRC_DIR)/configParser/Directive.cpp\
 				$(SRC_DIR)/configParser/ConfigParser.cpp\
-				$(SRC_DIR)/main/main.cpp
+				$(SRC_DIR)/main.cpp
 
 INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))	
 
@@ -51,7 +50,7 @@ PURPLE		:=	\033[3;35m
 YELLOW		:=	\033[3;93m
 
 #=== Pattern rules : =========================================================
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_FILES)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_FILES) 
 	@mkdir -p $(dir $@)
 	@$(CPP) $(CFLAGS) $(INCLUDE) -c $< -o $@
 	@printf "$(GREEN) [OK]	$(PURPLE)Compiling ==> $(DEF)%5s\n" $<

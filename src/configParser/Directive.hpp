@@ -1,14 +1,15 @@
-//            ################                                                  
-//          ####################                                                
-//        ########################                                              
-//       #############+########### #                                            
-//       ######-..        .+########   < Directive.hpp >                        
-//       ####-..            ..+####                                             
-//       ###-...             .-####                                             
-//       ###...              ..+##    Student: oezzaou <oezzaou@student.1337.ma>
-//        #-.++###.      -###+..##                                              
-//        #....  ...   .-.  ....##       Created: 2024/05/15 12:54:33 by oezzaou
-//     --.#.-#+## -..  -+ ##-#-.-...     Updated: 2024/05/19 17:08:02 by oezzaou
+/** ************************************************************************ ***
+#                                                                              #
+#         __ __         __    __  ___                                          #
+#        / // /__ ____ / /   /  |/  /__  __ __                                 #
+#       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
+#      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
+#                                                                              #
+#      | [ Directive header file ]                                              #
+#      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
+#      | Created: 2024-05-25                                                   #
+#                                                                              #
+** ************************************************************************* **/
 
 #ifndef  __DIRECTIVE_HPP__
 # define  __DIRECTIVE_HPP__
@@ -18,6 +19,7 @@
 *******************************************************************************/
 # include "ParserUtils.hpp"
 # include "Dictionary.hpp"
+# include "Shared_ptr.hpp"
 
 # include <string>
 # include <vector>
@@ -51,15 +53,22 @@ public:
 
 	typedef std::string								string;
 	typedef std::vector<DirectivePart>::iterator	DirPartsIter;
+	typedef mem::shared_ptr<Directive>				SharedDir_ptr;
 
+	Directive(void);
 	Directive(DirPartsIter& aBegin, DirPartsIter aEnd);
 	virtual ~Directive(void);
 
+	void	push(DirPartsIter& aBegin, DirPartsIter aEnd);
+	std::vector<std::string>	getTerminal(const std::string& aKey) const;
+	std::vector<SharedDir_ptr>  getNonTerminal(const std::string& aKey) const;
+
 private:
-	std::map<string, std::vector<Directive> >	mNonTerminal;
-	std::map<string, std::vector<string> >		mTerminal;
-	static int 									sCurrentLevel;
-	static std::vector<std::string> 			sHosts;
+	static int 										sCurrentLevel;
+	static std::vector<std::string> 				sHosts;
+
+	std::map<string, std::vector<SharedDir_ptr> >	mNonTerminal;
+	std::map<string, std::vector<string> >			mTerminal;
 
 	void _processNonTerminalDirective(DirPartsIter& adirIt, DirPartsIter aEnd);
 	void _processTerminalDirective(DirPartsIter& adirIt);

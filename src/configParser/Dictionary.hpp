@@ -21,7 +21,6 @@
 
 # include <iostream>
 # include <fstream>
-# include <cstdlib>
 # include <string>
 # include <vector>
 # include <map>
@@ -48,10 +47,11 @@ private:
 
     Dictionary(void);
 
-    static MapGrammar _initializeGrammar(const std::string aConfigFilePath);
-    static void _processValue(const std::string&aLine, const std::string& aKey,
-                                                          MapGrammar& aGrammar);
-    static bool _isValidKey(const std::string& line);
+    static MapGrammar   _initializeGrammar(const std::string aConfigFilePath);
+    static bool         _isValidKey(const std::string& line);
+    static void         _processValue(const std::string&aLine,
+                                      const std::string& aKey,
+                                      MapGrammar& aGrammar);
 };
 
 #endif /* __DICTIONARY_HPP__ */

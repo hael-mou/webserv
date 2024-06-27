@@ -89,9 +89,8 @@ void Dictionary::_processValue(const std::string&aLine,
     prs::keyValuePair kvp = prs::lineToPair(aLine, '=');
     if (kvp.first.empty())
         return;
-
-    DirType terminalType = kvp.second == "List" ? List :
-        (kvp.second == "Complex" ? Complex : Simple);
-
+    kvp.second = prs::toLower(kvp.second);
+    DirType terminalType = kvp.second == "list" ? List :
+        (kvp.second == "complex" ? Complex : Simple);
     aGrammar[aKey].push_back(PairNameType(kvp.first, terminalType));
 }
