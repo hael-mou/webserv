@@ -28,19 +28,22 @@
 /*******************************************************************************
 	* DirectivePart struct :
 *******************************************************************************/ 
-typedef enum { Terminal = 0, NonTerminal=1 }	DirectiveType;
 
-struct	DirectivePart
+class	DirectivePart
 {
+public:
+	typedef std::string								String;
+	typedef enum { Terminal = 0, NonTerminal=1 }	Type;
+
 	DirectivePart(const std::string& aLine, const std::string& aFile,
 		int aNline, int aLevel);
 	
-	DirectiveType		mType;
-	std::string 		mFile;
-	std::string			mKey;
-	std::string			mRest;
-	int					mLevel;
-	int					mNline;
+	Type		mType;
+	String 		mFile;
+	String		mKey;
+	String		mRest;
+	int			mLevel;
+	int			mNline;
 };
 
 /*******************************************************************************
@@ -51,27 +54,27 @@ class	Directive
 public:
 	class Exception;
 
-	typedef std::string								string;
-	typedef std::vector<DirectivePart>::iterator	DirPartsIter;
-	typedef mem::shared_ptr<Directive>				SharedDir_ptr;
+	typedef std::string								String;
+	typedef mem::shared_ptr<Directive>				SharedPtr;
+	typedef std::vector<DirectivePart>::iterator	DirPartVectIt;
 
 	Directive(void);
-	Directive(DirPartsIter& aBegin, DirPartsIter aEnd);
+	Directive(DirPartVectIt& aBegin, DirPartVectIt aEnd);
 	virtual ~Directive(void);
 
-	void	push(DirPartsIter& aBegin, DirPartsIter aEnd);
-	std::vector<std::string>	getTerminal(const std::string& aKey) const;
-	std::vector<SharedDir_ptr>  getNonTerminal(const std::string& aKey) const;
+	void  push(DirPartVectIt& aBegin, DirPartVectIt aEnd);
+	std::vector<String>  getTerminal(const String& aKey) const;
+	std::vector<Directive::SharedPtr>  getNonTerminal(const String& aKey) const;
 
 private:
-	static int 										sCurrentLevel;
-	static std::vector<std::string> 				sHosts;
+	static int						sCurrentLevel;
+	static std::vector<String> 		sHosts;
 
-	std::map<string, std::vector<SharedDir_ptr> >	mNonTerminal;
-	std::map<string, std::vector<string> >			mTerminal;
+	std::map<String, std::vector<Directive::SharedPtr> >	mNonTerminal;
+	std::map<String, std::vector<String> >					mTerminal;
 
-	void _processNonTerminalDirective(DirPartsIter& adirIt, DirPartsIter aEnd);
-	void _processTerminalDirective(DirPartsIter& adirIt);
+	void  _processTerminalDirective(DirPartVectIt& adirIt);
+	void  _processNonTerminalDirective(DirPartVectIt& adirIt, DirPartVectIt aEnd);
 };
 
 /*******************************************************************************

@@ -44,7 +44,7 @@ void ConfigParser::openFile(const std::string& aFileName, int aStartColumn)
         delete (stream);
         throw (Exception("Can't_Open_File", aFileName));
     }
-    mFiles.push_back(File(aFileName, stream));
+    mFiles.push_back(FilePair(aFileName, stream));
     mStartColumn.push_back(aStartColumn);
     mlineCount.push_back(0);
 }
@@ -67,7 +67,7 @@ mem::shared_ptr<Directive>	ConfigParser::parse(void)
             throw (Exception("Empty_Configuration", mFiles.back().first));
         _CloseLastOpenFile();
     }
-	DirPartSet::iterator iter = dirParts.begin();
+	DirPartVect::iterator iter = dirParts.begin();
 	globalDir->push(iter, dirParts.end());
 	return (globalDir);
 }
@@ -78,8 +78,8 @@ mem::shared_ptr<Directive>	ConfigParser::parse(void)
 
 //==[ Method: Process a line ]==================================================
 void	ConfigParser::_processLine(std::string& aLine,
-                                  Dir_ptr& aGlobalDir,
-                                  DirPartSet& aDirParts)
+                                  Dir::SharedPtr& aGlobalDir,
+                                  DirPartVect& aDirParts)
 {
 	aLine = aLine.substr(0, aLine.find_first_of('#'));
 	if (prs::strtrim(aLine).empty())
@@ -88,7 +88,7 @@ void	ConfigParser::_processLine(std::string& aLine,
 	if (_includeDirective(aLine, level) == true)
         return ;
 	if (_isValidDirective(aDirParts, level) == true) {
-		DirPartSet::iterator iter = aDirParts.begin();
+		DirPartVect::iterator iter = aDirParts.begin();
 		aGlobalDir->push(iter, aDirParts.end());
 		aDirParts.clear();
 	}
@@ -100,7 +100,7 @@ void	ConfigParser::_processLine(std::string& aLine,
 //===[ Method: check if a file is already open ]================================
 bool ConfigParser::_isFileAlreadyOpen(const std::string& aFileName) const
 {
-    std::vector<File>::const_iterator it;
+    std::vector<FilePair>::const_iterator it;
     for (it = mFiles.begin(); it != mFiles.end(); ++it) {
         if (it->first == aFileName)
             return (true);
@@ -123,9 +123,9 @@ int	ConfigParser::_getLevel(const std::string& aLine)
 }
 
 //===[ Method: check if a line is a valid directive ]===========================
-bool ConfigParser::_isValidDirective(const DirPartSet &aDirParts, int aLevel) const
+bool ConfigParser::_isValidDirective(const DirPartVect &aDirParts, int aLevel) const
 {
-    if (aDirParts.size() == 1 && aDirParts[0].mType == Terminal)
+    if (aDirParts.size() == 1 && aDirParts[0].mType == DirectivePart::Terminal)
     {
         if (aDirParts[0].mLevel > 0)
         return (true);

@@ -19,10 +19,6 @@
 int Directive::sCurrentLevel = 0;
 std::vector<std::string> Directive::sHosts(1, "global");
 
-/*******************************************************************************
-    * construction :
-*******************************************************************************/
-
 //===[ Constructor: DirectivePart ]=============================================
 DirectivePart::DirectivePart(const std::string& aLine,
                              const std::string& aFile,
@@ -48,7 +44,7 @@ DirectivePart::DirectivePart(const std::string& aLine,
 Directive::Directive(void) {}
 
 //===[ Constructor: Directive ] ================================================
-Directive::Directive(DirPartsIter& aDirectiveIter, DirPartsIter aDirectiveEnd)
+Directive::Directive(DirPartVectIt& aDirectiveIter, DirPartVectIt aDirectiveEnd)
 {
     while (aDirectiveIter != aDirectiveEnd || sCurrentLevel != 0)
     {	
@@ -60,9 +56,9 @@ Directive::Directive(DirPartsIter& aDirectiveIter, DirPartsIter aDirectiveEnd)
                                         aDirectiveIter->mFile,
                                         aDirectiveIter->mNline));
         }
-        if (aDirectiveIter->mType == NonTerminal)
+        if (aDirectiveIter->mType == DirectivePart::NonTerminal)
             _processNonTerminalDirective(aDirectiveIter, aDirectiveEnd);
-        else if (aDirectiveIter->mType == Terminal)
+        else if (aDirectiveIter->mType == DirectivePart::Terminal)
             _processTerminalDirective(aDirectiveIter);
     }
 }
@@ -75,11 +71,11 @@ Directive::~Directive(void){}
 *******************************************************************************/
 
 //===[ Method: create & push to current directive ]=============================
-void Directive::push(DirPartsIter &aDirectiveIter, DirPartsIter aDirectiveEnd)
+void Directive::push(DirPartVectIt &aDirectiveIter, DirPartVectIt aDirectiveEnd)
 {
-    if (aDirectiveIter->mType == NonTerminal)
+    if (aDirectiveIter->mType == DirectivePart::NonTerminal)
         _processNonTerminalDirective(aDirectiveIter, aDirectiveEnd);
-    else if (aDirectiveIter->mType == Terminal)
+    else if (aDirectiveIter->mType == DirectivePart::Terminal)
         _processTerminalDirective(aDirectiveIter);
 }
 
@@ -96,13 +92,13 @@ Directive::getTerminal(const std::string& directiveKey) const
 }
 
 //===[ Method: get non terminal directive ]====================================
-std::vector<Directive::SharedDir_ptr>
+std::vector<Directive::SharedPtr>
 Directive::getNonTerminal(const std::string& directiveKey) const
 {
-    std::map<std::string, std::vector<SharedDir_ptr> >::const_iterator it;
+    std::map<std::string, std::vector<SharedPtr> >::const_iterator it;
     it = mNonTerminal.find(directiveKey);
     if (it == mNonTerminal.end())
-        return (std::vector<SharedDir_ptr>());
+        return (std::vector<Directive::SharedPtr>());
     return (it->second);
 }
 
@@ -111,8 +107,8 @@ Directive::getNonTerminal(const std::string& directiveKey) const
 *******************************************************************************/
 
 //===[ Method: process a non terminal directive ]==============================
-void Directive::_processNonTerminalDirective(DirPartsIter& aDirectiveIter,
-                                             DirPartsIter aDirectiveEnd)
+void Directive::_processNonTerminalDirective(DirPartVectIt& aDirectiveIter,
+                                             DirPartVectIt aDirectiveEnd)
 {
     ++sCurrentLevel;
     const std::string& directiveKey = aDirectiveIter->mKey;
@@ -130,14 +126,14 @@ void Directive::_processNonTerminalDirective(DirPartsIter& aDirectiveIter,
     }
     sHosts.push_back(directiveKey);
     mNonTerminal[sHosts.back()].push_back(
-                SharedDir_ptr(new Directive(++aDirectiveIter, aDirectiveEnd))
+            Directive::SharedPtr(new Directive(++aDirectiveIter, aDirectiveEnd))
     );
     --sCurrentLevel;
     sHosts.pop_back();
 }
 
 //===[ _processNonTerminalDirective ] =========================================
-void Directive::_processTerminalDirective(DirPartsIter& aDirectiveIter)
+void Directive::_processTerminalDirective(DirPartVectIt& aDirectiveIter)
 {
     std::string directiveKey = aDirectiveIter->mKey;
     DirType type = Dictionary::find(sHosts.back(), directiveKey);
