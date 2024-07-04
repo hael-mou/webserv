@@ -17,41 +17,43 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "typedefs.hpp"
 # include "ParserUtils.hpp"
+# include "Logger.hpp"
 
 # include <iostream>
 # include <fstream>
-# include <string>
-# include <vector>
-# include <map>
+
+/*******************************************************************************
+    * defines :
+*******************************************************************************/
+#define CONFIG_FILE_PATH  "src/core/configParser/Dictionary.conf"
 
 /*******************************************************************************
     * Dictionary Static Class :
 *******************************************************************************/
-enum  DirType    { Simple = 0, List, Complex, Invalid };
 
-#define CONFIG_FILE_PATH  "src/configParser/config/parser.conf"
+enum  DirType    { Simple = 0, List, Complex, Invalid };
 
 class Dictionary
 {
 public:
-    typedef std::string                         String;
-    typedef std::pair<String, DirType>          PairNameType;
-    typedef std::vector<PairNameType>           VectorNameType;
-    typedef std::map<String, VectorNameType>    MapGrammar;
+    typedef std::pair<std::string, DirType>                SimpleDirPair;
+    typedef std::vector<SimpleDirPair>                     ComplexDirPairVector;
+    typedef std::map<std::string, ComplexDirPairVector>    GrammarMap;
 
-    static DirType  find(const std::string& aDir, const std::string& aSubDir);
+    static DirType  find(const_string& aDir, const_string& aSubDir);
 
 private:
-    static MapGrammar sGrammar;
+    static GrammarMap sGrammar;
 
     Dictionary(void);
 
-    static MapGrammar   _initializeGrammar(const std::string aConfigFilePath);
-    static bool         _isValidKey(const std::string& line);
-    static void         _processValue(const std::string&aLine,
-                                      const std::string& aKey,
-                                      MapGrammar& aGrammar);
+    static GrammarMap   _initializeGrammar(const_string aFilePath);
+    static bool         _isValidKey(const_string& aLine);
+    static void         _processValue(const_string& aLine,
+                                      const_string& aKey,
+                                      GrammarMap& aGrammar);
 };
 
 #endif /* __DICTIONARY_HPP__ */

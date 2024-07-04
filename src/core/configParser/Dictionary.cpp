@@ -16,23 +16,22 @@
 /*******************************************************************************
     * static Variables :
 *******************************************************************************/
-
-Dictionary::MapGrammar
+Dictionary::GrammarMap
 Dictionary::sGrammar = Dictionary::_initializeGrammar(CONFIG_FILE_PATH);
 
 /*******************************************************************************
      * public Methods :
 *******************************************************************************/
 
-//===[ Method: getGrammar ]====================================================
-DirType Dictionary::find(const std::string& aDir, const std::string& aSubDir)
+//===[ Method: getGrammar ]=====================================================
+DirType Dictionary::find(const_string& aDir, const_string& aSubDir)
 {
-     VectorNameType grammar = sGrammar[aDir];
+    ComplexDirPairVector grammar = sGrammar[aDir];
 
-     for (size_t i = 0; i < grammar.size(); ++i)
-     {
-         if (grammar[i].first == aSubDir)
-             return (grammar[i].second);
+    for (size_t i = 0; i < grammar.size(); ++i)
+    {
+        if (grammar[i].first == aSubDir)
+            return (grammar[i].second);
      }
      return (Invalid);
 }
@@ -41,24 +40,23 @@ DirType Dictionary::find(const std::string& aDir, const std::string& aSubDir)
     * Private Methods :
 *******************************************************************************/
 
-//===[ Method: initGrammar ]===================================================
-std::map<std::string, Dictionary::VectorNameType>
-        Dictionary::_initializeGrammar(const std::string aConfigFilePath)
+//===[ Method: initGrammar ]====================================================
+Dictionary::GrammarMap Dictionary::_initializeGrammar(const_string aFilePath)
 {
-    std::map<std::string, VectorNameType> grammar;
-    std::ifstream configFile(aConfigFilePath.c_str());
+    Dictionary::GrammarMap grammar;
+    std::ifstream configFile(aFilePath.c_str());
 
     if (!configFile.is_open())
     {
-        std::cerr << " Error : failed to open: ";
-        std::cerr << aConfigFilePath  << std::endl;
+        Logger::log("ERROR", "\e[1;31mGrammar_File_Failed_To_Open: \e[0m"
+                + aFilePath + "\n", 2);
         std::exit(EXIT_FAILURE);
     }
 
     std::string currentKey, line;
     while (std::getline(configFile, line))
     {
-        line = prs::strtrim(line);
+        line = utls::strtrim(line);
         if (line.empty())
             continue;
 
@@ -72,8 +70,8 @@ std::map<std::string, Dictionary::VectorNameType>
     return (grammar);
 }
 
-//===[ Method: isValidKey ]====================================================
-bool Dictionary::_isValidKey(const std::string& line)
+//===[ Method: isValidKey ]=====================================================
+bool Dictionary::_isValidKey(const_string& line)
 {
     size_t len = line.length();
     if (len > 1 && line[len - 1] == ':')
@@ -81,16 +79,16 @@ bool Dictionary::_isValidKey(const std::string& line)
     return (false);
 }
 
-//===[ Method: processValue ]==================================================
-void Dictionary::_processValue(const std::string&aLine,
-                               const std::string&aKey,
-                               MapGrammar& aGrammar)
+//===[ Method: processValue ]===================================================
+void Dictionary::_processValue(const_string& aLine,
+                               const_string& aKey,
+                               GrammarMap& aGrammar)
 {
-    prs::keyValuePair kvp = prs::lineToPair(aLine, '=');
-    if (kvp.first.empty())
+    StringPair KeyValue = utls::lineToPair(aLine, '=');
+    if (KeyValue.first.empty())
         return;
-    kvp.second = prs::toLower(kvp.second);
-    DirType terminalType = kvp.second == "list" ? List :
-        (kvp.second == "complex" ? Complex : Simple);
-    aGrammar[aKey].push_back(PairNameType(kvp.first, terminalType));
+    KeyValue.second = utls::toLower(KeyValue.second);
+    DirType terminalType = KeyValue.second == "list" ? List :
+        (KeyValue.second == "complex" ? Complex : Simple);
+    aGrammar[aKey].push_back(std::make_pair(KeyValue.first, terminalType));
 }

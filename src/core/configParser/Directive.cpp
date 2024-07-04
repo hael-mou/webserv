@@ -17,38 +17,40 @@
     * Static Variables :
 *******************************************************************************/
 int Directive::sCurrentLevel = 0;
-std::vector<std::string> Directive::sHosts(1, "global");
 
 /*******************************************************************************
-    * construction :
+    * Construction:
 *******************************************************************************/
 
 //===[ Constructor: DirectivePart ]=============================================
-DirectivePart::DirectivePart(const std::string& aLine,
-                             const std::string& aFile,
+DirectivePart::DirectivePart(const_string& aLine,
+                             const_string& aFile,
                              int aLineNumber,
                              int aLevel)
 {
-    size_t colonPos = prs::strtrim(aLine).find(':');
+    size_t colonPos = utls::strtrim(aLine).find(':');
     if (colonPos == 0 || colonPos == std::string::npos) {
         throw (Directive::Exception("Syntax_Error",
                                     aFile,
                                     aLineNumber));
     }
-    prs::keyValuePair	kv = prs::lineToPair(aLine, ':');
-    mType   = kv.second.empty() ? NonTerminal : Terminal;
+    StringPair	keyValue = utls::lineToPair(aLine, ':');
+    mType   = keyValue.second.empty() ? NonTerminal : Terminal;
     mFile   = aFile;
-    mKey    = kv.first;
-    mRest   = kv.second;
+    mKey    = keyValue.first;
+    mRest   = keyValue.second;
     mNline  = aLineNumber;
     mLevel  = aLevel;
 }
 
 //===[ Constructor: Directive Default ] ========================================
-Directive::Directive(void) {}
+Directive::Directive(void) : mHostName("global") {}
 
 //===[ Constructor: Directive ] ================================================
-Directive::Directive(DirPartsIter& aDirectiveIter, DirPartsIter aDirectiveEnd)
+Directive::Directive(const_string& aName,
+                     DirPartVectIt& aDirectiveIter,
+                     DirPartVectIt aDirectiveEnd)
+    : mHostName(aName)
 {
     while (aDirectiveIter != aDirectiveEnd || sCurrentLevel != 0)
     {	
@@ -60,9 +62,9 @@ Directive::Directive(DirPartsIter& aDirectiveIter, DirPartsIter aDirectiveEnd)
                                         aDirectiveIter->mFile,
                                         aDirectiveIter->mNline));
         }
-        if (aDirectiveIter->mType == NonTerminal)
+        if (aDirectiveIter->mType == DirectivePart::NonTerminal)
             _processNonTerminalDirective(aDirectiveIter, aDirectiveEnd);
-        else if (aDirectiveIter->mType == Terminal)
+        else if (aDirectiveIter->mType == DirectivePart::Terminal)
             _processTerminalDirective(aDirectiveIter);
     }
 }
@@ -75,19 +77,19 @@ Directive::~Directive(void){}
 *******************************************************************************/
 
 //===[ Method: create & push to current directive ]=============================
-void Directive::push(DirPartsIter &aDirectiveIter, DirPartsIter aDirectiveEnd)
+void Directive::push(DirPartVectIt &aDirectiveIter, DirPartVectIt aDirectiveEnd)
 {
-    if (aDirectiveIter->mType == NonTerminal)
+    if (aDirectiveIter->mType == DirectivePart::NonTerminal)
         _processNonTerminalDirective(aDirectiveIter, aDirectiveEnd);
-    else if (aDirectiveIter->mType == Terminal)
+    else if (aDirectiveIter->mType == DirectivePart::Terminal)
         _processTerminalDirective(aDirectiveIter);
 }
 
 //===[ Method: get terminal directive ]========================================
-std::vector<std::string>
-Directive::getTerminal(const std::string& directiveKey) const
+StringVector
+Directive::getTerminal(const_string& directiveKey) const
 {
-    std::map<std::string, std::vector<std::string> >::const_iterator it;
+    std::map<std::string, StringVector >::const_iterator it;
 
     it = mTerminal.find(directiveKey);
     if (it == mTerminal.end())
@@ -96,14 +98,38 @@ Directive::getTerminal(const std::string& directiveKey) const
 }
 
 //===[ Method: get non terminal directive ]====================================
-std::vector<Directive::SharedDir_ptr>
-Directive::getNonTerminal(const std::string& directiveKey) const
+Directive::DirPtrVector
+Directive::getNonTerminal(const_string& directiveKey) const
 {
-    std::map<std::string, std::vector<SharedDir_ptr> >::const_iterator it;
+    std::map<std::string, DirPtrVector >::const_iterator it;
     it = mNonTerminal.find(directiveKey);
     if (it == mNonTerminal.end())
-        return (std::vector<SharedDir_ptr>());
+        return (DirPtrVector());
     return (it->second);
+}
+
+//===[ Method: copy matching attributes ]=======================================
+void Directive::copyMatchingAttributes(Directive::SharedPtr httpDir)
+{
+    NonTerminalMap::iterator nonTermIt = httpDir->mNonTerminal.begin();
+    for (;nonTermIt != httpDir->mNonTerminal.end(); ++nonTermIt)
+    {
+        if (Dictionary::find(mHostName, nonTermIt->first) == Invalid)
+            continue ;
+        if (mNonTerminal.find(nonTermIt->first) != mNonTerminal.end())
+            continue ;
+        mNonTerminal[nonTermIt->first] = nonTermIt->second;
+    }
+
+    TerminalMap::iterator termIt = httpDir->mTerminal.begin();
+    for (;termIt != httpDir->mTerminal.end(); ++termIt)
+    {
+        if (Dictionary::find(mHostName, termIt->first) == Invalid)
+            continue ;
+        if (mTerminal.find(termIt->first) != mTerminal.end())
+            continue ;
+        mTerminal[termIt->first] = termIt->second;
+    }
 }
 
 /*******************************************************************************
@@ -111,13 +137,13 @@ Directive::getNonTerminal(const std::string& directiveKey) const
 *******************************************************************************/
 
 //===[ Method: process a non terminal directive ]==============================
-void Directive::_processNonTerminalDirective(DirPartsIter& aDirectiveIter,
-                                             DirPartsIter aDirectiveEnd)
+void Directive::_processNonTerminalDirective(DirPartVectIt& aDirectiveIter,
+                                             DirPartVectIt aDirectiveEnd)
 {
     ++sCurrentLevel;
-    const std::string& directiveKey = aDirectiveIter->mKey;
+    const_string& directiveKey = aDirectiveIter->mKey;
 
-    if (Dictionary::find(sHosts.back(), directiveKey) != Complex) {
+    if (Dictionary::find(mHostName, directiveKey) != Complex) {
         throw Directive::Exception("Invalid_Directive",
                                    aDirectiveIter->mFile,
                                    aDirectiveIter->mNline);
@@ -128,19 +154,18 @@ void Directive::_processNonTerminalDirective(DirPartsIter& aDirectiveIter,
                                   aDirectiveIter->mFile,
                                   aDirectiveIter->mNline);
     }
-    sHosts.push_back(directiveKey);
-    mNonTerminal[sHosts.back()].push_back(
-                SharedDir_ptr(new Directive(++aDirectiveIter, aDirectiveEnd))
-    );
+    mNonTerminal[directiveKey].push_back(
+             Directive::SharedPtr(new Directive(directiveKey, ++aDirectiveIter,
+                aDirectiveEnd))
+            );
     --sCurrentLevel;
-    sHosts.pop_back();
 }
 
 //===[ _processNonTerminalDirective ] =========================================
-void Directive::_processTerminalDirective(DirPartsIter& aDirectiveIter)
+void Directive::_processTerminalDirective(DirPartVectIt& aDirectiveIter)
 {
     std::string directiveKey = aDirectiveIter->mKey;
-    DirType type = Dictionary::find(sHosts.back(), directiveKey);
+    DirType type = Dictionary::find(mHostName, directiveKey);
 
     if (type != Simple && type != List) {
         throw Directive::Exception("Invalid_Directive",
@@ -155,7 +180,7 @@ void Directive::_processTerminalDirective(DirPartsIter& aDirectiveIter)
     }
 
     if (type == List) {
-        std::vector<std::string> values = prs::split(aDirectiveIter->mRest, ',');
+        std::vector<std::string> values = utls::split(aDirectiveIter->mRest, ',');
         mTerminal[directiveKey].insert(mTerminal[directiveKey].end(),
                                        values.begin(),
                                        values.end());
@@ -171,15 +196,15 @@ void Directive::_processTerminalDirective(DirPartsIter& aDirectiveIter)
 *******************************************************************************/
 
 //===[ Constructor: Directive::Exception ]======================================
-Directive::Exception::Exception(const std::string& aMessage,
-                                const std::string& aFile,
+Directive::Exception::Exception(const_string& aMessage,
+                                const_string& aFile,
                                 int aNline)
 {
     char mNline[16];
     sprintf(mNline, "%d", aNline);
-    mMessage =  "\e[1m\e[1;31m" + aMessage 	+ ": " 
-                "\e[0m\e[3m"	+ aFile		+ 
-                " ["			+ mNline 	+ "]";
+    mMessage =  "\e[1m\e[4;31m" + aMessage 	+ ": "
+                "\e[0m\e[4;3m"	+ aFile		+ 
+                " ["			+ mNline 	+ "]\n";
 }
 
 //===[ Destructor: Directive::Exception ]=======================================

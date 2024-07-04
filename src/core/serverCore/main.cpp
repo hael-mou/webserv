@@ -12,9 +12,11 @@
 ** ************************************************************************* **/
 
 #include "ConfigParser.hpp"
-#include "Shared_ptr.hpp"
+#include "ServerCore.hpp"
+# include "Logger.hpp"
 
 #include <iostream>
+#include <signal.h>
 
 int		main(int argc, char *argv[])
 {
@@ -23,14 +25,18 @@ int		main(int argc, char *argv[])
 
 	try
 	{
+		ServerCore serverCore;
 		{
-			ConfigParser	configParser;
-			configParser.openFile(configFilePath);
-			mem::shared_ptr<Directive> globalDir = configParser.parse();
+			ConfigParser   				 parser(configFilePath);
+			utls::shared_ptr<Directive> globalDir = parser.parse();
+			serverCore.setup(globalDir);
 		}
+
+		signal(SIGPIPE, SIG_IGN);
+		serverCore.run();
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		Logger::log("ERROR" ,e.what(), 2);
 	}
 }
