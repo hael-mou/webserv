@@ -17,14 +17,25 @@ NAME		:=	webserv
 SRC_DIR		:=	src
 OBJ_DIR		:=	build
 INC_DIR		:=	$(SRC_DIR)/utils\
-				$(SRC_DIR)/configParser
+				interface include\
+				$(SRC_DIR)/core/configParser\
+				$(SRC_DIR)/http/module
+				
 
 #=== Files : =================================================================
 SRC_FILES	:=	$(SRC_DIR)/utils/ParserUtils.cpp\
-				$(SRC_DIR)/configParser/Dictionary.cpp\
-				$(SRC_DIR)/configParser/Directive.cpp\
-				$(SRC_DIR)/configParser/ConfigParser.cpp\
-				$(SRC_DIR)/main.cpp
+				$(SRC_DIR)/utils/Logger.cpp\
+\
+				$(SRC_DIR)/core/configParser/Dictionary.cpp\
+				$(SRC_DIR)/core/configParser/Directive.cpp\
+				$(SRC_DIR)/core/configParser/ConfigParser.cpp\
+\
+				$(SRC_DIR)/http/module/HttpCluster.cpp\
+				$(SRC_DIR)/http/module/HttpServer.cpp\
+				$(SRC_DIR)/http/module/HttpFactory.cpp\
+\
+				$(SRC_DIR)/core/serverCore/ServerCore.cpp\
+				$(SRC_DIR)/core/serverCore/main.cpp
 
 INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))	
 

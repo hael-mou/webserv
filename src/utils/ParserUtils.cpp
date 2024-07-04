@@ -19,7 +19,7 @@
 *******************************************************************************/
 
 //===[ strtrim : ]============================================================
-std::string prs::strtrim(const std::string& input)
+std::string utls::strtrim(const_string& input)
 {
     size_t start = input.find_first_not_of(' ');
     if (std::string::npos == start)
@@ -29,19 +29,19 @@ std::string prs::strtrim(const std::string& input)
 }
 
 //===[ lineToPair : ]=========================================================
-prs::keyValuePair prs::lineToPair(const std::string& line, const char sep)
+StringPair utls::lineToPair(const_string& line, const char sep)
 {
-    prs::keyValuePair   pair;
+    StringPair          pair;
     std::stringstream   ss(line);
     getline(ss, pair.first, sep);
     getline(ss, pair.second);
-    return (keyValuePair(strtrim(pair.first), strtrim(pair.second)));
+    return (std::make_pair(strtrim(pair.first), strtrim(pair.second)));
 }
 
 //===[ split : ]==============================================================
-std::vector<std::string> prs::split(const std::string str, const char sep)
+std::vector<std::string> utls::split(const_string str, const char sep)
 {
-    std::vector<std::string>       arr;
+    std::vector<std::string>    arr;
     std::stringstream           ss(str);
     std::string                 buff;
 
@@ -51,9 +51,9 @@ std::vector<std::string> prs::split(const std::string str, const char sep)
 }
 
 //===[ stirngTolower : ]=======================================================
-std::string prs::toLower(const std::string &str)
+std::string utls::toLower(const_string &str)
 {
-	std::string result = str;
+    std::string result = str;
     for (size_t i = 0; i < result.length(); ++i) {
         result[i] = std::tolower(result[i]);
     }
