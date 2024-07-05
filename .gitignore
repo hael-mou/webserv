@@ -40,4 +40,10 @@ Thumbs.db
 
 # Ignore Vim-specific files
 *.swp
-*~
+*.bak
+*.tmp
+*.lock
+*.undo
+
+# Program-specific files
+webserv

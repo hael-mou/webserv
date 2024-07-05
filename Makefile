@@ -16,16 +16,26 @@ NAME		:=	webserv
 #=== Directories : ===========================================================
 SRC_DIR		:=	src
 OBJ_DIR		:=	build
-INC_DIR		:=	$(SRC_DIR)/multiplexer\
-				$(SRC_DIR)/reactor\
-				$(SRC_DIR)/testHandler\
-				interface
+INC_DIR		:=	$(SRC_DIR)/utils\
+				interface include\
+				$(SRC_DIR)/core/configParser\
+				$(SRC_DIR)/http/module
+				
 
 #=== Files : =================================================================
-SRC_FILES	:=	$(SRC_DIR)/multiplexer/SelectMultiplexer.cpp\
-				$(SRC_DIR)/reactor/Reactor.cpp\
-				$(SRC_DIR)/testHandler/handler.cpp\
-				$(SRC_DIR)/webserv.cpp
+SRC_FILES	:=	$(SRC_DIR)/utils/ParserUtils.cpp\
+				$(SRC_DIR)/utils/Logger.cpp\
+\
+				$(SRC_DIR)/core/configParser/Dictionary.cpp\
+				$(SRC_DIR)/core/configParser/Directive.cpp\
+				$(SRC_DIR)/core/configParser/ConfigParser.cpp\
+\
+				$(SRC_DIR)/http/module/HttpCluster.cpp\
+				$(SRC_DIR)/http/module/HttpServer.cpp\
+				$(SRC_DIR)/http/module/HttpFactory.cpp\
+\
+				$(SRC_DIR)/core/serverCore/ServerCore.cpp\
+				$(SRC_DIR)/core/serverCore/main.cpp
 
 INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))	
 
@@ -34,11 +44,11 @@ OBJ_FILES	:=	$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 #=== Commands : ==============================================================
 CPP			:=	c++
 RM			:=	rm -rf
-CFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 INCLUDE		:=	$(addprefix -I , $(INC_DIR))
 
 #=== Variables : =============================================================
-CONFIG_FILE :=	config
+CONFIG_FILE :=	default.conf
 
 #=== Colors : =================================================================
 DEF			:=	\033[3;39m
@@ -51,7 +61,7 @@ PURPLE		:=	\033[3;35m
 YELLOW		:=	\033[3;93m
 
 #=== Pattern rules : =========================================================
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_FILES)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_FILES) 
 	@mkdir -p $(dir $@)
 	@$(CPP) $(CFLAGS) $(INCLUDE) -c $< -o $@
 	@printf "$(GREEN) [OK]	$(PURPLE)Compiling ==> $(DEF)%5s\n" $<
@@ -66,11 +76,13 @@ $(NAME): $(OBJ_FILES)
 run:
 	@if [ ! -f $(NAME) ]; then\
 		printf "$(PURPLE) Warning: $(YELLOW) $(NAME) not found !!$(DEF)\n";\
-	elif [ ! -f $(NAME).pid ]; then\
+	else\
+		make stop > /dev/null;
+		if [ -f $(NAME).pid ]; then\
+			$(RM) $(NAME).pid;\
+		fi;\
 		./$(NAME) $(CONFIG_FILE) & printf $$! > $(NAME).pid;\
 		printf "$(PURPLE) Notis: $(GREEN) $(NAME) is started!$(DEF) \n";\
-	else\
-		printf "$(PURPLE) Warning: $(YELLOW) $(NAME) is already running !!$(DEF)\n";\
 	fi
 
 stop:
