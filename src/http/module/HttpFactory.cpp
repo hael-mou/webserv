@@ -51,7 +51,7 @@ Handle     http::Factory::createSocket(const_string& aListen)
         _bindSocket(socketHandle, hostPort[0], hostPort[1]);
         _startListening(socketHandle);
 
-        Logger::log("INFO", "HTTP: Socket \"" + aListen + "\" created", 1);
+        Logger::log("INFO", "HTTP: Socket [" + aListen + "] created", 1);
 
     } catch (const std::exception& e)
     {

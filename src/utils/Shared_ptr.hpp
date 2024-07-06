@@ -28,7 +28,7 @@ namespace utls
     class shared_ptr
     {
     public:
-        shared_ptr(T* aPtr = new T());
+        shared_ptr(T* aPtr = NULL);
         shared_ptr(const shared_ptr<T>& aOther);
         virtual	~shared_ptr(void);
 

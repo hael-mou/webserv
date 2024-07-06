@@ -56,16 +56,17 @@ void ConfigParser::openFile(const_string& aFileName, int aStartColumn)
 }
 
 //===[ Method: parse the configuration ]========================================
-utls::shared_ptr<Directive>	ConfigParser::parse(void)
+Directive::SharedPtr ConfigParser::parse(void)
 {
-	utls::shared_ptr<Directive>	 globalDir;
-	std::vector<DirectivePart>	 dirParts;
-    std::string					 line;
+	Dir::SharedPtr            globalDir;
+	DirPartVect	              dirParts;
+    std::string				  line;
 
-	while (!mFiles.empty())
-	{
-		while (std::getline(*(mFiles.back().second), line))
-		{
+    globalDir = new Directive("global");
+    while (!mFiles.empty())
+    {
+        while (std::getline(*(mFiles.back().second), line))
+        {
             ++mlineCount.back();
             _processLine(line, globalDir, dirParts);
         }
@@ -73,9 +74,9 @@ utls::shared_ptr<Directive>	ConfigParser::parse(void)
             throw (Exception("Empty_Configuration", mFiles.back().first));
         _CloseLastOpenFile();
     }
-	DirPartVect::iterator iter = dirParts.begin();
-	globalDir->push(iter, dirParts.end());
-	return (globalDir);
+    DirPartVect::iterator iter = dirParts.begin();
+    globalDir->push(iter, dirParts.end());
+    return (globalDir);
 }
 
 /*******************************************************************************
@@ -83,9 +84,9 @@ utls::shared_ptr<Directive>	ConfigParser::parse(void)
 *******************************************************************************/
 
 //==[ Method: Process a line ]==================================================
-void	ConfigParser::_processLine(std::string& aLine,
-                                  Dir::SharedPtr& aGlobalDir,
-                                  DirPartVect& aDirParts)
+void ConfigParser::_processLine(std::string& aLine,
+                               Dir::SharedPtr& aGlobalDir,
+                               DirPartVect& aDirParts)
 {
 	aLine = aLine.substr(0, aLine.find_first_of('#'));
 	if (utls::strtrim(aLine).empty())

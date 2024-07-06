@@ -15,26 +15,25 @@
 #define    __IMULTIPLEXER_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
-# include "ISocket.hpp"
-# include <queue>
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
 
 /*******************************************************************************
-	* Imultiplexer Interface :
+    * Imultiplexer Interface :
 *******************************************************************************/
 class IMultiplexer
 {
 public:
-	typedef ISocket::Handle					Handle;
-	typedef std::queue<ISocket::Handle>		HandleQueue;
-	typedef enum {Read, Write}				Mode;
+    typedef enum {Read, Write}					Mode;
+    typedef utls::shared_ptr<IMultiplexer>		SharedPtr;
 
-	virtual ~IMultiplexer(void) {};
+    virtual ~IMultiplexer(void) {};
 
-	virtual HandleQueue	 waitEvent(long long aTimeout_ms) = 0;
-	virtual void  registerHandle(const Handle& aHandle, const Mode& aMode) = 0;
-	virtual void  removeHandle(const Handle& aHandle, const Mode& aMode) = 0;
+    virtual HandleQueue	 waitEvent(long long aTimeout_ms) = 0;
+    virtual void         registerHandle(const Handle& aHandle, Mode aMode) = 0;
+    virtual void         removeHandle(const Handle& aHandle, Mode aMode) = 0;
 };
 
 #endif /* __IMULTIPLEXER_HPP__ */

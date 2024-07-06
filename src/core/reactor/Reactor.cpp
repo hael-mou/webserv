@@ -22,51 +22,46 @@ Reactor::Reactor(IMultiplexer *aMultiplexer)
     : mMultiplexer(aMultiplexer)
 {
     if (aMultiplexer == NULL)
-        throw (std::invalid_argument("Multiplexer is NULL"));
+    {
+        std::string error = "Reactor: Multiplexer failed to initialize!";
+        throw (std::runtime_error(error));
+    }
 }
 
 //===[ Destructor : ]=========================================================
-Reactor::~Reactor(void)
-{
-    EventHandlerMap::iterator handlerIt = mEventHandlers.begin();
-    while (handlerIt != mEventHandlers.end())
-    {
-        delete (handlerIt->second);
-        ++handlerIt;
-    }
-    mEventHandlers.clear();
-    delete  (mMultiplexer);
-}
+Reactor::~Reactor(void) {}
 
 /*******************************************************************************
     * public Methods :
 *******************************************************************************/
 
 //===[ Method : register new event handler ]====================================
-void Reactor::registerEventHandler(IEventHandler* aHandler)
+void Reactor::registerEventHandler(IEH::SharedPtr aHandler)
 {
-    if (aHandler != NULL)
-	{
-        Handle Handle = aHandler->getHandle();
-		mEventHandlers[Handle] = aHandler;
-		mMultiplexer->registerHandle(Handle, aHandler->getMode());
-	}
+    if (aHandler.get() != NULL)
+    {
+        Handle handle = aHandler->getHandle();
+        mEventHandlers[handle] = aHandler;
+        mMultiplexer->registerHandle(handle, aHandler->getMode());
+    }
 }
 
 //===[ Method : register queue of event handlers ]==============================
-void Reactor::registerEventHandler(EventHandlerQueue &aHandlers)
+void Reactor::registerEventHandler(IEventHandlerQueue& aHandlers)
 {
-	while (aHandlers.empty() == false)
-	{
-		registerEventHandler(aHandlers.front());
-		aHandlers.pop();
-	}
+    while (aHandlers.empty() == false)
+    {
+        registerEventHandler(aHandlers.front());
+        aHandlers.pop();
+    }
 }
 
 //===[ Method : unregister event handler ]=====================================
-IEventHandler* Reactor::unregisterEventHandler(IEventHandler* aHandler)
+IEventHandler::SharedPtr 
+Reactor::unregisterEventHandler(IEH::SharedPtr aHandler)
 {
-    if (aHandler != NULL) {
+    if (aHandler.get() != NULL)
+    {
         const Handle& handle = aHandler->getHandle();
         mMultiplexer->removeHandle(handle, aHandler->getMode());
         mEventHandlers.erase(handle);
@@ -77,17 +72,19 @@ IEventHandler* Reactor::unregisterEventHandler(IEventHandler* aHandler)
 //===[ Method : remove all ended event handlers ]==============================
 void Reactor::cleanupTerminatedHandlers(void)
 {
-    EventHandlerMap::iterator handlerIt = mEventHandlers.begin();
+    IEventHandlerMap::iterator handlerIt = mEventHandlers.begin();
     while (handlerIt != mEventHandlers.end())
     {
-        IEventHandler* handler = handlerIt->second;
-        if (handler->isTerminated() == true) {
+        IEH::SharedPtr handler = handlerIt->second;
+        if (handler->isTerminated() == true)
+        {
             mMultiplexer->removeHandle(handler->getHandle(),handler->getMode());
             handlerIt = mEventHandlers.erase(handlerIt);
-            delete (handler);
         }
         else
+        {
             ++handlerIt;
+        }
     }
 }
 
@@ -98,9 +95,8 @@ void Reactor::handleEvents(long long aTimeout_ms)
     while (readyHandles.empty() == false)
     {
         Handle            handle = readyHandles.front();
-        EventHandlerQueue newHandlers = mEventHandlers[handle]->handleEvent();
+        IEventHandlerQueue newHandlers = mEventHandlers[handle]->handleEvent();
         registerEventHandler(newHandlers);
         readyHandles.pop();
     }
-    cleanupTerminatedHandlers();
 }

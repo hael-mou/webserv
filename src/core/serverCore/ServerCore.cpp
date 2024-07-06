@@ -19,16 +19,14 @@
 
 //===[ Constructor: ServerCore ]================================================
 ServerCore::ServerCore(void)
+    : mReactor(NULL)
 {
-    // IMultiplexer* multiplexer = new Multiplexer();
-    // mReactor = new Reactor(multiplexer);
+    IMultiplexer* multiplexer = new SelectMultiplexer();
+    mReactor = new Reactor(multiplexer);
 }
 
 //===[ Destructor: ServerCore ]=================================================
-ServerCore::~ServerCore(void)
-{
-    // delete (mReactor);
-}
+ServerCore::~ServerCore(void){}
 
 /*******************************************************************************
     * Public Methods :
@@ -43,6 +41,7 @@ void	ServerCore::setup(Directive::SharedPtr aGlobalDir)
 //===[ Method: run Start Servers Handler ]======================================
 void	ServerCore::run(void)
 {
+    while (1);
 }
 
 /*******************************************************************************
@@ -61,7 +60,7 @@ void ServerCore::_setupHttp(Directive::SharedPtr aGlobalDir)
             return ;
         http::Cluster *cluster = http::Factory::createCluster(httpDir.front());
         IEH::IEventHandlerQueue Handlers = cluster->createHandlers();
-        // mReactor->setHandler(Handlers);
+        mReactor->registerEventHandler(Handlers);
         delete (cluster);
     }
     catch(const std::exception& e)

@@ -15,33 +15,36 @@
 # define   __REACTOR_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
+
 # include "IReactor.hpp"
 # include "IMultiplexer.hpp"
-# include <map>
 
 /*******************************************************************************
-	* Class Reactor :
+    * Class Reactor :
 *******************************************************************************/
 class Reactor : public IReactor
 {
 public:
-	typedef std::map<Handle, IEventHandler*>	EventHandlerMap;
-	typedef IMultiplexer::HandleQueue			HandleQueue;
+    typedef IEventHandler                       IEH;
+    typedef IMultiplexer                        IMux;
+    typedef std::map<Handle, IEH::SharedPtr>	IEventHandlerMap;
 
-	Reactor(IMultiplexer* aMultiplexer);
-	virtual ~Reactor(void);
+    Reactor(IMultiplexer* aMultiplexer);
+    virtual ~Reactor(void);
 
-	void			registerEventHandler(IEventHandler* aHandler);
-	void			registerEventHandler(EventHandlerQueue& aHandlers);
-	IEventHandler*	unregisterEventHandler(IEventHandler* aHandler);
-	void			handleEvents(long long aTimeout_ms);
-	void			cleanupTerminatedHandlers(void);
+    void              registerEventHandler(IEH::SharedPtr aHandler);
+    void              handleEvents(long long aTimeout_ms);
+    void              registerEventHandler(IEventHandlerQueue& aHandlers);
+    IEH::SharedPtr    unregisterEventHandler(IEH::SharedPtr aHandler);
+    void              cleanupTerminatedHandlers(void);
 
 private:
-	IMultiplexer*		mMultiplexer;
-	EventHandlerMap		mEventHandlers;
+    IMux::SharedPtr   mMultiplexer;
+    IEventHandlerMap  mEventHandlers;
 };
 
 #endif /* __REACTOR_HPP__ */

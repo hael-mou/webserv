@@ -40,10 +40,16 @@ namespace http
 	class Factory
 	{
 	public:
-		// public methods :
+		// typedef std::vector<Server::SharedPtr>	Servers;
+
+		// http Module creation methods:
 		static http::Cluster*	createCluster(Directive::SharedPtr aHttpDir);
 		static http::Server*	createServer(Directive::SharedPtr aServerDir);
 		static Handle			createSocket(const_string& aListen);
+
+		// http Handlers creation methods:
+		//static IEventHandler* createAcceptHandler(Handle aSocket, Servers& aServers);
+		//static IEventHandler* createRecvHandler(IClient::SharedPtr aClient, Servers& aServers);
 
 	private:
 		Factory(void);
@@ -55,6 +61,6 @@ namespace http
 		static void  _bindSocket(Handle aSocket, const_string& aHost,
 								 const_string& aPort);
 	};
-}
+};
 
 #endif	  /* __HTTPFACTORY_HPP__ */

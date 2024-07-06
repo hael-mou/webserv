@@ -19,9 +19,9 @@
 *******************************************************************************/
 
 //===[ Constructor: Cluster ]===================================================
-http::Cluster::Cluster(Directive::SharedPtr httpDir)
+http::Cluster::Cluster(Directive::SharedPtr aHttpDir)
 {
-    DirPtrVector serverDir = httpDir->getNonTerminal("server");
+    DirPtrVector serverDir = aHttpDir->getNonTerminal("server");
     if (serverDir.size() == 0)
         throw (Exception("HTTP: No server directive found"));
     for (size_t i = 0; i < serverDir.size(); ++i)

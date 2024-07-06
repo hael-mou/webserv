@@ -11,6 +11,10 @@
 #                                                                              #
 ** ************************************************************************* **/
 
+
+/*******************************************************************************
+    * Includes :
+*******************************************************************************/
 #include "ConfigParser.hpp"
 #include "ServerCore.hpp"
 # include "Logger.hpp"
@@ -18,25 +22,29 @@
 #include <iostream>
 #include <signal.h>
 
+
+/*******************************************************************************
+    * Main Program :
+*******************************************************************************/
 int		main(int argc, char *argv[])
 {
-	std::string	configFilePath = "config/default.conf";
-	configFilePath = (argc == 2) ? argv[1] : configFilePath;
+    std::string	configFilePath = "config/default.conf";
+    configFilePath = (argc == 2) ? argv[1] : configFilePath;
 
-	try
-	{
-		ServerCore serverCore;
-		{
-			ConfigParser   				 parser(configFilePath);
-			utls::shared_ptr<Directive> globalDir = parser.parse();
-			serverCore.setup(globalDir);
-		}
+    try
+    {
+        ServerCore serverCore;
+        {
+            ConfigParser             parser(configFilePath);
+            Directive::SharedPtr    globalDir = parser.parse();
+            serverCore.setup(globalDir);
+        }
 
-		signal(SIGPIPE, SIG_IGN);
-		serverCore.run();
-	}
-	catch(const std::exception& e)
-	{
-		Logger::log("ERROR" ,e.what(), 2);
-	}
+        signal(SIGPIPE, SIG_IGN);
+        serverCore.run();
+    }
+    catch(const std::exception& e)
+    {
+        Logger::log("ERROR" ,e.what(), 2);
+    }
 }

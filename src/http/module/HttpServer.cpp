@@ -56,22 +56,16 @@ http::Server::_processListenDirective(const StringVector& aListenDir)
 
 	for (size_t index = 0; index < aListenDir.size(); ++index)
 	{
-		StringVector addressPort = utls::split(aListenDir[index], ':');
-		if (addressPort.size() != 2)
-		{
-			Logger::log("WARNING", "HTTP: Listen directive ignored: "
-				+ aListenDir[index], 2);
-			continue ;
-		}
-		int port = atoi(addressPort[1].c_str());
+		StringPair addressPort = utls::lineToPair(aListenDir[index], ':');
+		int port = atoi(addressPort.second.c_str());
 		if (port <= 0 || port > 65535)
 		{
-			Logger::log("WARNING", "HTTP: Listen directive ignored: "
-				+ aListenDir[index], 2);
+			Logger::log("WARNING", "HTTP: Listen directive ignored: ["
+				+  aListenDir[index] + "]", 2);
 			continue ;
 		}
-		std::string address = utls::strtrim(addressPort[0]);
-		std::string portString = utls::strtrim(addressPort[1]);
+		std::string address = utls::strtrim(addressPort.first);
+		std::string portString = utls::strtrim(addressPort.second);
 		listenSet.push_back(address + ":" + portString);
 	}
 	if (listenSet.size() == 0)

@@ -33,6 +33,4 @@ namespace Logger
 };
 
 #endif /* __LOGGER_HPP__ */
-
-// { DEBUG, INFO, WARNING, ERROR, CRITICAL }; 
   

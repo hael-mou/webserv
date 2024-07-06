@@ -44,7 +44,7 @@ DirectivePart::DirectivePart(const_string& aLine,
 }
 
 //===[ Constructor: Directive Default ] ========================================
-Directive::Directive(void) : mHostName("global") {}
+Directive::Directive(const_string& aHostName) : mHostName(aHostName) {}
 
 //===[ Constructor: Directive ] ================================================
 Directive::Directive(const_string& aName,

@@ -15,26 +15,29 @@
 # define   __IREACTOR_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
-# include "ISocket.hpp"
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
+
 # include "IEventHandler.hpp"
 
 /*******************************************************************************
-	* IReactor Interface :
+    * IReactor Interface :
 *******************************************************************************/
 class IReactor
 {
 public:
-	typedef ISocket::Handle						Handle;
-	typedef IEventHandler::EventHandlerQueue	EventHandlerQueue;
+    typedef IEventHandler                   IEH;
+    typedef utls::shared_ptr<IReactor>      SharedPtr;
+    typedef std::queue<IEH::SharedPtr>      IEventHandlerQueue;
 
-	virtual ~IReactor(void) {};
-	
-	virtual void			registerEventHandler(IEventHandler* aHandler) = 0;
-	virtual void			registerEventHandler(EventHandlerQueue& aHandlers) = 0;
-	virtual IEventHandler*	unregisterEventHandler(IEventHandler* aHandler) = 0;
-	virtual void			handleEvents(long long aTimeout_ms) = 0;
+    virtual	~IReactor(void) {};
+    
+    virtual void            registerEventHandler(IEH::SharedPtr aHandler) = 0;
+    virtual void            registerEventHandler(IEventHandlerQueue& aHandlers) = 0;
+    virtual IEH::SharedPtr  unregisterEventHandler(IEH::SharedPtr aHandler) = 0;
+    virtual void            handleEvents(long long aTimeout_ms) = 0;
 };
 
 #endif	/* __IREACTOR_HPP__ */

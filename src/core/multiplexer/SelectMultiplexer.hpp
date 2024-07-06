@@ -30,8 +30,8 @@ public:
 	virtual ~SelectMultiplexer(void);
 
 	HandleQueue		waitEvent(long long aTimeout_ms);
-	void			registerHandle(const Handle& aHandle, const Mode& aMode);
-	void			removeHandle(const Handle& aHandle, const Mode& aMode);
+	void			registerHandle(const Handle& aHandle, Mode aMode);
+	void			removeHandle(const Handle& aHandle, Mode aMode);
 
 private:
 	int				mMaxHandle;
