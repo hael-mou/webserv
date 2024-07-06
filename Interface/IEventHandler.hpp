@@ -15,28 +15,28 @@
 # define   __IEVENTHANDLER_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
-# include "ISocket.hpp"
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
+
 # include "IMultiplexer.hpp"
-# include <queue>
 
 /*******************************************************************************
-	* IEventHandler Interface :
+    * IEventHandler Interface :
 *******************************************************************************/
 class IEventHandler
 {
 public:
-	typedef ISocket::Handle				Handle;
-	typedef IMultiplexer::Mode			Mode;
-	typedef std::queue<IEventHandler*>	EventHandlerQueue;
+    typedef utls::shared_ptr<IEventHandler>  SharedPtr;
+    typedef std::queue<SharedPtr>            IEventHandlerQueue;
 
-	virtual ~IEventHandler(void) {};
-
-	virtual EventHandlerQueue	handleEvent(void) = 0;
-	virtual const Handle&		getHandle(void) const = 0;
-	virtual const Mode&			getMode(void) const = 0;
-	virtual bool				isTerminated(void) const = 0;
+    virtual ~IEventHandler(void) {};
+    
+    virtual const Handle&         getHandle(void) const = 0;
+    virtual IMultiplexer::Mode    getMode(void) const = 0;
+    virtual IEventHandlerQueue	  handleEvent(void) = 0;
+    virtual bool                  isTerminated(void) const = 0;
 };
 
 #endif /* __IEVENTHANDLER_HPP__ */
