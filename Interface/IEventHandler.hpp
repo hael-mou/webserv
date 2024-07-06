@@ -36,7 +36,7 @@ public:
     virtual const Handle&         getHandle(void) const = 0;
     virtual IMultiplexer::Mode    getMode(void) const = 0;
     virtual IEventHandlerQueue	  handleEvent(void) = 0;
-    virtual bool                  isTerminated(void) const = 0;
+    virtual bool				  isTerminated(void) const = 0;
 };
 
 #endif /* __IEVENTHANDLER_HPP__ */
