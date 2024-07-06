@@ -59,7 +59,7 @@ public:
     typedef std::map<std::string, DirPtrVector >    NonTerminalMap;
     typedef std::map<std::string, StringVector >    TerminalMap;
 
-    Directive(void);
+    Directive(const_string& aHostName = "global");
     Directive(const_string& aName, DirPartVectIt& aBegin, DirPartVectIt aEnd);
     virtual ~Directive(void);
 

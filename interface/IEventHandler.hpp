@@ -20,6 +20,8 @@
 # include "typedefs.hpp"
 # include "Shared_ptr.hpp"
 
+# include "IMultiplexer.hpp"
+
 /*******************************************************************************
     * IEventHandler Interface :
 *******************************************************************************/
@@ -31,7 +33,10 @@ public:
 
     virtual ~IEventHandler(void) {};
     
-    virtual const Handle&   getHandle(void) const = 0;
+    virtual const Handle&         getHandle(void) const = 0;
+    virtual IMultiplexer::Mode    getMode(void) const = 0;
+    virtual IEventHandlerQueue	  handleEvent(void) = 0;
+    virtual bool				  isTerminated(void) const = 0;
 };
 
 #endif /* __IEVENTHANDLER_HPP__ */

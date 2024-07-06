@@ -5,46 +5,46 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Main Program File ]                                                 #
+#      | [ Reactor header file ]                                                #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-21                                                   #
+#      | Created: 2024-05-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
+#ifndef   __REACTOR_HPP__
+# define   __REACTOR_HPP__
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-#include "ConfigParser.hpp"
-#include "ServerCore.hpp"
-# include "Logger.hpp"
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
 
-#include <iostream>
-#include <signal.h>
-
+# include "IReactor.hpp"
+# include "IMultiplexer.hpp"
 
 /*******************************************************************************
-    * Main Program :
+    * Class Reactor :
 *******************************************************************************/
-int		main(int argc, char *argv[])
+class Reactor : public IReactor
 {
-    std::string	configFilePath = "config/default.conf";
-    configFilePath = (argc == 2) ? argv[1] : configFilePath;
+public:
+    typedef IEventHandler                       IEH;
+    typedef IMultiplexer                        IMux;
+    typedef std::map<Handle, IEH::SharedPtr>	IEventHandlerMap;
 
-    try
-    {
-        ServerCore serverCore;
-        {
-            ConfigParser             parser(configFilePath);
-            Directive::SharedPtr    globalDir = parser.parse();
-            serverCore.setup(globalDir);
-        }
+    Reactor(IMultiplexer* aMultiplexer);
+    virtual ~Reactor(void);
 
-        signal(SIGPIPE, SIG_IGN);
-        serverCore.run();
-    }
-    catch(const std::exception& e)
-    {
-        Logger::log("ERROR" ,e.what(), 2);
-    }
-}
+    void              registerEventHandler(IEH::SharedPtr aHandler);
+    void              handleEvents(long long aTimeout_ms);
+    void              registerEventHandler(IEventHandlerQueue& aHandlers);
+    IEH::SharedPtr    unregisterEventHandler(IEH::SharedPtr aHandler);
+    void              cleanupTerminatedHandlers(void);
+
+private:
+    IMux::SharedPtr   mMultiplexer;
+    IEventHandlerMap  mEventHandlers;
+};
+
+#endif /* __REACTOR_HPP__ */

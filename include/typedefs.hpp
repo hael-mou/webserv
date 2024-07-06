@@ -30,5 +30,6 @@ typedef std::map<std::string, std::string>		StringMap;
 typedef int										Handle;
 typedef std::string								Address;
 typedef std::string								Port;
+typedef std::queue<Handle>						HandleQueue;
 
 #endif /* __TYPEDEFS_HPP__ */

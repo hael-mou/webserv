@@ -5,46 +5,39 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Main Program File ]                                                 #
+#      | [ IReactor Interface ]                                                #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-21                                                   #
+#      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
+#ifndef   __IREACTOR_HPP__
+# define   __IREACTOR_HPP__
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-#include "ConfigParser.hpp"
-#include "ServerCore.hpp"
-# include "Logger.hpp"
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
 
-#include <iostream>
-#include <signal.h>
-
+# include "IEventHandler.hpp"
 
 /*******************************************************************************
-    * Main Program :
+    * IReactor Interface :
 *******************************************************************************/
-int		main(int argc, char *argv[])
+class IReactor
 {
-    std::string	configFilePath = "config/default.conf";
-    configFilePath = (argc == 2) ? argv[1] : configFilePath;
+public:
+    typedef IEventHandler                   IEH;
+    typedef utls::shared_ptr<IReactor>      SharedPtr;
+    typedef std::queue<IEH::SharedPtr>      IEventHandlerQueue;
 
-    try
-    {
-        ServerCore serverCore;
-        {
-            ConfigParser             parser(configFilePath);
-            Directive::SharedPtr    globalDir = parser.parse();
-            serverCore.setup(globalDir);
-        }
+    virtual	~IReactor(void) {};
+    
+    virtual void            registerEventHandler(IEH::SharedPtr aHandler) = 0;
+    virtual void            registerEventHandler(IEventHandlerQueue& aHandlers) = 0;
+    virtual IEH::SharedPtr  unregisterEventHandler(IEH::SharedPtr aHandler) = 0;
+    virtual void            handleEvents(long long aTimeout_ms) = 0;
+};
 
-        signal(SIGPIPE, SIG_IGN);
-        serverCore.run();
-    }
-    catch(const std::exception& e)
-    {
-        Logger::log("ERROR" ,e.what(), 2);
-    }
-}
+#endif	/* __IREACTOR_HPP__ */

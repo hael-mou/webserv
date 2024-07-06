@@ -5,46 +5,38 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Main Program File ]                                                 #
+#      | [ IEventHandler Interface ]                                           #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-21                                                   #
+#      | Created: 2024-05-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
+#ifndef   __IEVENTHANDLER_HPP__
+# define   __IEVENTHANDLER_HPP__
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-#include "ConfigParser.hpp"
-#include "ServerCore.hpp"
-# include "Logger.hpp"
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
 
-#include <iostream>
-#include <signal.h>
-
+# include "IMultiplexer.hpp"
 
 /*******************************************************************************
-    * Main Program :
+    * IEventHandler Interface :
 *******************************************************************************/
-int		main(int argc, char *argv[])
+class IEventHandler
 {
-    std::string	configFilePath = "config/default.conf";
-    configFilePath = (argc == 2) ? argv[1] : configFilePath;
+public:
+    typedef utls::shared_ptr<IEventHandler>  SharedPtr;
+    typedef std::queue<SharedPtr>            IEventHandlerQueue;
 
-    try
-    {
-        ServerCore serverCore;
-        {
-            ConfigParser             parser(configFilePath);
-            Directive::SharedPtr    globalDir = parser.parse();
-            serverCore.setup(globalDir);
-        }
+    virtual ~IEventHandler(void) {};
+    
+    virtual const Handle&         getHandle(void) const = 0;
+    virtual IMultiplexer::Mode    getMode(void) const = 0;
+    virtual IEventHandlerQueue	  handleEvent(void) = 0;
+    virtual bool                  isTerminated(void) const = 0;
+};
 
-        signal(SIGPIPE, SIG_IGN);
-        serverCore.run();
-    }
-    catch(const std::exception& e)
-    {
-        Logger::log("ERROR" ,e.what(), 2);
-    }
-}
+#endif /* __IEVENTHANDLER_HPP__ */

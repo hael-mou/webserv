@@ -20,7 +20,9 @@
 # include "typedefs.hpp"
 # include "Shared_ptr.hpp"
 
-# include "IEventHandler.hpp"
+# include "SelectMultiplexer.hpp"
+# include "Reactor.hpp"
+
 # include "Directive.hpp"
 # include "HttpFactory.hpp"
 
@@ -32,8 +34,6 @@
 class ServerCore
 {
 public:
-    class Exception;
-
     typedef IEventHandler                       IEH;
     typedef std::vector<Directive::SharedPtr>   DirPtrVector;
 
@@ -44,7 +44,7 @@ public:
     void    run(void);
 
 private:
-    // IReactor*    mReactor;
+    IReactor::SharedPtr    mReactor;
 
     void    _setupHttp(Directive::SharedPtr aGlobalDir);
 };

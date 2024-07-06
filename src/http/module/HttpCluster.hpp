@@ -42,7 +42,7 @@ namespace http
         typedef std::vector<utls::shared_ptr<http::Server> >    ServerVector;
         typedef std::map<Handle, ServerVector>                  ServerMap;
 
-        Cluster(Directive::SharedPtr httpDir);
+        Cluster(Directive::SharedPtr aHttpDir);
         virtual ~Cluster(void);
 
         IEH::IEventHandlerQueue     createHandlers(void);

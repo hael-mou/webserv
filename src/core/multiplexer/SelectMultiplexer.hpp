@@ -5,46 +5,41 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Main Program File ]                                                 #
+#      | [ SelectMultiplexer header file ]                                      #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-21                                                   #
+#      | Created: 2024-05-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
+#ifndef   __SELECTMULTIPLEXER_HPP__
+#define    __SELECTMULTIPLEXER_HPP__
 
 /*******************************************************************************
-    * Includes :
+	* Includes
 *******************************************************************************/
-#include "ConfigParser.hpp"
-#include "ServerCore.hpp"
-# include "Logger.hpp"
-
-#include <iostream>
-#include <signal.h>
-
+# include "IMultiplexer.hpp"
+# include <sys/select.h>
 
 /*******************************************************************************
-    * Main Program :
+	* Class SelectMultiplexer
 *******************************************************************************/
-int		main(int argc, char *argv[])
+class SelectMultiplexer : public IMultiplexer
 {
-    std::string	configFilePath = "config/default.conf";
-    configFilePath = (argc == 2) ? argv[1] : configFilePath;
+public:
+	SelectMultiplexer(void);
+	virtual ~SelectMultiplexer(void);
 
-    try
-    {
-        ServerCore serverCore;
-        {
-            ConfigParser             parser(configFilePath);
-            Directive::SharedPtr    globalDir = parser.parse();
-            serverCore.setup(globalDir);
-        }
+	HandleQueue		waitEvent(long long aTimeout_ms);
+	void			registerHandle(const Handle& aHandle, Mode aMode);
+	void			removeHandle(const Handle& aHandle, Mode aMode);
 
-        signal(SIGPIPE, SIG_IGN);
-        serverCore.run();
-    }
-    catch(const std::exception& e)
-    {
-        Logger::log("ERROR" ,e.what(), 2);
-    }
-}
+private:
+	int				mMaxHandle;
+	fd_set			mReadSet;
+	fd_set			mWriteSet;
+
+	HandleQueue		_collectReadyHandles(fd_set& aReadSet, fd_set& aWriteSet);
+	void			_updateMaxHandleFromSets(void);
+};
+
+#endif /* __SELECTMULTIPLEXER_HPP__ */

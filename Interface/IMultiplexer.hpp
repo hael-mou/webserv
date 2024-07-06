@@ -5,46 +5,35 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Main Program File ]                                                 #
+#      | [ IMultiplexer Interface ]                                            #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-21                                                   #
+#      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
+#ifndef   __IMULTIPLEXER_HPP__
+#define    __IMULTIPLEXER_HPP__
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-#include "ConfigParser.hpp"
-#include "ServerCore.hpp"
-# include "Logger.hpp"
-
-#include <iostream>
-#include <signal.h>
-
+# include "typedefs.hpp"
+# include "Shared_ptr.hpp"
 
 /*******************************************************************************
-    * Main Program :
+    * Imultiplexer Interface :
 *******************************************************************************/
-int		main(int argc, char *argv[])
+class IMultiplexer
 {
-    std::string	configFilePath = "config/default.conf";
-    configFilePath = (argc == 2) ? argv[1] : configFilePath;
+public:
+    typedef enum {Read, Write}					Mode;
+    typedef utls::shared_ptr<IMultiplexer>		SharedPtr;
 
-    try
-    {
-        ServerCore serverCore;
-        {
-            ConfigParser             parser(configFilePath);
-            Directive::SharedPtr    globalDir = parser.parse();
-            serverCore.setup(globalDir);
-        }
+    virtual ~IMultiplexer(void) {};
 
-        signal(SIGPIPE, SIG_IGN);
-        serverCore.run();
-    }
-    catch(const std::exception& e)
-    {
-        Logger::log("ERROR" ,e.what(), 2);
-    }
-}
+    virtual HandleQueue	 waitEvent(long long aTimeout_ms) = 0;
+    virtual void         registerHandle(const Handle& aHandle, Mode aMode) = 0;
+    virtual void         removeHandle(const Handle& aHandle, Mode aMode) = 0;
+};
+
+#endif /* __IMULTIPLEXER_HPP__ */

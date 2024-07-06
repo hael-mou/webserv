@@ -19,6 +19,8 @@ OBJ_DIR		:=	build
 INC_DIR		:=	$(SRC_DIR)/utils\
 				interface include\
 				$(SRC_DIR)/core/configParser\
+				$(SRC_DIR)/core/multiplexer\
+				$(SRC_DIR)/core/reactor\
 				$(SRC_DIR)/http/module
 				
 
@@ -29,6 +31,10 @@ SRC_FILES	:=	$(SRC_DIR)/utils/ParserUtils.cpp\
 				$(SRC_DIR)/core/configParser/Dictionary.cpp\
 				$(SRC_DIR)/core/configParser/Directive.cpp\
 				$(SRC_DIR)/core/configParser/ConfigParser.cpp\
+\
+				$(SRC_DIR)/core/multiplexer/SelectMultiplexer.cpp\
+\
+				$(SRC_DIR)/core/reactor/Reactor.cpp\
 \
 				$(SRC_DIR)/http/module/HttpCluster.cpp\
 				$(SRC_DIR)/http/module/HttpServer.cpp\
