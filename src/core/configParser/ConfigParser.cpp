@@ -171,10 +171,10 @@ void ConfigParser::_CloseLastOpenFile(void)
 *******************************************************************************/
 
 //===[ Constructor: Exception ]=================================================
-ConfigParser::Exception::Exception(std::string aMessage, std::string aLine)
+ConfigParser::Exception::Exception(std::string aMessage, std::string aFileName)
 {
     mMessage =  "\e[1m\e[4;31m" + aMessage 	+ ": " 
-                "\e[0m\e[4;3m"	+ aLine + "\n";
+                "\e[0m\e[4;3m"	+ aFileName + "\n";
 }
 
 //===[ Destructor: Exception ]==================================================

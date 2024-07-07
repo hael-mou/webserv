@@ -61,6 +61,21 @@ Handle     http::Factory::createSocket(const_string& aListen)
     return (socketHandle);
 }
 
+//===[ Method: createClient ]==================================================
+http::Client*  http::Factory::createClient(Handle aSocket,
+                                           const sockaddr_in& aAddr,
+                                           socklen_t aAddrLen)
+{
+    return (new Client(aSocket, aAddr, aAddrLen));
+}
+
+//===[ Method: createAcceptHandler ]============================================
+IEventHandler*
+http::Factory::createAcceptHandler(Handle aSocket, const ServerVector &aServers)
+{
+	return (new AcceptHandler(aSocket, aServers));
+}
+
 /*******************************************************************************
     * Private Methods :
 *******************************************************************************/

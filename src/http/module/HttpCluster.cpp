@@ -5,7 +5,7 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Man Program File ]                                                 #
+#      | [ HttpCluster implementation File ]                                   #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-07-03                                                   #
 #                                                                              #
@@ -23,9 +23,10 @@ http::Cluster::Cluster(Directive::SharedPtr aHttpDir)
 {
     DirPtrVector serverDir = aHttpDir->getNonTerminal("server");
     if (serverDir.size() == 0)
-        throw (Exception("HTTP: No server directive found"));
+        throw (std::invalid_argument("HTTP: No server directive found"));
     for (size_t i = 0; i < serverDir.size(); ++i)
     {
+        serverDir[i]->copyMatchingAttributes(aHttpDir);
         Server::SharedPtr server = http::Factory::createServer(serverDir[i]);
         StringVector listenSet = server->getListen();
         for (size_t index = 0; index < listenSet.size(); ++index)
@@ -51,17 +52,17 @@ http::Cluster::~Cluster(void) {}
 *******************************************************************************/
 
 //===[ QueueOfHandler: Cluster ]================================================
-IEventHandler::IEventHandlerQueue  http::Cluster::createHandlers(void)
+IEventHandler::IEventHandlerQueue http::Cluster::createHandlers(void)
 {
     IEH::IEventHandlerQueue Handlers;
     ServerMap::iterator it = mServers.begin();
-	while (it != mServers.end())
-	{
-		// Handlers.push(
-		// 	http::Factory::createAcceptHandler(it->first, it->second)
-		// );
-		++it;
-	}
+    while (it != mServers.end())
+    {
+        Handlers.push(
+            http::Factory::createAcceptHandler(it->first, it->second)
+        );
+        ++it;
+    }
     return (Handlers);
 }
 
@@ -70,26 +71,7 @@ IEventHandler::IEventHandlerQueue  http::Cluster::createHandlers(void)
 *******************************************************************************/
 
 //===[ Method: Check if socket is created ]====================================
-bool	http::Cluster::_isSocketReadyCreated(const_string& aListen) const
+bool http::Cluster::_isSocketReadyCreated(const_string& aListen) const
 {
     return (mSockets.find(aListen) != mSockets.end());
-}
-
-/*********************************************************************************
-    * ServerCore Exception :
-*******************************************************************************/
-
-//===[ Constructor: Exception ]=================================================
-http::Cluster::Exception::Exception(std::string aMessage)
-{
-    mMessage = aMessage + "\n";
-}
-
-//===[ Destructor: Exception ]==================================================
-http::Cluster::Exception::~Exception() throw() {};
-
-//===[ Method: what ]===========================================================
-const char* http::Cluster::Exception::what() const throw()
-{
-    return (mMessage.c_str());
 }

@@ -21,6 +21,7 @@ INC_DIR		:=	$(SRC_DIR)/utils\
 				$(SRC_DIR)/core/configParser\
 				$(SRC_DIR)/core/multiplexer\
 				$(SRC_DIR)/core/reactor\
+				$(SRC_DIR)/http/handler\
 				$(SRC_DIR)/http/module
 				
 
@@ -33,12 +34,14 @@ SRC_FILES	:=	$(SRC_DIR)/utils/ParserUtils.cpp\
 				$(SRC_DIR)/core/configParser/ConfigParser.cpp\
 \
 				$(SRC_DIR)/core/multiplexer/SelectMultiplexer.cpp\
-\
 				$(SRC_DIR)/core/reactor/Reactor.cpp\
+\
+				$(SRC_DIR)/http/handler/HttpAcceptHandler.cpp\
 \
 				$(SRC_DIR)/http/module/HttpCluster.cpp\
 				$(SRC_DIR)/http/module/HttpServer.cpp\
 				$(SRC_DIR)/http/module/HttpFactory.cpp\
+				$(SRC_DIR)/http/module/HttpClient.cpp\
 \
 				$(SRC_DIR)/core/serverCore/ServerCore.cpp\
 				$(SRC_DIR)/core/serverCore/main.cpp

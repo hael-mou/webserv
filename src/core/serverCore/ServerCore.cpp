@@ -17,6 +17,13 @@
     * Construction :
 *******************************************************************************/
 
+//===[ Constructor: getInstance ]===============================================
+ServerCore::SharedPtr  ServerCore::getInstance(void)
+{
+    static ServerCore::SharedPtr instance = new ServerCore();
+    return (instance);
+}
+
 //===[ Constructor: ServerCore ]================================================
 ServerCore::ServerCore(void)
     : mReactor(NULL)
@@ -41,7 +48,17 @@ void	ServerCore::setup(Directive::SharedPtr aGlobalDir)
 //===[ Method: run Start Servers Handler ]======================================
 void	ServerCore::run(void)
 {
-    while (1);
+    while (mIsRunning)
+    {
+        mReactor->handleEvents(1000000);
+        mReactor->cleanupTerminatedHandlers();
+    }
+}
+
+//===[ Method: stop all Servers ]===============================================
+void	ServerCore::stop(void)
+{
+    mIsRunning = false;
 }
 
 /*******************************************************************************
@@ -62,6 +79,7 @@ void ServerCore::_setupHttp(Directive::SharedPtr aGlobalDir)
         IEH::IEventHandlerQueue Handlers = cluster->createHandlers();
         mReactor->registerEventHandler(Handlers);
         delete (cluster);
+        mIsRunning = true;
     }
     catch(const std::exception& e)
     {

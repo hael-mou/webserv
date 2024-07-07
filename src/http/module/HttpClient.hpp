@@ -5,46 +5,46 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Reactor header file ]                                                #
+#      | [ HttpClient header file ]                                             #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-16                                                   #
+#      | Created: 2024-07-06                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __REACTOR_HPP__
-# define   __REACTOR_HPP__
+#ifndef	  __HTTPCLIENT_HPP__
+# define   __HTTPCLIENT_HPP__
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "Logger.hpp"
 # include "typedefs.hpp"
 # include "Shared_ptr.hpp"
 
-# include "IReactor.hpp"
-# include "IMultiplexer.hpp"
+# include <netinet/in.h> 
 
 /*******************************************************************************
-    * Class Reactor :
+    * Client Class :
 *******************************************************************************/
-class Reactor : public IReactor
+namespace http
 {
-public:
-    typedef IEventHandler                       IEH;
-    typedef IMultiplexer                        IMux;
-    typedef std::map<Handle, IEH::SharedPtr>	IEventHandlerMap;
+    class Client
+    {
+    public:
+        typedef utls::shared_ptr<Client>    SharedPtr;
 
-    Reactor(IMultiplexer* aMultiplexer);
-    virtual ~Reactor(void);
+        Client(Handle aSocket, const sockaddr_in &aAddr, socklen_t aAddrLen);
+        virtual ~Client(void);
 
-    void              registerEventHandler(IEH::SharedPtr aHandler);
-    void              registerEventHandler(IEventHandlerQueue& aHandlers);
-    IEH::SharedPtr    unregisterEventHandler(IEH::SharedPtr aHandler);
-    void              handleEvents(long long aTimeout_ms);
-    void              cleanupTerminatedHandlers(void);
+        Handle                  getSocket(void) const;
+        const std::string&      getInfo(void) const;
 
-private:
-    IMux::SharedPtr   mMultiplexer;
-    IEventHandlerMap  mEventHandlers;
-};
+    private:
+        Handle                  mSocket;
+        std::string             mInfo;
 
-#endif /* __REACTOR_HPP__ */
+        std::string _AddrtoString(const in_addr_t& addr, const socklen_t& addrLen);
+    };
+}
+
+#endif /* __HTTPCLIENT_HPP__ */

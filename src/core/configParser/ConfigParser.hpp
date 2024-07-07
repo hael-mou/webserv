@@ -66,7 +66,7 @@ private:
 class	ConfigParser::Exception : public std::exception
 {
 public:
-    Exception(std::string aMessage, std::string aLine);
+    Exception(std::string aMessage, std::string aFileName);
     virtual ~Exception(void) throw();
     const char* what(void) const throw();
 

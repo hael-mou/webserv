@@ -36,15 +36,21 @@ class ServerCore
 public:
     typedef IEventHandler                       IEH;
     typedef std::vector<Directive::SharedPtr>   DirPtrVector;
+    typedef utls::shared_ptr<ServerCore>        SharedPtr;
 
-    ServerCore(void);
-    virtual ~ServerCore(void);
+    ~ServerCore(void);
+
+    static ServerCore::SharedPtr  getInstance(void);
 
     void    setup(Directive::SharedPtr aGlobalDir);
     void    run(void);
+    void    stop(void);
 
 private:
     IReactor::SharedPtr    mReactor;
+    bool                   mIsRunning;
+  
+    ServerCore(void);
 
     void    _setupHttp(Directive::SharedPtr aGlobalDir);
 };

@@ -38,6 +38,7 @@ public:
     virtual void            registerEventHandler(IEventHandlerQueue& aHandlers) = 0;
     virtual IEH::SharedPtr  unregisterEventHandler(IEH::SharedPtr aHandler) = 0;
     virtual void            handleEvents(long long aTimeout_ms) = 0;
+    virtual void            cleanupTerminatedHandlers(void) = 0;
 };
 
 #endif	/* __IREACTOR_HPP__ */
