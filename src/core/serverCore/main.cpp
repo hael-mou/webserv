@@ -22,6 +22,15 @@
 #include <iostream>
 #include <signal.h>
 
+/*******************************************************************************
+    * Signal Handler :
+*******************************************************************************/
+void	signalHandler(int aSignal)
+{
+    (void)aSignal;
+    ServerCore::getInstance()->stop();
+    Logger::log("INFO", "SERVERCORE: Servers stopped !", 1);
+}
 
 /*******************************************************************************
     * Main Program :
@@ -33,15 +42,17 @@ int		main(int argc, char *argv[])
 
     try
     {
-        ServerCore serverCore;
+        ServerCore::SharedPtr serverCore = ServerCore::getInstance();
         {
             ConfigParser             parser(configFilePath);
             Directive::SharedPtr    globalDir = parser.parse();
-            serverCore.setup(globalDir);
+            serverCore->setup(globalDir);
         }
 
         signal(SIGPIPE, SIG_IGN);
-        serverCore.run();
+        signal(SIGINT, signalHandler);
+        signal(SIGTERM, signalHandler);
+        serverCore->run();
     }
     catch(const std::exception& e)
     {
