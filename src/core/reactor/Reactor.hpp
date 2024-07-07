@@ -37,9 +37,9 @@ public:
     virtual ~Reactor(void);
 
     void              registerEventHandler(IEH::SharedPtr aHandler);
-    void              handleEvents(long long aTimeout_ms);
     void              registerEventHandler(IEventHandlerQueue& aHandlers);
     IEH::SharedPtr    unregisterEventHandler(IEH::SharedPtr aHandler);
+    void              handleEvents(long long aTimeout_ms);
     void              cleanupTerminatedHandlers(void);
 
 private:

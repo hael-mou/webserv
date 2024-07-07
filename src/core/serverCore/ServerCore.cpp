@@ -44,6 +44,7 @@ void	ServerCore::run(void)
     while (true)
     {
         mReactor->handleEvents(1000000);
+        mReactor->cleanupTerminatedHandlers();
     }
 }
 
