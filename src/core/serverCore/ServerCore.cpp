@@ -41,7 +41,10 @@ void	ServerCore::setup(Directive::SharedPtr aGlobalDir)
 //===[ Method: run Start Servers Handler ]======================================
 void	ServerCore::run(void)
 {
-    while (1);
+    while (true)
+    {
+        mReactor->handleEvents(1000000);
+    }
 }
 
 /*******************************************************************************

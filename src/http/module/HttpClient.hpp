@@ -5,38 +5,46 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IEventHandler Interface ]                                           #
+#      | [ HttpClient header file ]                                             #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-16                                                   #
+#      | Created: 2024-07-06                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IEVENTHANDLER_HPP__
-# define   __IEVENTHANDLER_HPP__
+#ifndef	  __HTTPCLIENT_HPP__
+# define   __HTTPCLIENT_HPP__
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "Logger.hpp"
 # include "typedefs.hpp"
 # include "Shared_ptr.hpp"
 
-# include "IMultiplexer.hpp"
+# include <netinet/in.h> 
 
 /*******************************************************************************
-    * IEventHandler Interface :
+    * Client Class :
 *******************************************************************************/
-class IEventHandler
+namespace http
 {
-public:
-    typedef utls::shared_ptr<IEventHandler>  SharedPtr;
-    typedef std::queue<SharedPtr>            IEventHandlerQueue;
+    class Client
+    {
+    public:
+        typedef utls::shared_ptr<Client>    SharedPtr;
 
-    virtual ~IEventHandler(void) {};
-    
-    virtual const Handle&         getHandle(void) const = 0;
-    virtual IMultiplexer::Mode    getMode(void) const = 0;
-    virtual IEventHandlerQueue    handleEvent(void) = 0;
-    virtual bool                  isTerminated(void) const = 0;
-};
+        Client(Handle aSocket, const sockaddr_in &aAddr, socklen_t aAddrLen);
+        virtual ~Client(void);
 
-#endif /* __IEVENTHANDLER_HPP__ */
+        Handle                  getSocket(void) const;
+        const std::string&      getInfo(void) const;
+
+    private:
+        Handle                  mSocket;
+        std::string             mInfo;
+
+        std::string _AddrtoString(const in_addr_t& addr, const socklen_t& addrLen);
+    };
+}
+
+#endif /* __HTTPCLIENT_HPP__ */

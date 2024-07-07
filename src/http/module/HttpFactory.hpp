@@ -24,6 +24,9 @@
 # include "Directive.hpp"
 # include "HttpCluster.hpp"
 # include "HttpServer.hpp"
+# include "HttpClient.hpp"
+
+# include "HttpAcceptHandler.hpp"
 
 # include <cstring>
 # include <unistd.h>
@@ -37,30 +40,34 @@
 
 namespace http
 {
-	class Factory
-	{
-	public:
-		// typedef std::vector<Server::SharedPtr>	Servers;
+    class Factory
+    {
+    public:
+        typedef std::vector<Server::SharedPtr>  ServerVector;
 
-		// http Module creation methods:
-		static http::Cluster*	createCluster(Directive::SharedPtr aHttpDir);
-		static http::Server*	createServer(Directive::SharedPtr aServerDir);
-		static Handle			createSocket(const_string& aListen);
+        // http Module creation methods:
+        static http::Cluster*	createCluster(Directive::SharedPtr aHttpDir);
+        static http::Server*	createServer(Directive::SharedPtr aServerDir);
+        static Handle			createSocket(const_string& aListen);
+        static http::Client*	createClient(Handle aSocket,
+                                             const sockaddr_in& aAddr,
+                                             socklen_t aAddrLen);
 
-		// http Handlers creation methods:
-		//static IEventHandler* createAcceptHandler(Handle aSocket, Servers& aServers);
-		//static IEventHandler* createRecvHandler(IClient::SharedPtr aClient, Servers& aServers);
+        // http Handlers creation methods:
+        static IEventHandler* createAcceptHandler(Handle aSocket,
+                                                  const ServerVector& aServers);
 
-	private:
-		Factory(void);
+    private:
+        Factory(void);
 
-		// Socket creation methods:
-		static void  _setSocketOptions(Handle aSocket);
-		static void  _setNonBlocking(Handle aSocket);
-		static void  _startListening(Handle aSocket);
-		static void  _bindSocket(Handle aSocket, const_string& aHost,
-								 const_string& aPort);
-	};
+        // Socket creation methods:
+        static void  _setSocketOptions(Handle aSocket);
+        static void  _setNonBlocking(Handle aSocket);
+        static void  _startListening(Handle aSocket);
+        static void  _bindSocket(Handle aSocket,
+                                 const_string& aHost,
+                                 const_string& aPort);
+    };
 };
 
 #endif	  /* __HTTPFACTORY_HPP__ */
