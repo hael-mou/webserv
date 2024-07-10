@@ -17,33 +17,30 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-# include "Logger.hpp"
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
+# include "Utils.hpp"
 
-# include <netinet/in.h> 
+# include "IClient.hpp"
 
 /*******************************************************************************
     * Client Class :
 *******************************************************************************/
 namespace http
 {
-    class Client
+    class Client : public IClient
     {
     public:
-        typedef utls::shared_ptr<Client>    SharedPtr;
-
         Client(Handle aSocket, const sockaddr_in &aAddr, socklen_t aAddrLen);
         virtual ~Client(void);
 
-        Handle                  getSocket(void) const;
+        const Handle&           getSocket(void) const;
         const std::string&      getInfo(void) const;
+        std::string             recv(void) const;
 
     private:
         Handle                  mSocket;
         std::string             mInfo;
-
-        std::string _AddrtoString(const in_addr_t& addr, const socklen_t& addrLen);
     };
 }
 

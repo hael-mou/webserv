@@ -25,24 +25,32 @@ ServerCore::SharedPtr  ServerCore::getInstance(void)
 }
 
 //===[ Constructor: ServerCore ]================================================
-ServerCore::ServerCore(void)
-    : mReactor(NULL)
+ServerCore::ServerCore(void) 
 {
     IMultiplexer* multiplexer = new SelectMultiplexer();
     mReactor = new Reactor(multiplexer);
+    mIsRunning = false;
+
+    mProtocolFactoryMap["http"] = new http::Factory();
 }
 
 //===[ Destructor: ServerCore ]=================================================
-ServerCore::~ServerCore(void){}
+ServerCore::~ServerCore(void) {}
 
 /*******************************************************************************
     * Public Methods :
 *******************************************************************************/
 
 //===[ Method: init Start Servers Handler ]=====================================
-void	ServerCore::setup(Directive::SharedPtr aGlobalDir)
+void ServerCore::setup(Directive::SharedPtr aGlobalDir)
 {
-    _setupHttp(aGlobalDir);
+    IProtocolFactoryMap::iterator it = mProtocolFactoryMap.begin();
+
+    while (it != mProtocolFactoryMap.end())
+    {
+        _setupProtocol(it->first, it->second, aGlobalDir);
+        ++it;
+    }
 }
 
 //===[ Method: run Start Servers Handler ]======================================
@@ -50,7 +58,7 @@ void	ServerCore::run(void)
 {
     while (mIsRunning)
     {
-        mReactor->handleEvents(1000000);
+        mReactor->handleEvents(3000);
         mReactor->cleanupTerminatedHandlers();
     }
 }
@@ -65,17 +73,23 @@ void	ServerCore::stop(void)
     * Private Methods :
 *******************************************************************************/
 
-//===[ Method: setup Http Protocol ]============================================
-void ServerCore::_setupHttp(Directive::SharedPtr aGlobalDir)
+//===[ Method: setup Protocol ]================================================
+void ServerCore::_setupProtocol(const std::string& aProtocolName,
+                               IProtocolFactoryPtr aProtocolFactory,
+                               Directive::SharedPtr aGlobalDir)
 {
     try
     {
-        DirPtrVector httpDir = aGlobalDir->getNonTerminal("http");
-        if (httpDir.size() > 1)
-            Logger::log("WARNING", "HTTP: Just first Http directive is used", 2);
-        if (httpDir.size() == 0)
+        (void)aProtocolFactory;
+        DirPtrVector protocolDir = aGlobalDir->getNonTerminal(aProtocolName);
+        if (protocolDir.size() > 1)
+        {
+            Logger::log("warning", aProtocolName + ": Just first " 
+                + aProtocolName + " directive is used", 2);
+        }
+        if (protocolDir.size() == 0)
             return ;
-        http::Cluster *cluster = http::Factory::createCluster(httpDir.front());
+        ICluster *cluster = aProtocolFactory->createCluster(protocolDir.front());
         IEH::IEventHandlerQueue Handlers = cluster->createHandlers();
         mReactor->registerEventHandler(Handlers);
         delete (cluster);
@@ -83,6 +97,6 @@ void ServerCore::_setupHttp(Directive::SharedPtr aGlobalDir)
     }
     catch(const std::exception& e)
     {
-        Logger::log("ERROR", e.what(), 2);
+        Logger::log("error", e.what(), 2);
     }
 }

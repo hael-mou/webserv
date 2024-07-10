@@ -24,9 +24,9 @@ Dictionary::sGrammar = Dictionary::_initializeGrammar(CONFIG_FILE_PATH);
 *******************************************************************************/
 
 //===[ Method: getGrammar ]=====================================================
-DirType Dictionary::find(const_string& aDir, const_string& aSubDir)
+DirType  Dictionary::find(const_string& aDir, const_string& aSubDir)
 {
-    ComplexDirPairVector grammar = sGrammar[aDir];
+    NonTerminalDirVector grammar = sGrammar[aDir];
 
     for (size_t i = 0; i < grammar.size(); ++i)
     {
@@ -43,12 +43,12 @@ DirType Dictionary::find(const_string& aDir, const_string& aSubDir)
 //===[ Method: initGrammar ]====================================================
 Dictionary::GrammarMap Dictionary::_initializeGrammar(const_string aFilePath)
 {
-    Dictionary::GrammarMap grammar;
-    std::ifstream configFile(aFilePath.c_str());
+    GrammarMap      grammar;
+    std::ifstream   configFile(aFilePath.c_str());
 
     if (!configFile.is_open())
     {
-        Logger::log("ERROR", "\e[1;31mGrammar_File_Failed_To_Open: \e[0m"
+        Logger::log("error", "\e[1;31mGrammar_File_Failed_To_Open: \e[0m"
                 + aFilePath + "\n", 2);
         std::exit(EXIT_FAILURE);
     }
@@ -56,7 +56,7 @@ Dictionary::GrammarMap Dictionary::_initializeGrammar(const_string aFilePath)
     std::string currentKey, line;
     while (std::getline(configFile, line))
     {
-        line = utls::strtrim(line);
+        line = str::strtrim(line);
         if (line.empty())
             continue;
 
@@ -84,11 +84,11 @@ void Dictionary::_processValue(const_string& aLine,
                                const_string& aKey,
                                GrammarMap& aGrammar)
 {
-    StringPair KeyValue = utls::lineToPair(aLine, '=');
+    StringPair KeyValue = str::lineToPair(aLine, '=');
     if (KeyValue.first.empty())
         return;
-    KeyValue.second = utls::toLower(KeyValue.second);
+    KeyValue.second = str::toLower(KeyValue.second);
     DirType terminalType = KeyValue.second == "list" ? List :
-        (KeyValue.second == "complex" ? Complex : Simple);
+        (KeyValue.second == "block" ? Block : Inline);
     aGrammar[aKey].push_back(std::make_pair(KeyValue.first, terminalType));
 }

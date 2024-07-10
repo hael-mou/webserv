@@ -17,36 +17,36 @@ NAME		:=	webserv
 SRC_DIR		:=	src
 OBJ_DIR		:=	build
 INC_DIR		:=	$(SRC_DIR)/utils\
-				interface include\
 				$(SRC_DIR)/core/configParser\
 				$(SRC_DIR)/core/multiplexer\
+				$(SRC_DIR)/core/serverCore\
 				$(SRC_DIR)/core/reactor\
+				$(SRC_DIR)/http/factory\
+				$(SRC_DIR)/http/module\
 				$(SRC_DIR)/http/handler\
-				$(SRC_DIR)/http/module
-				
+				interface
 
 #=== Files : =================================================================
-SRC_FILES	:=	$(SRC_DIR)/utils/ParserUtils.cpp\
-				$(SRC_DIR)/utils/Logger.cpp\
-\
+SRC_FILES	:=	$(SRC_DIR)/utils/Utils.cpp\
+				\
 				$(SRC_DIR)/core/configParser/Dictionary.cpp\
 				$(SRC_DIR)/core/configParser/Directive.cpp\
 				$(SRC_DIR)/core/configParser/ConfigParser.cpp\
-\
+				\
 				$(SRC_DIR)/core/multiplexer/SelectMultiplexer.cpp\
 				$(SRC_DIR)/core/reactor/Reactor.cpp\
-\
-				$(SRC_DIR)/http/handler/HttpAcceptHandler.cpp\
-\
+				\
+				$(SRC_DIR)/core/serverCore/ServerCore.cpp\
+				$(SRC_DIR)/core/serverCore/main.cpp\
+				\
+				$(SRC_DIR)/http/factory/HttpFactory.cpp\
 				$(SRC_DIR)/http/module/HttpCluster.cpp\
 				$(SRC_DIR)/http/module/HttpServer.cpp\
-				$(SRC_DIR)/http/module/HttpFactory.cpp\
 				$(SRC_DIR)/http/module/HttpClient.cpp\
-\
-				$(SRC_DIR)/core/serverCore/ServerCore.cpp\
-				$(SRC_DIR)/core/serverCore/main.cpp
+				\
+				$(SRC_DIR)/http/handler/HttpAcceptHandler.cpp
 
-INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))	
+INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))
 
 OBJ_FILES	:=	$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 

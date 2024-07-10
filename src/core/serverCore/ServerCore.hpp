@@ -17,13 +17,14 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
 
+# include "IProtocolFactory.hpp"
 # include "SelectMultiplexer.hpp"
+# include "Directive.hpp"
 # include "Reactor.hpp"
 
-# include "Directive.hpp"
 # include "HttpFactory.hpp"
 
 # include <exception>
@@ -34,9 +35,11 @@
 class ServerCore
 {
 public:
-    typedef IEventHandler                       IEH;
-    typedef std::vector<Directive::SharedPtr>   DirPtrVector;
-    typedef utls::shared_ptr<ServerCore>        SharedPtr;
+    typedef IEventHandler                                  IEH;
+    typedef IProtocolFactory::SharedPtr                    IProtocolFactoryPtr;
+    typedef std::map<std::string, IProtocolFactoryPtr>     IProtocolFactoryMap;
+    typedef std::vector<Directive::SharedPtr>              DirPtrVector;
+    typedef mem::shared_ptr<ServerCore>                    SharedPtr;
 
     ~ServerCore(void);
 
@@ -47,12 +50,15 @@ public:
     void    stop(void);
 
 private:
-    IReactor::SharedPtr    mReactor;
-    bool                   mIsRunning;
+    IProtocolFactoryMap     mProtocolFactoryMap;
+    IReactor::SharedPtr     mReactor;
+    bool                    mIsRunning;
   
     ServerCore(void);
 
-    void    _setupHttp(Directive::SharedPtr aGlobalDir);
+    void    _setupProtocol(const std::string& aProtocolName,
+                           IProtocolFactoryPtr aProtocolFactory,
+                           Directive::SharedPtr aGlobalDir);
 };
 
 #endif /* __SERVERCORE_HPP__ */

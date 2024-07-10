@@ -22,13 +22,14 @@ http::Client::Client(Handle aSocket, const sockaddr_in& aAddr,
                      socklen_t aAddrLen)
 {
     mSocket = aSocket;
-    mInfo += _AddrtoString(aAddr.sin_addr.s_addr, aAddrLen);
+    mInfo += str::addrtoString(aAddr.sin_addr.s_addr, aAddrLen);
     mInfo += ":" + std::to_string(ntohs(aAddr.sin_port));
 }
 
 //===[ Destructor: Client ]================================================
 http::Client::~Client(void)
 {
+    Logger::log("notice", "HTTP: Client '" + mInfo + "' disconnected", 2);
     close(mSocket);
 }
 
@@ -37,7 +38,7 @@ http::Client::~Client(void)
 *******************************************************************************/
 
 //===[ Method: getSocket ]====================================================
-Handle http::Client::getSocket(void) const
+const Handle& http::Client::getSocket(void) const
 {
     return (mSocket);
 }
@@ -48,17 +49,14 @@ const std::string& http::Client::getInfo(void) const
     return (mInfo);
 }
 
-/*******************************************************************************
-    * Private Methods :
-*******************************************************************************/
-
-//===[ Method: _AddrtoString ]===============================================
-std::string
-http::Client::_AddrtoString(const in_addr_t& addr, const socklen_t& addrLen)
+//===[ Method: recv ]=========================================================
+std::string http::Client::recv(void) const
 {
-    utls::shared_ptr<char> buffer = new char[addrLen];
-    unsigned char *ip = (unsigned char *)&addr;
-    snprintf(buffer.get(), sizeof(buffer), "%d.%d.%d.%d",
-             ip[0], ip[1], ip[2], ip[3]);
-    return (buffer.get());
+    char buffer[1025];
+	memset(buffer, 0, 1025); 
+	int bytesReaded = ::recv(mSocket, buffer, 1024, 0);
+	if (bytesReaded < 0) {
+		throw(std::runtime_error("recv error"));
+    }
+    return (std::string(buffer));
 }

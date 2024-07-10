@@ -17,8 +17,8 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
 
 # include "IMultiplexer.hpp"
 
@@ -28,7 +28,7 @@
 class IEventHandler
 {
 public:
-    typedef utls::shared_ptr<IEventHandler>  SharedPtr;
+    typedef mem::shared_ptr<IEventHandler>  SharedPtr;
     typedef std::queue<SharedPtr>            IEventHandlerQueue;
 
     virtual ~IEventHandler(void) {};

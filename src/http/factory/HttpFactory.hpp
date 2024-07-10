@@ -17,22 +17,17 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-# include "Logger.hpp"
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
 
+# include "IProtocolFactory.hpp"
 # include "Directive.hpp"
+
 # include "HttpCluster.hpp"
 # include "HttpServer.hpp"
 # include "HttpClient.hpp"
 
 # include "HttpAcceptHandler.hpp"
-
-# include <cstring>
-# include <unistd.h>
-# include <fcntl.h>
-# include <arpa/inet.h>
-# include <netdb.h>
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -40,33 +35,22 @@
 
 namespace http
 {
-    class Factory
+    class Factory : public IProtocolFactory
     {
     public:
-        typedef std::vector<Server::SharedPtr>  ServerVector;
+        typedef std::vector<IServer::SharedPtr>  ServerVector;
 
-        // http Module creation methods:
-        static http::Cluster*	createCluster(Directive::SharedPtr aHttpDir);
-        static http::Server*	createServer(Directive::SharedPtr aServerDir);
-        static Handle			createSocket(const_string& aListen);
-        static http::Client*	createClient(Handle aSocket,
-                                             const sockaddr_in& aAddr,
-                                             socklen_t aAddrLen);
+        // Modules Factory :
+        ICluster*	    createCluster(Directive::SharedPtr aHttpDir);
+        static Handle   createSocket(const_string& aListen);
+        static IServer* createServer(Directive::SharedPtr aServerDir);
+        static IClient* createClient(Handle aSocket,
+                                     const sockaddr_in& aAddr,
+                                     socklen_t aAddrLen);
 
-        // http Handlers creation methods:
-        static IEventHandler* createAcceptHandler(Handle aSocket,
+        // Handlers Factory :
+        static IEventHandler* createAcceptHandler(Handle Socket,
                                                   const ServerVector& aServers);
-
-    private:
-        Factory(void);
-
-        // Socket creation methods:
-        static void  _setSocketOptions(Handle aSocket);
-        static void  _setNonBlocking(Handle aSocket);
-        static void  _startListening(Handle aSocket);
-        static void  _bindSocket(Handle aSocket,
-                                 const_string& aHost,
-                                 const_string& aPort);
     };
 };
 

@@ -18,8 +18,7 @@
     * Includes :
 *******************************************************************************/
 # include "typedefs.hpp"
-# include "ParserUtils.hpp"
-# include "Logger.hpp"
+# include "Utils.hpp"
 
 # include <iostream>
 # include <fstream>
@@ -33,14 +32,14 @@
     * Dictionary Static Class :
 *******************************************************************************/
 
-enum  DirType    { Simple = 0, List, Complex, Invalid };
+enum DirType { Inline = 0, List, Block, Invalid };
 
 class Dictionary
 {
 public:
-    typedef std::pair<std::string, DirType>                SimpleDirPair;
-    typedef std::vector<SimpleDirPair>                     ComplexDirPairVector;
-    typedef std::map<std::string, ComplexDirPairVector>    GrammarMap;
+    typedef std::pair<std::string, DirType>                TerminalDirPair;
+    typedef std::vector<TerminalDirPair>                   NonTerminalDirVector;
+    typedef std::map<std::string, NonTerminalDirVector>    GrammarMap;
 
     static DirType  find(const_string& aDir, const_string& aSubDir);
 
@@ -51,8 +50,7 @@ private:
 
     static GrammarMap   _initializeGrammar(const_string aFilePath);
     static bool         _isValidKey(const_string& aLine);
-    static void         _processValue(const_string& aLine,
-                                      const_string& aKey,
+    static void         _processValue(const_string& aLine, const_string& aKey,
                                       GrammarMap& aGrammar);
 };
 

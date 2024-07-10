@@ -13,13 +13,12 @@
 //  ⠀⠀⠀⠀⠀⠘⠄⣀⡀⠸⠓⠀⠀⠀⠠⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                                              
 
 # include "HttpAcceptHandler.hpp"
-# include "HttpFactory.hpp"
 
 /*******************************************************************************
     * Construction :
 *******************************************************************************/
 
-//===[ Constructor: AcceptHandler ]============================================
+//===[ Constructor: AcceptHandler ]=============================================
 http::AcceptHandler::AcceptHandler(Handle aHandle, const ServerVector& aServers)
 {
     mHandle = aHandle;
@@ -27,8 +26,13 @@ http::AcceptHandler::AcceptHandler(Handle aHandle, const ServerVector& aServers)
 }
 
 //===[ Destructor: AcceptHandler ]==============================================
-http::AcceptHandler::~AcceptHandler(void){}
-
+http::AcceptHandler::~AcceptHandler(void)
+{
+    close(mHandle);
+    Logger::log("notice","HTTP: Closing Socket["
+        + std::to_string(mHandle)
+        + "], Done.", 2);
+}
 
 /*******************************************************************************
     * Public Methods :
@@ -44,21 +48,23 @@ IEventHandler::IEventHandlerQueue  http::AcceptHandler::handleEvent(void)
 
     while (true)
     {
+        http::IClient::SharedPtr client;
+    
         clientAddrLen = sizeof(clientAddr);
         clientSocket = accept(mHandle, (sockaddr *)&clientAddr, &clientAddrLen);
         if (clientSocket == -1)
             break;
-        http::Client* client = http::Factory::createClient(clientSocket,
-                                                           clientAddr,
-                                                           clientAddrLen);
-        if (client == NULL)
+        client = http::Factory::createClient(clientSocket,
+                                             clientAddr,
+                                             clientAddrLen);
+        if (client.get() == NULL)
         {
             close(clientSocket);
             continue;
         }
 
-        Logger::log("INFO","HTTP: New Client [" + client->getInfo()
-                  + "] connected", 2);
+        Logger::log("notice","HTTP: New Client '" + client->getInfo()
+                  + "' connected", 2);
         // eventHandlers.push(http::Factory::createRecvHandler(client, mServers));
     }
     return (eventHandlers);

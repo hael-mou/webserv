@@ -89,7 +89,7 @@ void ConfigParser::_processLine(std::string& aLine,
                                DirPartVect& aDirParts)
 {
 	aLine = aLine.substr(0, aLine.find_first_of('#'));
-	if (utls::strtrim(aLine).empty())
+	if (str::strtrim(aLine).empty())
 		return ;
 	int level = _getLevel(aLine);
 	if (_includeDirective(aLine, level) == true)
@@ -145,7 +145,7 @@ bool ConfigParser::_includeDirective(const_string& aLine, int aLevel)
 {
     if (aLine.find("include") == std::string::npos)
         return (false);
-    StringPair kv = utls::lineToPair(aLine, ':');
+    StringPair kv = str::lineToPair(aLine, ':');
     if (kv.first != "include" || kv.second.empty())
         return (false);
     if (kv.second[0] != '/' && kv.second[0] != '.')

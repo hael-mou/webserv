@@ -18,32 +18,34 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
 
 # include "IEventHandler.hpp"
+# include "ICluster.hpp"
+# include "IServer.hpp"
 
 # include "Directive.hpp"
-# include "HttpServer.hpp"
+# include "HttpFactory.hpp"
 
 /*******************************************************************************
     * HttpCluster Class :
 *******************************************************************************/
 namespace http
 {
-    class	Cluster
+    class	Cluster : public ICluster
     {
     public:
         typedef IEventHandler                                   IEH;
         typedef std::map<std::string, Handle>                   HandleMap;
         typedef std::vector<Directive::SharedPtr>               DirPtrVector;
-        typedef std::vector<utls::shared_ptr<http::Server> >    ServerVector;
+        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
         typedef std::map<Handle, ServerVector>                  ServerMap;
 
         Cluster(Directive::SharedPtr aHttpDir);
         virtual ~Cluster(void);
 
-        IEH::IEventHandlerQueue     createHandlers(void);
+        IEventHandler::IEventHandlerQueue     createHandlers(void);
 
     private:
         ServerMap	mServers;

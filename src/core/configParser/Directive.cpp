@@ -28,13 +28,13 @@ DirectivePart::DirectivePart(const_string& aLine,
                              int aLineNumber,
                              int aLevel)
 {
-    size_t colonPos = utls::strtrim(aLine).find(':');
+    size_t colonPos = str::strtrim(aLine).find(':');
     if (colonPos == 0 || colonPos == std::string::npos) {
         throw (Directive::Exception("Syntax_Error",
                                     aFile,
                                     aLineNumber));
     }
-    StringPair	keyValue = utls::lineToPair(aLine, ':');
+    StringPair	keyValue = str::lineToPair(aLine, ':');
     mType   = keyValue.second.empty() ? NonTerminal : Terminal;
     mFile   = aFile;
     mKey    = keyValue.first;
@@ -143,13 +143,15 @@ void Directive::_processNonTerminalDirective(DirPartVectIt& aDirectiveIter,
     ++sCurrentLevel;
     const_string& directiveKey = aDirectiveIter->mKey;
 
-    if (Dictionary::find(mHostName, directiveKey) != Complex) {
+    if (Dictionary::find(mHostName, directiveKey) != Block)
+    {
         throw Directive::Exception("Invalid_Directive",
                                    aDirectiveIter->mFile,
                                    aDirectiveIter->mNline);
     }
     if ((aDirectiveIter + 1) == aDirectiveEnd ||
-        (aDirectiveIter + 1)->mLevel < sCurrentLevel) {
+        (aDirectiveIter + 1)->mLevel < sCurrentLevel)
+    {
         throw Directive::Exception("Empty_Directive",
                                   aDirectiveIter->mFile,
                                   aDirectiveIter->mNline);
@@ -167,24 +169,29 @@ void Directive::_processTerminalDirective(DirPartVectIt& aDirectiveIter)
     std::string directiveKey = aDirectiveIter->mKey;
     DirType type = Dictionary::find(mHostName, directiveKey);
 
-    if (type != Simple && type != List) {
+    if (type != Inline && type != List)
+    {
         throw Directive::Exception("Invalid_Directive",
                                     aDirectiveIter->mFile,
                                     aDirectiveIter->mNline);
     }
 
-    if (type == Simple && mTerminal.count(directiveKey) != 0) {
+    if (type == Inline && mTerminal.count(directiveKey) != 0)
+    {
         throw Directive::Exception("Duplicate_Simple_Directive",
                                     aDirectiveIter->mFile,
                                     aDirectiveIter->mNline);
     }
 
-    if (type == List) {
-        std::vector<std::string> values = utls::split(aDirectiveIter->mRest, ',');
+    if (type == List) 
+    {
+        std::vector<std::string> values = str::split(aDirectiveIter->mRest, ',');
         mTerminal[directiveKey].insert(mTerminal[directiveKey].end(),
                                        values.begin(),
                                        values.end());
-    } else {
+    }
+    else 
+    {
         mTerminal[directiveKey].push_back(aDirectiveIter->mRest);
     }
 

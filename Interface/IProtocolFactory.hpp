@@ -5,14 +5,14 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IMultiplexer Interface ]                                            #
+#      | [ IProtocolFactory Interface ]                                        #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-18                                                   #
+#      | Created: 2024-07-09                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IMULTIPLEXER_HPP__
-#define    __IMULTIPLEXER_HPP__
+#ifndef   __IPROTOCOLFACTORY_HPP__
+#define    __IPROTOCOLFACTORY_HPP__
 
 /*******************************************************************************
     * Includes :
@@ -20,20 +20,20 @@
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
+# include "ICluster.hpp"
+# include "Directive.hpp"
+
 /*******************************************************************************
-    * Imultiplexer Interface :
+    * IProtocolFactory Interface :
 *******************************************************************************/
-class IMultiplexer
+
+class IProtocolFactory
 {
 public:
-    typedef enum {Read, Write}					Mode;
-    typedef mem::shared_ptr<IMultiplexer>		SharedPtr;
+    typedef mem::shared_ptr<IProtocolFactory>		SharedPtr;
 
-    virtual ~IMultiplexer(void) {};
-
-    virtual HandleQueue  waitEvent(long long aTimeout_ms) = 0;
-    virtual void         registerHandle(const Handle& aHandle, Mode aMode) = 0;
-    virtual void         removeHandle(const Handle& aHandle, Mode aMode) = 0;
+    virtual ~IProtocolFactory(void) {};
+    virtual ICluster*   createCluster(Directive::SharedPtr aGlobalDir) = 0;
 };
 
-#endif /* __IMULTIPLEXER_HPP__ */
+#endif /* __IPROTOCOLFACTORY_HPP__ */

@@ -17,9 +17,9 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-# include "ParserUtils.hpp"
-# include "Shared_ptr.hpp"
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
+# include "Utils.hpp"
 
 # include "Dictionary.hpp"
 
@@ -52,7 +52,7 @@ class	Directive
 public:
     class Exception;
 
-    typedef utls::shared_ptr<Directive>             SharedPtr;
+    typedef mem::shared_ptr<Directive>              SharedPtr;
     typedef std::vector<SharedPtr>                  DirPtrVector;
     typedef std::vector<DirectivePart>              DirPartVect;
     typedef std::vector<DirectivePart>::iterator    DirPartVectIt;

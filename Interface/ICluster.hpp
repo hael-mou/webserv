@@ -5,32 +5,31 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Logger header file ]                                                 #
+#      | [ ICluster Interface ]                                                #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-07-04                                                   #
+#      | Created: 2024-07-09                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __LOGGER_HPP__
-# define   __LOGGER_HPP__
+#ifndef __ICLUSTER_HPP__
+# define __ICLUSTER_HPP__
 
 /*******************************************************************************
-    * Includes :
+	* Includes :
 *******************************************************************************/
-# include "Shared_ptr.hpp"
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
-# include <ctime>
-# include <unistd.h>
+# include "IEventHandler.hpp"
 
 /*******************************************************************************
-    * Logger :
+	* ICluster Interface :
 *******************************************************************************/
-namespace Logger
+class ICluster
 {
-    void         log(const_string& level, const_string& message, int fd = 1);
-    std::string  getcurrentTime(void);
+public:
+	virtual ~ICluster(void) {};
+	virtual IEventHandler::IEventHandlerQueue  createHandlers(void) = 0;
 };
 
-#endif /* __LOGGER_HPP__ */
-  
+#endif /* __ICLUSTER_HPP__ */

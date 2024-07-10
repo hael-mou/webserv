@@ -5,35 +5,37 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IMultiplexer Interface ]                                            #
+#      | [ IServer Interface ]                                                 #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IMULTIPLEXER_HPP__
-#define    __IMULTIPLEXER_HPP__
+#ifndef   __ISERVER_HPP__
+# define   __ISERVER_HPP__
 
 /*******************************************************************************
-    * Includes :
+	* Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
 /*******************************************************************************
-    * Imultiplexer Interface :
+	* http::IServer Interface :
 *******************************************************************************/
-class IMultiplexer
+
+namespace http
 {
-public:
-    typedef enum {Read, Write}					Mode;
-    typedef mem::shared_ptr<IMultiplexer>		SharedPtr;
+	class IServer
+	{
+	public:
+		typedef mem::shared_ptr<IServer>    SharedPtr;
 
-    virtual ~IMultiplexer(void) {};
+		virtual	~IServer(void) {};
 
-    virtual HandleQueue  waitEvent(long long aTimeout_ms) = 0;
-    virtual void         registerHandle(const Handle& aHandle, Mode aMode) = 0;
-    virtual void         removeHandle(const Handle& aHandle, Mode aMode) = 0;
-};
+		virtual const StringVector getListen(void) const = 0;
+		virtual const StringVector getName(void) = 0;
+	};
+}
 
-#endif /* __IMULTIPLEXER_HPP__ */
+#endif	/* __ISERVER_HPP__ */

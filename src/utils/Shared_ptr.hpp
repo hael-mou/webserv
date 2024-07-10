@@ -5,7 +5,7 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Shared_ptr header file ]                                             #
+#      | [ shared_ptr header file ]                                             #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-06-26                                                   #
 #                                                                              #
@@ -22,7 +22,7 @@
 /*******************************************************************************
     * shared_ptr Definition :
 *******************************************************************************/
-namespace utls
+namespace mem
 {
     template<typename T>
     class shared_ptr
@@ -58,7 +58,7 @@ namespace utls
 
 //==[ shared_ptr: Constructor ]================================================
 template<typename T>
-utls::shared_ptr<T>::shared_ptr(T* aPtr)
+mem::shared_ptr<T>::shared_ptr(T* aPtr)
     : mPtr(NULL), mRef_count(NULL)
 {
     if (aPtr != NULL)
@@ -70,7 +70,7 @@ utls::shared_ptr<T>::shared_ptr(T* aPtr)
 
 //==[ shared_ptr: Copy Constructor ]===========================================
 template<typename T>
-utls::shared_ptr<T>::shared_ptr(const shared_ptr<T>& aOther)
+mem::shared_ptr<T>::shared_ptr(const shared_ptr<T>& aOther)
     : mPtr(NULL), mRef_count(NULL)
 {
     if (aOther.mPtr != NULL)
@@ -83,7 +83,7 @@ utls::shared_ptr<T>::shared_ptr(const shared_ptr<T>& aOther)
 
 //==[ shared_ptr: Destructor ]=================================================
 template<typename T>
-utls::shared_ptr<T>::~shared_ptr(void)
+mem::shared_ptr<T>::~shared_ptr(void)
 {
     if (mRef_count != NULL)
     {
@@ -100,14 +100,14 @@ utls::shared_ptr<T>::~shared_ptr(void)
 
 //==[ Method : number owners ]=================================================
 template<typename T>
-size_t utls::shared_ptr<T>::use_count(void)
+size_t mem::shared_ptr<T>::use_count(void)
 {
     return ((mRef_count != NULL) ? (*mRef_count) : (0));
 }
 
 //==[ Method : get pointer ]===================================================
 template<typename T>
-T* utls::shared_ptr<T>::get(void)
+T* mem::shared_ptr<T>::get(void)
 {
     return (mPtr);
 }
@@ -117,7 +117,7 @@ T* utls::shared_ptr<T>::get(void)
 
 //==[ shared_ptr: operator= ]=================================================
 template<typename T>
-utls::shared_ptr<T>& utls::shared_ptr<T>::operator=(const shared_ptr<T>& aOther)
+mem::shared_ptr<T>& mem::shared_ptr<T>::operator=(const shared_ptr<T>& aOther)
 {
 	if (mPtr != aOther.mPtr)
 	{
@@ -136,35 +136,35 @@ utls::shared_ptr<T>& utls::shared_ptr<T>::operator=(const shared_ptr<T>& aOther)
 
 //==[ shared_ptr: operator* ]==================================================
 template<typename T>
-T& utls::shared_ptr<T>::operator*(void)
+T& mem::shared_ptr<T>::operator*(void)
 {
     return (*mPtr);
 }
 
 //==[ shared_ptr: operator-> ]=================================================
 template<typename T>
-T* utls::shared_ptr<T>::operator->(void)
+T* mem::shared_ptr<T>::operator->(void)
 {
     return (mPtr);
 }
 
 //==[ shared_ptr: operator* ]==================================================
 template<typename T>
-const T& utls::shared_ptr<T>::operator*(void) const
+const T& mem::shared_ptr<T>::operator*(void) const
 {
     return (*mPtr);
 }
 
 //==[ shared_ptr: operator-> ]=================================================
 template<typename T>
-const T* utls::shared_ptr<T>::operator->(void) const
+const T* mem::shared_ptr<T>::operator->(void) const
 {
     return (mPtr);
 }
 
 //==[ shared_ptr: operatorbool ]===============================================
 template<typename T>
-utls::shared_ptr<T>::operator bool(void) const
+mem::shared_ptr<T>::operator bool(void) const
 {
     return (mPtr != NULL);
 }

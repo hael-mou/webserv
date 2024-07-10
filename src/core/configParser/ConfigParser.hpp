@@ -18,8 +18,9 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-# include "ParserUtils.hpp"
-# include "Shared_ptr.hpp"
+# include "shared_ptr.hpp"
+# include "typedefs.hpp"
+# include "Utils.hpp"
 
 # include "Directive.hpp"
 

@@ -12,7 +12,6 @@
 ** ************************************************************************* **/
 
 #include "HttpCluster.hpp"
-#include "HttpFactory.hpp"
 
 /*******************************************************************************
     * Construction :
@@ -27,17 +26,17 @@ http::Cluster::Cluster(Directive::SharedPtr aHttpDir)
     for (size_t i = 0; i < serverDir.size(); ++i)
     {
         serverDir[i]->copyMatchingAttributes(aHttpDir);
-        Server::SharedPtr server = http::Factory::createServer(serverDir[i]);
+        http::IServer::SharedPtr server = http::Factory::createServer(serverDir[i]);
         StringVector listenSet = server->getListen();
         for (size_t index = 0; index < listenSet.size(); ++index)
         {
             std::string listen = listenSet[index];
             if (_isSocketReadyCreated(listen) == false)
             {
-                Handle socket = 0;
-                if ((socket = http::Factory::createSocket(listen)) == -1)
+                Handle socketfd = 0;
+                if ((socketfd = http::Factory::createSocket(listen)) == -1)
                     continue;
-                mSockets[listen] = socket;
+                mSockets[listen] = socketfd;
             }
             mServers[mSockets[listen]].push_back(server);
         }
@@ -59,7 +58,7 @@ IEventHandler::IEventHandlerQueue http::Cluster::createHandlers(void)
     while (it != mServers.end())
     {
         Handlers.push(
-            http::Factory::createAcceptHandler(it->first, it->second)
+                http::Factory::createAcceptHandler(it->first, it->second)
         );
         ++it;
     }

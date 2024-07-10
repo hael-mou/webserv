@@ -12,7 +12,6 @@
 ** ************************************************************************* **/
 
 # include "HttpServer.hpp"
-# include "HttpFactory.hpp"
 
 /*******************************************************************************
 	* Construction :
@@ -56,16 +55,16 @@ http::Server::_processListenDirective(const StringVector& aListenDir)
 
 	for (size_t index = 0; index < aListenDir.size(); ++index)
 	{
-		StringPair addressPort = utls::lineToPair(aListenDir[index], ':');
-		int port = atoi(addressPort.second.c_str());
+		StringPair addressPort = str::lineToPair(aListenDir[index], ':');
+		int port =  integer::strToInt (addressPort.second);
 		if (port <= 0 || port > 65535)
 		{
-			Logger::log("WARNING", "HTTP: Listen directive ignored: ["
-				+  aListenDir[index] + "]", 2);
+			Logger::log("warning", "HTTP: Listen directive ignored: '"
+				+  aListenDir[index] + "'", 2);
 			continue ;
 		}
-		std::string address = utls::strtrim(addressPort.first);
-		std::string portString = utls::strtrim(addressPort.second);
+		std::string address = str::strtrim(addressPort.first);
+		std::string portString = str::strtrim(addressPort.second);
 		listenSet.push_back(address + ":" + portString);
 	}
 	if (listenSet.size() == 0)
@@ -81,6 +80,6 @@ http::Server::_processHostDirective(const StringVector& hostDir)
 {
     StringVector hostList;
     if (hostDir.size() == 1)
-        hostList = utls::split(hostDir[0], ',');
+        hostList = str::split(hostDir[0], ',');
     return (hostList);
 }

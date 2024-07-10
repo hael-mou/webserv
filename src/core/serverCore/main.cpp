@@ -17,7 +17,7 @@
 *******************************************************************************/
 #include "ConfigParser.hpp"
 #include "ServerCore.hpp"
-# include "Logger.hpp"
+#include "Utils.hpp"
 
 #include <iostream>
 #include <signal.h>
@@ -27,9 +27,9 @@
 *******************************************************************************/
 void	signalHandler(int aSignal)
 {
-    (void)aSignal;
     ServerCore::getInstance()->stop();
-    Logger::log("INFO", "SERVERCORE: Servers stopped !", 1);
+    Logger::log("notice", "SERVERCORE: signal [" + std::to_string(aSignal)
+        + "] received !", 1);
 }
 
 /*******************************************************************************
@@ -56,6 +56,6 @@ int		main(int argc, char *argv[])
     }
     catch(const std::exception& e)
     {
-        Logger::log("ERROR" ,e.what(), 2);
+        Logger::log("error" ,e.what(), 2);
     }
 }

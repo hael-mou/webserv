@@ -18,13 +18,14 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-# include "Logger.hpp"
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
 
 # include "IEventHandler.hpp"
-# include "HttpServer.hpp"
-# include "HttpClient.hpp"
+# include "IServer.hpp"
+# include "IClient.hpp"
+
+# include "HttpFactory.hpp"
 
 # include <sys/types.h>                                                                                                                                    
 # include <sys/socket.h>                                                                                                                                   
@@ -39,7 +40,7 @@ namespace http
     class	AcceptHandler : public IEventHandler
     {
     public:
-        typedef std::vector<Server::SharedPtr>      ServerVector;
+        typedef std::vector<IServer::SharedPtr>      ServerVector;
 
         AcceptHandler(Handle aHandle, const ServerVector& aServers);
         virtual ~AcceptHandler(void);

@@ -1,5 +1,5 @@
 //  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣦⣴⣶⣾⣿⣶⣶⣶⣶⣦⣤⣄⠀⠀⠀⠀⠀⠀⠀                                              
-//  ⠀⠀⠀⠀⠀⠀⠀⢠⡶⠻⠛⠟⠋⠉⠀⠈⠤⠴⠶⠶⢾⣿⣿⣿⣷⣦⠄⠀⠀⠀          𓐓  ParserUtils.hpp 𓐔           
+//  ⠀⠀⠀⠀⠀⠀⠀⢠⡶⠻⠛⠟⠋⠉⠀⠈⠤⠴⠶⠶⢾⣿⣿⣿⣷⣦⠄⠀⠀⠀          𓐓  Utils.hpp 𓐔           
 //  ⠀⠀⠀⠀⠀⢀⠔⠋⠀⠀⠤⠒⠒⢲⠀⠀⠀⢀⣠⣤⣤⣬⣽⣿⣿⣿⣷⣄⠀⠀                                              
 //  ⠀⠀⠀⣀⣎⢤⣶⣾⠅⠀⠀⢀⡤⠏⠀⠀⠀⠠⣄⣈⡙⠻⢿⣿⣿⣿⣿⣿⣦⠀  Student: oezzaou <oezzaou@student.1337.ma> 
 //  ⢀⠔⠉⠀⠊⠿⠿⣿⠂⠠⠢⣤⠤⣤⣼⣿⣶⣶⣤⣝⣻⣷⣦⣍⡻⣿⣿⣿⣿⡀                                              
@@ -12,26 +12,67 @@
 //  ⠀⠀⠀⠀⠀⡄⠀⠀⠀⠘⢧⡀⠀⠀⠸⣿⣿⣿⠟⠀⠀⠀⠀⠀⠀⠐⠋⠀⠀⠀                        𓄂 oussama ezzaou𓆃
 //  ⠀⠀⠀⠀⠀⠘⠄⣀⡀⠸⠓⠀⠀⠀⠠⠟⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                                              
 
-#ifndef   __PARSERUTILS_HPP__
-# define   __PARSERUTILS_HPP__
+#ifndef   __UTILS_HPP__
+# define   __UTILS_HPP__
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
+# include <netinet/in.h> 
+# include <unistd.h>
 # include <sstream>
 # include <string>
+# include <ctime>
+
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <fcntl.h>
+# include <netdb.h>
 
 /*******************************************************************************
-    * ParserUtils :
+    * string Utils :
 *******************************************************************************/
-namespace utls
+namespace str
 {
-    std::string     strtrim(const_string& str);
-    std::string     toLower(const_string& str);
-    StringPair      lineToPair(const_string& line, const char sep);
-    StringVector    split(const_string str, const char sep);
+    std::string    strtrim(const_string& str);
+    std::string    toLower(const_string& str);
+    StringPair     lineToPair(const_string& line, const char sep);
+    StringVector   split(const_string str, const char sep);
+    std::string    addrtoString(const in_addr_t& addr, const socklen_t& addrLen);
 };
 
-#endif /* __PARSERUTILS_HPP__ */
+/*******************************************************************************
+    * integer Utils :
+*******************************************************************************/
+namespace integer
+{
+    int     strToInt(const_string& str);   
+};
+
+/*******************************************************************************
+    * Logger Utils :
+*******************************************************************************/
+namespace Logger
+{
+    void         log(const_string& level, const_string& message, int fd = 1);
+    std::string  getcurrentTime(void);
+};
+
+/*******************************************************************************
+    * Socket Utils :
+*******************************************************************************/
+namespace sock
+{
+    Handle  createSocket(int family, int type, int protocol);
+    void    bind(Handle socket, const_string& host, const_string& port);
+    void    startListening(Handle socket, int backlog = 10);
+    void    setReuseAddr(Handle& socket);
+    void    setNonBlocking(Handle& socket);
+
+}
+
+#endif /* __UTILS_HPP__ */

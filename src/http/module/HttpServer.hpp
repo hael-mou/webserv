@@ -16,22 +16,21 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-# include "Logger.hpp"
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
+# include "Utils.hpp"
 
 # include "Directive.hpp"
+# include "IServer.hpp"
 
 /*******************************************************************************
     * PorotocolFactory Class :
 *******************************************************************************/
 namespace http
 {
-	class Server
+	class Server : public IServer
 	{
     public:
-        typedef utls::shared_ptr<Server>    SharedPtr;
-
         Server(Directive::SharedPtr aServerDir);
         virtual ~Server(void);
 

@@ -17,8 +17,8 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
 
 # include "IEventHandler.hpp"
 
@@ -29,7 +29,7 @@ class IReactor
 {
 public:
     typedef IEventHandler                   IEH;
-    typedef utls::shared_ptr<IReactor>      SharedPtr;
+    typedef mem::shared_ptr<IReactor>       SharedPtr;
     typedef std::queue<IEH::SharedPtr>      IEventHandlerQueue;
 
     virtual	~IReactor(void) {};

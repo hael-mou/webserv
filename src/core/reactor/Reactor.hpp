@@ -17,8 +17,8 @@
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
+# include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Shared_ptr.hpp"
 
 # include "IReactor.hpp"
 # include "IMultiplexer.hpp"
