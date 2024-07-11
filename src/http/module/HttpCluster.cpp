@@ -14,6 +14,11 @@
 #include "HttpCluster.hpp"
 
 /*******************************************************************************
+    * Static Variables :
+*******************************************************************************/
+http::Cluster::ServerMap http::Cluster::mServers;
+
+/*******************************************************************************
     * Construction :
 *******************************************************************************/
 
@@ -58,7 +63,7 @@ IEventHandler::IEventHandlerQueue http::Cluster::createHandlers(void)
     while (it != mServers.end())
     {
         Handlers.push(
-                http::Factory::createAcceptHandler(it->first, it->second)
+                http::Factory::createAcceptHandler(it->first)
         );
         ++it;
     }

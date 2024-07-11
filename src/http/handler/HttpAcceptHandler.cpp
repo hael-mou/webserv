@@ -19,10 +19,9 @@
 *******************************************************************************/
 
 //===[ Constructor: AcceptHandler ]=============================================
-http::AcceptHandler::AcceptHandler(Handle aHandle, const ServerVector& aServers)
+http::AcceptHandler::AcceptHandler(Handle aHandle)
+    : mHandle(aHandle)
 {
-    mHandle = aHandle;
-    mServers = aServers;
 }
 
 //===[ Destructor: AcceptHandler ]==============================================

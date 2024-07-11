@@ -48,8 +48,8 @@ namespace http
         IEventHandler::IEventHandlerQueue     createHandlers(void);
 
     private:
-        ServerMap	mServers;
-        HandleMap   mSockets;
+        static ServerMap	mServers;
+        HandleMap           mSockets;
 
         bool    _isSocketReadyCreated(const_string& aListen) const;
     };

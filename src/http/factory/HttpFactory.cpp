@@ -69,8 +69,7 @@ Handle http::Factory::createSocket(const_string& aListen)
 *******************************************************************************/
 
 //===[ Method: createAcceptHandler ]============================================
-IEventHandler*
-http::Factory::createAcceptHandler(Handle aSocket, const ServerVector& aServers)
+IEventHandler* http::Factory::createAcceptHandler(Handle aSocket)
 {
-    return (new http::AcceptHandler(aSocket, aServers));
+    return (new http::AcceptHandler(aSocket));
 }

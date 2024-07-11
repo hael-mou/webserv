@@ -42,7 +42,7 @@ namespace http
     public:
         typedef std::vector<IServer::SharedPtr>      ServerVector;
 
-        AcceptHandler(Handle aHandle, const ServerVector& aServers);
+        AcceptHandler(Handle aHandle);
         virtual ~AcceptHandler(void);
 
         const Handle&           getHandle(void) const;
@@ -52,7 +52,6 @@ namespace http
 
     private:
         Handle          mHandle;
-        ServerVector    mServers;
     };
 }
 

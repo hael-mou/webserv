@@ -38,19 +38,17 @@ namespace http
     class Factory : public IProtocolFactory
     {
     public:
-        typedef std::vector<IServer::SharedPtr>  ServerVector;
-
         // Modules Factory :
-        ICluster*	    createCluster(Directive::SharedPtr aHttpDir);
-        static Handle   createSocket(const_string& aListen);
-        static IServer* createServer(Directive::SharedPtr aServerDir);
-        static IClient* createClient(Handle aSocket,
-                                     const sockaddr_in& aAddr,
-                                     socklen_t aAddrLen);
+        ICluster*	     createCluster(Directive::SharedPtr aHttpDir);
+        static Handle    createSocket(const_string& aListen);
+        static IServer*  createServer(Directive::SharedPtr aServerDir);
+        static IClient*  createClient(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLen);
 
         // Handlers Factory :
-        static IEventHandler* createAcceptHandler(Handle Socket,
-                                                  const ServerVector& aServers);
+        static IEventHandler*       createAcceptHandler(Handle Socket);
+        //static IEventHandler*     createRecvHandler(Handle Socket, IClient::SharedPtr Client);
+        //static IEventHandler*     createSendHandler(Handle Socket, IClient::SharedPtr Client);
+        //static IEventHandler*     createErrorHandler(Handle Socket, IClient::SharedPtr Client);
     };
 };
 
