@@ -5,46 +5,58 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ HttpServer header file ]                                             #
+#      | [ HttpRecvHandler header file ]                                       #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-06-02                                                   #
+#      | Created: 2024-07-09                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef	  __HTTPSERVER_HPP__
-# define   __HTTPSERVER_HPP__
+#ifndef __HTTPRECVHANDLER_HPP__
+# define __HTTPRECVHANDLER_HPP__
+
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
-# include "Utils.hpp"
 
-# include "Directive.hpp"
+# include "IEventHandler.hpp"
+# include "IClient.hpp"
 # include "IServer.hpp"
+# include "IRequest.hpp"
+
+# include "HttpFactory.hpp"
+# include "HttpCluster.hpp"
+
+# include <sys/socket.h>
+
+# define EMPTY ""
 
 /*******************************************************************************
-    * PorotocolFactory Class :
+    * class : RecvHandler :
 *******************************************************************************/
 namespace http
 {
-	class Server : public IServer
-	{
+    class RecvHandler : public IEventHandler
+    {
     public:
-        Server(Directive::SharedPtr aServerDir);
-        virtual ~Server(void);
+        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
 
-		const StringVector getListen(void) const;
-		const StringVector getName(void);
-         bool              isMatch(const_string& aHost) const;
-
+        RecvHandler(IClient::SharedPtr aClient);
+        virtual ~RecvHandler(void);
+        
+        const Handle&           getHandle(void) const;
+        IMultiplexer::Mode      getMode(void) const;
+        IEventHandlerQueue      handleEvent(void);
+        bool                    isTerminated(void) const;
+    
     private:
-	    StringVector    mListen;
-	    StringVector	mServerName;
-
-        StringVector    _processListenDirective(const StringVector& aListenDir);
-        StringVector    _processHostDirective(const StringVector& aHostDir);
+        bool                    mTerminated;
+        IClient::SharedPtr      mClient;
+        IRequest::sharedPtr    mRequest;
+        std::string             mReceivedData;
+        ServerVector            mServers;
     };
-}
+};
 
-#endif /* __HTTPSERVER_HPP__ */
+#endif /* __HTTPRECVHANDLER_HPP__ */

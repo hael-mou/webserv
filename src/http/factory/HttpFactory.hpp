@@ -26,8 +26,10 @@
 # include "HttpCluster.hpp"
 # include "HttpServer.hpp"
 # include "HttpClient.hpp"
+# include "HttpRequest.hpp"
 
 # include "HttpAcceptHandler.hpp"
+# include "HttpRecvHandler.hpp"
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -43,12 +45,13 @@ namespace http
         static Handle    createSocket(const_string& aListen);
         static IServer*  createServer(Directive::SharedPtr aServerDir);
         static IClient*  createClient(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLen);
+        static IRequest* createRequest(std::string& aReceivedData);
 
         // Handlers Factory :
-        static IEventHandler*       createAcceptHandler(Handle Socket);
-        //static IEventHandler*     createRecvHandler(Handle Socket, IClient::SharedPtr Client);
-        //static IEventHandler*     createSendHandler(Handle Socket, IClient::SharedPtr Client);
-        //static IEventHandler*     createErrorHandler(Handle Socket, IClient::SharedPtr Client);
+        static IEventHandler*     createAcceptHandler(Handle Socket);
+        static IEventHandler*     createRecvHandler(IClient::SharedPtr Client);
+        //static IEventHandler*     createSendHandler(Client::SharedPtr Client);
+        //static IEventHandler*     createErrorHandler(IClient::SharedPtr Client);
     };
 };
 

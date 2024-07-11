@@ -40,8 +40,6 @@ namespace http
     class	AcceptHandler : public IEventHandler
     {
     public:
-        typedef std::vector<IServer::SharedPtr>      ServerVector;
-
         AcceptHandler(Handle aHandle);
         virtual ~AcceptHandler(void);
 

@@ -35,6 +35,7 @@ namespace http
 
 		virtual const StringVector getListen(void) const = 0;
 		virtual const StringVector getName(void) = 0;
+		virtual bool isMatch(const_string& aHost) const = 0;
 	};
 }
 

@@ -43,6 +43,17 @@ const StringVector http::Server::getName(void)
 	return (mServerName);
 }
 
+//===[ isMatch: check if server name match ]====================================
+bool  http::Server::isMatch(const_string& aHost) const
+{
+	for (size_t index = 0; index < mServerName.size(); ++index)
+	{
+		if (aHost == mServerName[index])
+			return (true);
+	}
+	return (false);
+}
+
 /*******************************************************************************
 	* Private Methods :
 *******************************************************************************/

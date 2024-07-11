@@ -45,7 +45,8 @@ namespace http
         Cluster(Directive::SharedPtr aHttpDir);
         virtual ~Cluster(void);
 
-        IEventHandler::IEventHandlerQueue     createHandlers(void);
+        IEventHandler::IEventHandlerQueue      createHandlers(void);
+        static ServerVector                    getServers(Handle aSocket);
 
     private:
         static ServerMap	mServers;

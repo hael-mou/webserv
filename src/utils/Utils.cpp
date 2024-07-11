@@ -180,3 +180,36 @@ void    sock::setNonBlocking(Handle& socket)
         throw std::runtime_error("SOCKET: setNonBlocking fcntl() failed");
     }
 }
+
+/*******************************************************************************
+ * HTTP Utils
+*******************************************************************************/
+
+//=== [ isValidHeader ] ========================================================
+bool    httptools::isValidHeader(const char &c)
+{
+    if (!(::isalnum(c) || c == '-' || c == '_' ))
+        return (false);
+    return (true);
+}
+
+//=== [ isSpecialChar ] ========================================================
+bool    httptools::isSpecialChars(const char &c)
+{
+    if (!(::isalnum(c) || HttpSpecialChars(c)))
+        return (false);
+    return (true);
+}
+
+//===[ httpDecoder: ]===========================================================
+void    httptools::httpDecoder(std::string &str)
+{
+	std::size_t percentSignPosition;
+	while ((percentSignPosition = str.find('%')) != std::string::npos)
+	{
+		std::string hexadecimalValue = str.substr(percentSignPosition + 1, 2);
+		char character = static_cast<char>(std::strtol(hexadecimalValue.c_str()
+            ,NULL, 16));
+		str.replace(percentSignPosition, 3, 1, character);				
+	}
+}

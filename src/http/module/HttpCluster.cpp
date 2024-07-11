@@ -70,6 +70,12 @@ IEventHandler::IEventHandlerQueue http::Cluster::createHandlers(void)
     return (Handlers);
 }
 
+//===[ Method: get Servers ]====================================================
+http::Cluster::ServerVector http::Cluster::getServers(Handle aSocket)
+{
+    return (mServers[aSocket]);
+}
+
 /*******************************************************************************
     * Private Methods :
 *******************************************************************************/

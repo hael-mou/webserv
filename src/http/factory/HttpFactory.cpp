@@ -19,25 +19,15 @@
 *******************************************************************************/
 
 //===[ Method: createCluster ]=================================================
-ICluster*
-http::Factory::createCluster(Directive::SharedPtr aHttpDir)
+ICluster* http::Factory::createCluster(Directive::SharedPtr aHttpDir)
 {
     return (new http::Cluster(aHttpDir));
 }
 
 //===[ Method: createServer ]==================================================
-http::IServer*
-http::Factory::createServer(Directive::SharedPtr aServerDir)
+http::IServer* http::Factory::createServer(Directive::SharedPtr aServerDir)
 {
     return (new http::Server(aServerDir));
-}
-
-//===[ Method: createClient ]==================================================
-http::IClient*  http::Factory::createClient(Handle aSocket,
-                                            const sockaddr_in& aAddr,
-                                            socklen_t aAddrLen)
-{
-    return (new http::Client(aSocket, aAddr, aAddrLen));
 }
 
 //===[ Method: createSocket ]==================================================
@@ -64,6 +54,24 @@ Handle http::Factory::createSocket(const_string& aListen)
     }
 }
 
+//===[ Method: createClient ]==================================================
+http::IClient*  http::Factory::createClient(Handle aSocket,
+                                            const sockaddr_in& aAddr,
+                                            socklen_t aAddrLen)
+{
+    return (new http::Client(aSocket, aAddr, aAddrLen));
+}
+
+//===[ Method: createRequest ]=================================================
+http::IRequest* http::Factory::createRequest(std::string& aReceivedData)
+{
+    if (aReceivedData.find("\r\n\r\n") != std::string::npos)
+        return (new http::Request(aReceivedData));
+    if (aReceivedData.find("\n\n") != std::string::npos)
+        return (new http::Request(aReceivedData));
+    return (NULL);
+}
+
 /*******************************************************************************
     *  Handlers Factory :
 *******************************************************************************/
@@ -72,4 +80,10 @@ Handle http::Factory::createSocket(const_string& aListen)
 IEventHandler* http::Factory::createAcceptHandler(Handle aSocket)
 {
     return (new http::AcceptHandler(aSocket));
+}
+
+//===[ Method: createRecvHandler ]==============================================
+IEventHandler* http::Factory::createRecvHandler(IClient::SharedPtr aClient)
+{
+    return (new http::RecvHandler(aClient));
 }
