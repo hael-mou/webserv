@@ -148,7 +148,7 @@ bool ConfigParser::_includeDirective(const_string& aLine, int aLevel)
     StringPair kv = str::lineToPair(aLine, ':');
     if (kv.first != "include" || kv.second.empty())
         return (false);
-    if (kv.second[0] != '/' && kv.second[0] != '.')
+    if (kv.second[0] != '/')
     {
         std::string curFile = mFiles.back().first;
         kv.second = curFile.substr(0, curFile.find_last_of('/') +1) + kv.second;

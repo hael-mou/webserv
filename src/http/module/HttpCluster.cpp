@@ -32,7 +32,7 @@ http::Cluster::Cluster(Directive::SharedPtr aHttpDir)
     {
         serverDir[i]->copyMatchingAttributes(aHttpDir);
         http::IServer::SharedPtr server = http::Factory::createServer(serverDir[i]);
-        StringVector listenSet = server->getListen();
+        StringVector listenSet = server->getListens();
         for (size_t index = 0; index < listenSet.size(); ++index)
         {
             std::string listen = listenSet[index];

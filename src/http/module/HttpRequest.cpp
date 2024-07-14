@@ -26,10 +26,10 @@ http::Request::Request(std::string& aBuffer)
 	if (line.back() == '\r') line.pop_back();
     _setRequestLine(line);
 
-    while(getline(bufferStream, line) && line != "\r")
+    while (std::getline(bufferStream, line) && (line != "\r" && !line.empty()))
 	{
-		setHeader(line);
-	}
+        setHeader(line);
+    }
 
     if (getHeader("host").empty()) {
         throw (http::IRequest::BAD_REQUEST);

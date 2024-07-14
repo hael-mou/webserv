@@ -46,7 +46,12 @@ std::vector<std::string> str::split(const_string str, const char sep)
     std::string                 buff;
 
     while (getline(ss, buff, sep))
-        arr.push_back(buff);
+    {
+        if (buff.empty() == false)
+        {
+            arr.push_back(buff);
+        }
+    }
     return (arr);
 }
 

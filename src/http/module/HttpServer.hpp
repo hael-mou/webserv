@@ -21,7 +21,17 @@
 # include "Utils.hpp"
 
 # include "Directive.hpp"
+# include "HttpErrorPage.hpp"
 # include "IServer.hpp"
+
+/*******************************************************************************
+    * DEFAULT VALUES :
+*******************************************************************************/
+# define   DEFAULT_LISTEN              "0.0.0.0:80"
+# define   DEFAULT_TIMEOUT             120
+# define   DEFAULT_BODY_BUFFER_SIZE    1024
+# define   DEFAULT_MIME_TYPE           "text/html"
+# define   DEFAULT_SERVER_ROOT         "."
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -34,16 +44,39 @@ namespace http
         Server(Directive::SharedPtr aServerDir);
         virtual ~Server(void);
 
-		const StringVector getListen(void) const;
-		const StringVector getName(void);
-         bool              isMatch(const_string& aHost) const;
+        bool    isMatch(const_string& aHostName) const;
+
+        void    setListens(const StringVector& aListens);
+        void    setServerNames(const StringVector& aServerName);
+        void    setConnectionType(const StringVector& aConnection);
+        void    setKeepAliveTimeout(const StringVector& aTimeout);
+        void    setBodyBufferSize(const StringVector& aBodyBufferSize);
+        void    setMaxBodySize(const StringVector& aMaxBodySize);
+        void    setDefaultMimeType(const StringVector& aDefaultType);
+        void    setMimeTypes(const StringVector& aTypes);
+        void    setServerRoot(const StringVector& aRoot);
+
+        const StringVector&   getListens(void) const;
+        const StringVector&   getServerNames(void) const;
+        bool                  isKeepAlive(void) const;
+        time_t                getKeepAliveTimeout(void) const;
+        unsigned long         getBodyBufferSize(void) const;
+        unsigned long         getMaxBodySize(void) const;
+        const std::string&    getMimeType(const_string aExtansion) const;
+        const ErrorPages&     getErrorPages(void) const;
+        // location
 
     private:
-	    StringVector    mListen;
-	    StringVector	mServerName;
-
-        StringVector    _processListenDirective(const StringVector& aListenDir);
-        StringVector    _processHostDirective(const StringVector& aHostDir);
+	    StringVector    mListens;
+	    StringVector    mServerName;
+        std::string     mRoot; 
+        bool            mKeepAlive;
+        time_t          mKeepAliveTimeout;
+        unsigned long   mBodyBufferSize;
+        unsigned long   mMaxBodySize;
+        StringMap       mMimeTypes;
+        ErrorPages      mErrorPages;
+        // location
     };
 }
 
