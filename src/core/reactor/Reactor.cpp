@@ -36,13 +36,19 @@ Reactor::~Reactor(void) {}
 *******************************************************************************/
 
 //===[ Method : register new event handler ]====================================
-void Reactor::registerEventHandler(IEH::SharedPtr aHandler)
+void Reactor::registerEventHandler(IEH::SharedPtr aEventHandler)
 {
-    if (aHandler.get() != NULL)
+    if (aEventHandler.get() != NULL)
     {
-        Handle handle = aHandler->getHandle();
-        mEventHandlers[handle] = aHandler;
-        mMultiplexer->registerHandle(handle, aHandler->getMode());
+        Handle handle = aEventHandler->getHandle();
+        IEventHandlerMap::iterator it = mEventHandlers.find(handle);
+
+        if (it != mEventHandlers.end()) {
+            unregisterEventHandler(it->second);
+        }
+
+        mEventHandlers[handle] = aEventHandler;
+        mMultiplexer->registerHandle(handle, aEventHandler->getMode());
     }
 }
 
@@ -79,7 +85,8 @@ void Reactor::cleanupTerminatedHandlers(void)
         if (handler->isTerminated() == true)
         {
             mMultiplexer->removeHandle(handler->getHandle(),handler->getMode());
-            handlerIt = mEventHandlers.erase(handlerIt);
+            IEventHandlerMap::iterator toErase = handlerIt++;
+            mEventHandlers.erase(toErase);
         }
         else
         {
