@@ -5,38 +5,56 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IClient Interface ]                                                 #
+#      | [ IRequest Interface ]                                                 #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef __ICLIENT_HPP__
-# define __ICLIENT_HPP__
+#ifndef	  __IREQUEST_HPP__
+# define   __IREQUEST_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
+# include "IServer.hpp"
+
 /*******************************************************************************
-	* http::IClient Interface :
+    * http::IRequest Interface :
 *******************************************************************************/
 
 namespace http
 {
-	class IClient
-	{
-	public:
-		typedef mem::shared_ptr<IClient>    SharedPtr;
+    class IRequest
+    {
+    public:
+        typedef mem::shared_ptr<IRequest>           sharedPtr;
+        typedef std::vector<IServer::SharedPtr>     ServerVector;
 
-		virtual	~IClient(void) {};
+        enum Error
+        {
+            BAD_REQUEST = 400,
+            PAYLOAD_TOO_LARGE = 413,
+            URI_TOO_LONG = 414,
+            NOT_IMPLEMENTED = 501,
+            VERSION_NOT_SUPPORTED = 505
+        };
 
-		virtual const Handle&           getSocket(void) const = 0;
-        virtual const std::string&      getInfo(void) const = 0;
-        virtual std::string             recv(void) const = 0;
-	};
+        virtual ~IRequest(void) {};
+
+        virtual void            setMatchedServer(const ServerVector& aServers) = 0;
+        virtual void            setHeader(std::string& aLine) = 0;
+        virtual std::string     getVersion(void) const = 0;
+        virtual std::string		getMethod(void) const = 0;
+        virtual std::string		getUriPath(void) const = 0;
+        virtual StringMap		getUriQuery(void) const = 0;
+        virtual StringMap 		getHeaders(void) const = 0;
+        virtual std::string		getHeader(std::string const& key) = 0;
+        virtual void            display(void) const = 0;
+    };
 }
 
-#endif	/* __ICLIENT_HPP__ */
+#endif	/* __IREQUEST_HPP__ */

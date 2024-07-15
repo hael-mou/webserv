@@ -75,4 +75,35 @@ namespace sock
 
 }
 
+/*******************************************************************************
+ * Http Utils :
+********************************************************************************/
+namespace httptools
+{
+    bool    isSpecialChars(const char &c);
+    bool    isValidHeader(const char &c);
+    void    httpDecoder(std::string &str);
+
+
+    enum HttpSpecialChars{
+    Dot                 = '.',
+    Dash                =  '-',
+    Plus                = '+',
+    Comma               = ',',
+    Slash               = '/',
+    Colon               = ':',
+    Space               = ' ',
+    Equals              = '=',
+    Asterisk            = '*',
+    Ampersand           = '&',
+    Underscore          ='_',
+    QuestionMark        = '?',
+    ExclamationMark     = '!',
+    LeftCurlyBracket    = '{',
+    LeftSquareBracket   = '[',
+    RightCurlyBracket   = '}',
+    RightSquareBracket  = ']',
+    };
+}
+
 #endif /* __UTILS_HPP__ */

@@ -91,6 +91,8 @@ void ServerCore::_setupProtocol(const std::string& aProtocolName,
             return ;
         ICluster *cluster = aProtocolFactory->createCluster(protocolDir.front());
         IEH::IEventHandlerQueue Handlers = cluster->createHandlers();
+        if (Handlers.size() == 0)
+            return ;
         mReactor->registerEventHandler(Handlers);
         delete (cluster);
         mIsRunning = true;

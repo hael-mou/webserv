@@ -32,7 +32,7 @@ http::Cluster::Cluster(Directive::SharedPtr aHttpDir)
     {
         serverDir[i]->copyMatchingAttributes(aHttpDir);
         http::IServer::SharedPtr server = http::Factory::createServer(serverDir[i]);
-        StringVector listenSet = server->getListen();
+        StringVector listenSet = server->getListens();
         for (size_t index = 0; index < listenSet.size(); ++index)
         {
             std::string listen = listenSet[index];
@@ -68,6 +68,12 @@ IEventHandler::IEventHandlerQueue http::Cluster::createHandlers(void)
         ++it;
     }
     return (Handlers);
+}
+
+//===[ Method: get Servers ]====================================================
+http::Cluster::ServerVector http::Cluster::getServers(Handle aSocket)
+{
+    return (mServers[aSocket]);
 }
 
 /*******************************************************************************
