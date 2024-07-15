@@ -45,7 +45,7 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
 		if (mRequest.get() != NULL)
 		{
 			mRequest->setMatchedServer(mServers);
-			mRequest->display();
+			// mRequest->display();
 		// 	//mRequest->buildBody();
 		// 	//eventHandlers += http::Factory::createSendHandler(mClient, mRequest);
 		}

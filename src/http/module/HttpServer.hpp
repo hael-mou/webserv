@@ -23,6 +23,7 @@
 # include "Directive.hpp"
 # include "HttpErrorPage.hpp"
 # include "IServer.hpp"
+# include "HttpLocation.hpp"
 
 /*******************************************************************************
     * DEFAULT VALUES :
@@ -41,10 +42,14 @@ namespace http
 	class Server : public IServer
 	{
     public:
+
+        typedef std::map<std::string, http::Location::SharedPtr> LocationMap;
+
         Server(Directive::SharedPtr aServerDir);
         virtual ~Server(void);
 
         bool    isMatch(const_string& aHostName) const;
+
 
         void    setListens(const StringVector& aListens);
         void    setServerNames(const StringVector& aServerName);
@@ -55,6 +60,8 @@ namespace http
         void    setDefaultMimeType(const StringVector& aDefaultType);
         void    setMimeTypes(const StringVector& aTypes);
         void    setServerRoot(const StringVector& aRoot);
+        void    setLocations(Directive::SharedPtr aServerDir,
+                                Directive::DirPtrVector aLocation);
 
         const StringVector&   getListens(void) const;
         const StringVector&   getServerNames(void) const;
@@ -64,7 +71,7 @@ namespace http
         unsigned long         getMaxBodySize(void) const;
         const std::string&    getMimeType(const_string aExtansion) const;
         const ErrorPages&     getErrorPages(void) const;
-        // location
+        const LocationMap&    getLocations(void) const;
 
     private:
 	    StringVector    mListens;
@@ -76,6 +83,7 @@ namespace http
         unsigned long   mMaxBodySize;
         StringMap       mMimeTypes;
         ErrorPages      mErrorPages;
+        LocationMap     mLocations;
         // location
     };
 }

@@ -20,6 +20,7 @@
 //===[ Constructor: Server ]===================================================
 http::Server::Server(Directive::SharedPtr aServerDir)
 {
+
     setListens(aServerDir->getTerminal("listen"));
     setServerNames(aServerDir->getTerminal("server_names"));
     setConnectionType(aServerDir->getTerminal("connection"));
@@ -30,6 +31,7 @@ http::Server::Server(Directive::SharedPtr aServerDir)
     setMimeTypes(aServerDir->getTerminal("meme_type"));
     setServerRoot(aServerDir->getTerminal("root"));
     mErrorPages = ErrorPages(aServerDir->getTerminal("error_page"), mRoot);
+    setLocations(aServerDir, aServerDir->getNonTerminal("location"));
 }
 
 //===[ Destructor: Server ]====================================================
@@ -170,6 +172,26 @@ void    http::Server::setServerRoot(const StringVector& aRoot)
     mRoot = DEFAULT_SERVER_ROOT;
 }
 
+//===[ Method: set Location ]===================================================
+void http::Server::setLocations(Directive::SharedPtr aServerDir,
+                                Directive::DirPtrVector aLocation)
+{
+    for (size_t index = 0; index < aLocation.size(); ++index)
+    {
+        aLocation[index]->copyMatchingAttributes(aServerDir);
+        try
+        {
+            Location* location = new Location(aLocation[index]);
+            mLocations.insert(std::make_pair(location->getUri(), location));
+        }
+        catch(const std::exception& e)
+        {
+            Logger::log("warning", 
+            "HTTP: unable to create location without specifying a URI.", 2);
+        }
+    }
+}
+
 /*** * getters :
 *******************************************************************************/
 
@@ -224,4 +246,10 @@ const std::string &http::Server::getMimeType(const_string aExtansion) const
 const http::ErrorPages& http::Server::getErrorPages(void) const
 {
     return (mErrorPages);
+}
+
+//===[ Method : Get Locations ]==================================================
+const   http::Server::LocationMap& http::Server::getLocations(void) const
+{
+    return (mLocations);
 }
