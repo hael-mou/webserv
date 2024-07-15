@@ -47,12 +47,14 @@ namespace http
 
         virtual void            setMatchedServer(const ServerVector& aServers) = 0;
         virtual void            setHeader(std::string& aLine) = 0;
+
         virtual std::string     getVersion(void) const = 0;
         virtual std::string		getMethod(void) const = 0;
         virtual std::string		getUriPath(void) const = 0;
         virtual StringMap		getUriQuery(void) const = 0;
         virtual StringMap 		getHeaders(void) const = 0;
         virtual std::string		getHeader(std::string const& key) = 0;
+        virtual const IServer&  getMatchedServer(void) const = 0;
         virtual void            display(void) const = 0;
     };
 }

@@ -64,7 +64,8 @@ IEventHandler::IEventHandlerQueue  http::AcceptHandler::handleEvent(void)
 
         Logger::log("notice","HTTP: New Client '" + client->getInfo()
                   + "' connected", 2);
-        eventHandlers.push(http::Factory::createRecvHandler(client));
+        ServerVector servers = http::Cluster::getServers(mHandle);
+        eventHandlers.push(http::Factory::createRecvHandler(client, servers));
     }
     return (eventHandlers);
 }

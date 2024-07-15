@@ -20,7 +20,7 @@
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
-# include "HttpErrorPage.hpp"
+# include "HttpErrorPage.hpp" //remove
 
 /*******************************************************************************
 	* http::IServer Interface :
@@ -34,17 +34,18 @@ namespace http
 		typedef mem::shared_ptr<IServer>    SharedPtr;
 
 		virtual	~IServer(void) {};
-		
-		virtual bool isMatch(const_string& aHost) const = 0;
+
+        virtual bool                  isKeepAlive(void) const = 0;
+		virtual bool 				  isMatch(const_string& aHost) const = 0;
 
 		virtual const StringVector&   getListens(void) const = 0;
         virtual const StringVector&   getServerNames(void) const = 0;
-        virtual bool                  isKeepAlive(void) const = 0;
         virtual time_t                getKeepAliveTimeout(void) const = 0;
         virtual unsigned long         getBodyBufferSize(void) const = 0;
         virtual unsigned long         getMaxBodySize(void) const = 0;
         virtual const std::string&    getMimeType(const_string aExtansion) const = 0;
         virtual const ErrorPages&     getErrorPages(void) const = 0;
+
 	};
 }
 

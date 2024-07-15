@@ -13,15 +13,14 @@
 
 #include "HttpClient.hpp"
 
-/*********************************************************************************
+/*******************************************************************************
     * Construction :
 *******************************************************************************/
 
-//===[ Constructor: Client ]================================================
-http::Client::Client(Handle aSocket, const sockaddr_in& aAddr,
-                     socklen_t aAddrLen)
+//===[ Constructor: Client ]====================================================
+http::Client::Client(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLen)
+    : mSocket(aSocket), mLastActivityTime(time(NULL))
 {
-    mSocket = aSocket;
     mInfo += str::addrtoString(aAddr.sin_addr.s_addr, aAddrLen);
     mInfo += ":" + std::to_string(ntohs(aAddr.sin_port));
 }
@@ -37,6 +36,12 @@ http::Client::~Client(void)
     * Public Methods :
 *******************************************************************************/
 
+//===[ Method: updateActivityTime ]===========================================
+void http::Client::updateActivityTime(void)
+{
+    mLastActivityTime = time(NULL);
+}
+
 //===[ Method: getSocket ]====================================================
 const Handle& http::Client::getSocket(void) const
 {
@@ -47,6 +52,12 @@ const Handle& http::Client::getSocket(void) const
 const std::string& http::Client::getInfo(void) const
 {
     return (mInfo);
+}
+
+//===[ Method: getLastActivityTime ]==========================================
+time_t http::Client::getLastActivityTime(void) const
+{
+    return (mLastActivityTime);
 }
 
 //===[ Method: recv ]=========================================================
