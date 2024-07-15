@@ -20,7 +20,6 @@
 //===[ Constructor: Server ]===================================================
 http::Server::Server(Directive::SharedPtr aServerDir)
 {
-
     setListens(aServerDir->getTerminal("listen"));
     setServerNames(aServerDir->getTerminal("server_names"));
     setConnectionType(aServerDir->getTerminal("connection"));
@@ -50,6 +49,12 @@ bool  http::Server::isMatch(const_string& aHostName) const
             return (true);
     }
     return (false);
+}
+
+//===[ Method: check if keep alive ]============================================
+bool    http::Server::isKeepAlive(void) const
+{
+    return (mKeepAlive);
 }
 
 /*** * Setters :
@@ -105,7 +110,7 @@ void    http::Server::setKeepAliveTimeout(const StringVector& aTimeout)
 {
     if (aTimeout.size() == 1)
     {
-        if ((mKeepAliveTimeout = integer::strToInt(aTimeout[0])) > 0)
+        if ((mKeepAliveTimeout = integer::strToInt(aTimeout[0])) > 5)
             return ;
         Logger::log("warning", "HTTP: Keepalive_timeout ignored: '"
             +  aTimeout[0] + "'", 2);
@@ -205,12 +210,6 @@ const StringVector&  http::Server::getListens(void) const
 const StringVector&  http::Server::getServerNames(void) const
 {
     return (mServerName);
-}
-
-//===[ Method: get connection type ]============================================
-bool    http::Server::isKeepAlive(void) const
-{
-    return (mKeepAlive);
 }
 
 //===[ Method: get keep alive timeout ]=========================================

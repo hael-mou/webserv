@@ -48,6 +48,7 @@ namespace http
         std::string		getHeader(std::string const& key);
         StringMap		getUriQuery(void) const;
         StringMap 		getHeaders(void) const;
+        const IServer&  getMatchedServer(void) const;
      
         void            display(void) const;
 

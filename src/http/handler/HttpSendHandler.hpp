@@ -5,58 +5,44 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ HttpRecvHandler header file ]                                       #
+#      | [ HttpSendHandler header file ]                                        #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-07-09                                                   #
+#      | Created: 2024-07-12                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef __HTTPRECVHANDLER_HPP__
-# define __HTTPRECVHANDLER_HPP__
+#ifndef __HTTPSENDHANDLER_HPP__
+# define __HTTPSENDHANDLER_HPP__
 
 /*******************************************************************************
-    * Includes :
+	* Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
 # include "IEventHandler.hpp"
 # include "IClient.hpp"
-# include "IServer.hpp"
-# include "IRequest.hpp"
-
-# include "HttpFactory.hpp"
-# include "HttpCluster.hpp"
-
-# define EMPTY ""
 
 /*******************************************************************************
-    * class : RecvHandler :
+	* class : SendHandler :
 *******************************************************************************/
 namespace http
 {
-    class RecvHandler : public IEventHandler
-    {
-    public:
-        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
+	class SendHandler : public IEventHandler
+	{
+	public:
+		SendHandler(IClient::SharedPtr aClient);
+		virtual ~SendHandler(void);
 
-        RecvHandler(IClient::SharedPtr aClient, const ServerVector& aServers);
-        virtual ~RecvHandler(void);
-        
-        const Handle&           getHandle(void) const;
-        IMultiplexer::Mode      getMode(void) const;
-        IEventHandlerQueue      handleEvent(void);
-        bool                    isTerminated(void) const;
-    
-    private:
-        bool                    mTerminated;
-        IClient::SharedPtr      mClient;
-        IRequest::sharedPtr     mRequest;
-        std::string             mReceivedData;
-        ServerVector            mServers;
+		const Handle&           getHandle(void) const;
+		IMultiplexer::Mode      getMode(void) const;
+		IEventHandlerQueue      handleEvent(void);
+		bool                    isTerminated(void) const;
 
-        const IServer&          _getMatchedServer(void) const;
-    };
-};
+	private:
+		bool                    mTerminated;
+		IClient::SharedPtr      mClient;
+	};
+}
 
-#endif /* __HTTPRECVHANDLER_HPP__ */
+#endif	/* __HTTPSENDHANDLER_HPP__ */

@@ -33,9 +33,13 @@ namespace http
 
 		virtual	~IClient(void) {};
 
+		virtual void                    updateActivityTime(void) = 0;
+
 		virtual const Handle&           getSocket(void) const = 0;
         virtual const std::string&      getInfo(void) const = 0;
-        virtual std::string             recv(void) const = 0;
+		virtual time_t                  getLastActivityTime(void) const = 0;
+
+		virtual std::string             recv(void) const = 0;
 	};
 }
 

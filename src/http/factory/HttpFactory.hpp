@@ -40,6 +40,8 @@ namespace http
     class Factory : public IProtocolFactory
     {
     public:
+        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
+
         // Modules Factory :
         ICluster*	     createCluster(Directive::SharedPtr aHttpDir);
         static Handle    createSocket(const_string& aListen);
@@ -49,7 +51,7 @@ namespace http
 
         // Handlers Factory :
         static IEventHandler*     createAcceptHandler(Handle Socket);
-        static IEventHandler*     createRecvHandler(IClient::SharedPtr Client);
+        static IEventHandler*     createRecvHandler(IClient::SharedPtr Client, const ServerVector& Servers);
         //static IEventHandler*     createSendHandler(Client::SharedPtr Client);
         //static IEventHandler*     createErrorHandler(IClient::SharedPtr Client);
     };

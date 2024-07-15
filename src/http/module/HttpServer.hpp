@@ -29,7 +29,7 @@
     * DEFAULT VALUES :
 *******************************************************************************/
 # define   DEFAULT_LISTEN              "0.0.0.0:80"
-# define   DEFAULT_TIMEOUT             120
+# define   DEFAULT_TIMEOUT             7
 # define   DEFAULT_BODY_BUFFER_SIZE    1024
 # define   DEFAULT_MIME_TYPE           "text/html"
 # define   DEFAULT_SERVER_ROOT         "."
@@ -49,6 +49,7 @@ namespace http
         virtual ~Server(void);
 
         bool    isMatch(const_string& aHostName) const;
+        bool    isKeepAlive(void) const;
 
 
         void    setListens(const StringVector& aListens);
@@ -65,7 +66,6 @@ namespace http
 
         const StringVector&   getListens(void) const;
         const StringVector&   getServerNames(void) const;
-        bool                  isKeepAlive(void) const;
         time_t                getKeepAliveTimeout(void) const;
         unsigned long         getBodyBufferSize(void) const;
         unsigned long         getMaxBodySize(void) const;

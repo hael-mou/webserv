@@ -16,6 +16,7 @@
 /*******************************************************************************
     * Construction :
 *******************************************************************************/
+
 //===[ Constructor: Request ]===================================================
 http::Request::Request(std::string& aBuffer)
 {
@@ -110,6 +111,13 @@ StringMap http::Request::getHeaders() const
 {
 	return (mHeaders);
 }
+
+//====[ Method: getMatchedServer ]=============================================
+const http::IServer& http::Request::getMatchedServer(void) const
+{
+	return (*mMatchedServer);
+}
+
 //====[ Method: display ]======================================================
 void http::Request::display(void) const
 {
