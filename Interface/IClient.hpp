@@ -40,6 +40,7 @@ namespace http
 		virtual time_t                  getLastActivityTime(void) const = 0;
 
 		virtual std::string             recv(void) const = 0;
+		virtual ssize_t                 send(const std::string& aData) const = 0;
 	};
 }
 

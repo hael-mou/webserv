@@ -30,6 +30,7 @@
 
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"
+# include "HttpSendHandler.hpp"
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -50,8 +51,8 @@ namespace http
         // Handlers Factory :
         static IEventHandler*     createAcceptHandler(Handle Socket);
         static IEventHandler*     createRecvHandler(IClient::SharedPtr Client);
-        //static IEventHandler*     createSendHandler(Client::SharedPtr Client);
-        //static IEventHandler*     createErrorHandler(IClient::SharedPtr Client);
+        static IEventHandler*     createSendHandler(IClient::SharedPtr Client);
+
     };
 };
 

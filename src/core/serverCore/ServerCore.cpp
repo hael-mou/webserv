@@ -80,7 +80,6 @@ void ServerCore::_setupProtocol(const std::string& aProtocolName,
 {
     try
     {
-        (void)aProtocolFactory;
         DirPtrVector protocolDir = aGlobalDir->getNonTerminal(aProtocolName);
         if (protocolDir.size() > 1)
         {

@@ -42,6 +42,7 @@ namespace http
         time_t                  getLastActivityTime(void) const;
 
         std::string             recv(void) const;
+        ssize_t                 send(const std::string& aData) const;
 
     private:
         Handle                  mSocket;

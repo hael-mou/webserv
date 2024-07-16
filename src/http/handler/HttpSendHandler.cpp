@@ -19,9 +19,9 @@
 
 //===[ Constructor: SendHandler ]===============================================
 http::SendHandler::SendHandler(IClient::SharedPtr aClient)
+	: mTerminated(false),
+	  mClient(aClient)
 {
-	mTerminated = false;
-	mClient = aClient;
 }
 
 //===[ Destructor: SendHandler ]================================================
@@ -44,17 +44,22 @@ IMultiplexer::Mode http::SendHandler::getMode(void) const
 }
 
 //===[ handleEvent: return IEventHandlerQueue ]=================================
-# include <sys/socket.h>
 
 IEventHandler::IEventHandlerQueue http::SendHandler::handleEvent(void)
 {
-	std::string response = "HTTP/1.1 200 OK\r\nContent-length: 13\r\n\r\n Hello World !";
+	// JUST FOR TEST
+	std::string response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-length: 15\r\n\r\nHello client! " +  std::to_string(mClient->getSocket());
 
-	::send(mClient->getSocket(), response.c_str(), response.size(), 0);
-
+	IEventHandlerQueue eventHandlers;
+	
+	if  (mClient->send(response) == -1)
+	{
+		Logger::log("error", "HTTP: Failed to send !!", 2);
+		mTerminated = true;
+		return (eventHandlers);
+	}
 	mTerminated = true;
-
-	return (IEventHandlerQueue());
+	return (eventHandlers);
 }
 
 //===[ isTerminated: return Handler Status ]====================================

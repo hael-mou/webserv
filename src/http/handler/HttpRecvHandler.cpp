@@ -44,13 +44,14 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
         mRequest = http::Factory::createRequest(mReceivedData);
         if (mRequest.get() != NULL)
         {
-           // mRequest->setMatchedServer(mServers);
-           // mRequst->selectMatechedServer(mServers);
-            // mRequest->display();
+           // mRequst->selectMatechedRoute(mServers);
         // 	//mRequest->buildBody();
         // 	eventHandlers.push(
             //     http::Factory::createProcessHandler(mClient, mRequest)
             // );
+            eventHandlers.push(
+                http::Factory::createSendHandler(mClient)
+            );
         }
         mClient->updateActivityTime();
     }
@@ -61,10 +62,12 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
     }
     catch(const http::IRequest::Error& aErrorCode)
     {
-        //const IServer& server = _getMatchedServer();
+        Logger::log("error", std::to_string(aErrorCode), 2);
+        mTerminated = true;
+        // const IServer& server = _getMatchedServer();
         // IResponse* response = server->getErrorPage(aErrorCode);
         // eventHandlers.push(
-        //     http::Factory::createSendHandler(mClient, response)
+        //     http::Factory::createSendHandler(mClient)
         // );
     }
 

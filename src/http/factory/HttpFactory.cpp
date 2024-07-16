@@ -42,7 +42,7 @@ Handle http::Factory::createSocket(const_string& aListen)
         sock::setNonBlocking(socketHandle);
         sock::bind(socketHandle, hostPort[0], hostPort[1]);
         sock::startListening(socketHandle, SOMAXCONN);
-
+        
         Logger::log("notice", "HTTP: Socket[" + std::to_string(socketHandle)
             + "] '" + aListen + "' created", 1);
         return (socketHandle);
@@ -86,4 +86,10 @@ IEventHandler* http::Factory::createAcceptHandler(Handle aSocket)
 IEventHandler* http::Factory::createRecvHandler(IClient::SharedPtr aClient)
 {
     return (new http::RecvHandler(aClient));
+}
+
+//===[ Method: createSendHandler ]==============================================
+IEventHandler* http::Factory::createSendHandler(IClient::SharedPtr aClient)
+{
+    return (new http::SendHandler(aClient));
 }
