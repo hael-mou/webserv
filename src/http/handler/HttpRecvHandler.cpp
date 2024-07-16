@@ -18,11 +18,9 @@
 *******************************************************************************/
 
 //===[ Constructor: AcceptHandler ]============================================
-http::RecvHandler::RecvHandler(IClient::SharedPtr aClient,
-                               const ServerVector& aServers)
+http::RecvHandler::RecvHandler(IClient::SharedPtr aClient)
     : mTerminated(false),
-      mClient(aClient), 
-      mServers(aServers)
+      mClient(aClient)
 {
 }
 
@@ -106,11 +104,14 @@ bool http::RecvHandler::isTerminated(void) const
 //===[ Method: getMatchedServer ]==============================================
 const http::IServer& http::RecvHandler::_getMatchedServer(void) const
 {
-    if (mRequest)
-        return (mRequest->getMatchedServer());
+    const std::vector<IServer::SharedPtr>&
+    servers = Cluster::getServers(mClient->getSocket());
 
-    if (mServers.size() != 0)
-        return (*(mServers[0]));
-
+    // if (mRequest) {
+    //     return (mRequest->getMatchedServer());
+    // }
+    if (servers.size() != 0) {
+        return (*(servers[0]));
+    }
     throw (std::runtime_error("HttpRecvHandler: No server found"));
 }

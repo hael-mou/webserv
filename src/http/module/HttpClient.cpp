@@ -28,8 +28,9 @@ http::Client::Client(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLe
 //===[ Destructor: Client ]================================================
 http::Client::~Client(void)
 {
-    Logger::log("notice", "HTTP: Client '" + mInfo + "' disconnected", 2);
+    http::Cluster::eraseServers(mSocket);
     close(mSocket);
+    Logger::log("notice", "HTTP: Client '" + mInfo + "' disconnected", 2);
 }
 
 /*******************************************************************************

@@ -22,6 +22,7 @@
 # include "Utils.hpp"
 
 # include "IClient.hpp"
+# include "HttpCluster.hpp"
 
 /*******************************************************************************
     * Client Class :

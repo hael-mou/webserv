@@ -83,8 +83,7 @@ IEventHandler* http::Factory::createAcceptHandler(Handle aSocket)
 }
 
 //===[ Method: createRecvHandler ]==============================================
-IEventHandler* http::Factory::createRecvHandler(IClient::SharedPtr aClient,
-                                                const ServerVector& Servers)
+IEventHandler* http::Factory::createRecvHandler(IClient::SharedPtr aClient)
 {
-    return (new http::RecvHandler(aClient, Servers));
+    return (new http::RecvHandler(aClient));
 }
