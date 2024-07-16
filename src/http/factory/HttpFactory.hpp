@@ -27,6 +27,7 @@
 # include "HttpServer.hpp"
 # include "HttpClient.hpp"
 # include "HttpRequest.hpp"
+# include "IResponse.hpp"
 
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"
@@ -51,7 +52,7 @@ namespace http
         // Handlers Factory :
         static IEventHandler*     createAcceptHandler(Handle Socket);
         static IEventHandler*     createRecvHandler(IClient::SharedPtr Client);
-        static IEventHandler*     createSendHandler(IClient::SharedPtr Client);
+        static IEventHandler*     createSendHandler(IClient::SharedPtr Client, IResponse::SharedPtr Response);
 
     };
 };

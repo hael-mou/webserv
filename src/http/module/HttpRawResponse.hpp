@@ -5,48 +5,47 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ HttpSendHandler header file ]                                        #
+#      | [ HttpRawResponse header file ]                                        #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-07-12                                                   #
+#      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef __HTTPSENDHANDLER_HPP__
-# define __HTTPSENDHANDLER_HPP__
+#ifndef   __HttpRawResponse_HPP__
+# define   __HttpRawResponse_HPP__
 
 /*******************************************************************************
 	* Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
+# include "Utils.hpp"
 
-# include "IEventHandler.hpp"
-# include "IClient.hpp"
-# include "IResponse.hpp"
+# include "HttpAResponse.hpp"
 
-# include "HttpFactory.hpp"
+# include <iostream>
 
 /*******************************************************************************
-	* class : SendHandler :
+	* HttpRawResponse Class :
 *******************************************************************************/
 namespace http
 {
-	class SendHandler : public IEventHandler
+	class RawResponse : public AResponse
 	{
 	public:
-		SendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
-		virtual ~SendHandler(void);
+		RawResponse(void);
+		virtual ~RawResponse(void);
 
-		const Handle&           getHandle(void) const;
-		IMultiplexer::Mode      getMode(void) const;
-		IEventHandlerQueue      handleEvent(void);
-		bool                    isTerminated(void) const;
-
+		RawResponse&    setBody(const_string& aBody);
+		std::string     toRaw(void);
+		void			removeBytesSent(size_t bytesSent);
+        bool            eof(void) const;
+		void			display(void) const;
+	
 	private:
-		bool                    mTerminated;
-		IClient::SharedPtr      mClient;
-		IResponse::SharedPtr    mResponse;
+		std::string		mBody;
+		bool			misConverted;
 	};
 }
 
-#endif	/* __HTTPSENDHANDLER_HPP__ */
+#endif	/* __HttpRawResponse_HPP__ */

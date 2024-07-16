@@ -21,10 +21,14 @@
 # include <map>
 
 //===[ Stirng : ] ==============================================================
+const std::string							    EmptyString = "";
 typedef const std::string						const_string;
 typedef std::pair<std::string, std::string>		StringPair;
 typedef std::vector<std::string>				StringVector;
 typedef std::map<std::string, std::string>		StringMap;
+
+//===[ int/Stirng : ] ==========================================================
+typedef std::map<unsigned int, std::string>		UintStringMap;
 
 //===[ Handle : ] ==============================================================
 typedef int										Handle;

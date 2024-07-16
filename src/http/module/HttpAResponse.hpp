@@ -5,48 +5,57 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ HttpSendHandler header file ]                                        #
+#      | [ HttpAResponse header file ]                                          #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-07-12                                                   #
+#      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef __HTTPSENDHANDLER_HPP__
-# define __HTTPSENDHANDLER_HPP__
+#ifndef   __HttpAResponse_HPP__
+# define   __HttpAResponse_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
+# include "Utils.hpp"
 
-# include "IEventHandler.hpp"
-# include "IClient.hpp"
 # include "IResponse.hpp"
 
-# include "HttpFactory.hpp"
+# include <iostream>
 
 /*******************************************************************************
-	* class : SendHandler :
+    * HttpAResponse Class :
 *******************************************************************************/
 namespace http
 {
-	class SendHandler : public IEventHandler
-	{
-	public:
-		SendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
-		virtual ~SendHandler(void);
+    class AResponse : public IResponse
+    {
+    public:   
+        AResponse(void);
+        virtual	~AResponse(void);
 
-		const Handle&           getHandle(void) const;
-		IMultiplexer::Mode      getMode(void) const;
-		IEventHandlerQueue      handleEvent(void);
-		bool                    isTerminated(void) const;
+        AResponse&	   setVersion(const std::string& aVersion);
+        AResponse&	   setStatusCode(unsigned int aStatusCode);
+        AResponse&	   setHeader(const std::string& aHeader, const_string& aValue);
 
-	private:
-		bool                    mTerminated;
-		IClient::SharedPtr      mClient;
-		IResponse::SharedPtr    mResponse;
-	};
+        const_string&  getHeader(const_string& aHeader) const;
+        time_t         getSendTimeout(void) const;
+
+        std::string    toRaw(void);
+        void           display(void) const;
+
+    protected:
+        std::string    mVersion;
+        std::string    mStatusline;
+        StringMap      mHeaders;
+        time_t         mSendTimeout;
+        std::string    mRawMessage;
+
+        static const UintStringMap    sStatusMessage;
+        static const UintStringMap    _sinitStatusMessage(void);
+    };
 }
 
-#endif	/* __HTTPSENDHANDLER_HPP__ */
+#endif	/* __HttpAResponse_HPP__ */

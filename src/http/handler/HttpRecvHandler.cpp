@@ -19,9 +19,9 @@
 
 //===[ Constructor: AcceptHandler ]============================================
 http::RecvHandler::RecvHandler(IClient::SharedPtr aClient)
-    : mTerminated(false),
-      mClient(aClient)
+    : mClient(aClient)
 {
+    mTerminated = (aClient.get() == NULL) ? true : false;
 }
 
 //===[ Destructor: AcceptHandler ]=============================================
@@ -30,14 +30,15 @@ http::RecvHandler::~RecvHandler(void) {}
 /*******************************************************************************
     * Public Methods of Interface: IEventHandler
 *******************************************************************************/
-
+# include "HttpRawResponse.hpp" // for test
+# include <iostream> // for test
 //===[ Method: handle The Read Events ]========================================
 IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
 {
     IEventHandlerQueue eventHandlers;
 
     try{
-        if ((mReceivedData += mClient->recv()) == EMPTY)
+        if ((mReceivedData += mClient->recv()) == EmptyString)
         {
             return ((mTerminated = true),  eventHandlers);
         }
@@ -49,9 +50,16 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
         // 	eventHandlers.push(
             //     http::Factory::createProcessHandler(mClient, mRequest)
             // );
+
+            //for test only:
+            RawResponse* response = new RawResponse();
+            response->setVersion("HTTP/1.1").setStatusCode(200);
+            response->setBody("Hello World");
+            
             eventHandlers.push(
-                http::Factory::createSendHandler(mClient)
+                http::Factory::createSendHandler(mClient, response)
             );
+            //
         }
         mClient->updateActivityTime();
     }
@@ -91,13 +99,15 @@ const Handle& http::RecvHandler::getHandle(void) const
 bool http::RecvHandler::isTerminated(void) const
 {
     const IServer& server = _getMatchedServer();
-    
+
+    if (mTerminated == true)
+        return (true);
+ 
     time_t lastActivity = mClient->getLastActivityTime();
     time_t timeout      = server.getKeepAliveTimeout();
-    if (time(NULL) - lastActivity >= timeout)
-        return (true);
+    time_t currentTime  = time(NULL);
 
-    return (mTerminated);
+    return (currentTime - lastActivity >= timeout);
 }
 
 /*******************************************************************************

@@ -14,56 +14,72 @@
 #include "HttpSendHandler.hpp"
 
 /*******************************************************************************
-	* Construction :
+    * Construction :
 *******************************************************************************/
 
 //===[ Constructor: SendHandler ]===============================================
-http::SendHandler::SendHandler(IClient::SharedPtr aClient)
-	: mTerminated(false),
-	  mClient(aClient)
+http::SendHandler::SendHandler(IClient::SharedPtr aClient,
+                               IResponse::SharedPtr aResponse)
+    : mClient(aClient),
+      mResponse(aResponse)
 {
+    mTerminated = (mClient && mResponse) ? false : true;
 }
 
 //===[ Destructor: SendHandler ]================================================
 http::SendHandler::~SendHandler(void) {}
 
 /*******************************************************************************
-	* Public Methods :
+    * Public Methods :
 *******************************************************************************/
 
 //===[ getHandle: return Handler Handle ]========================================
 const Handle& http::SendHandler::getHandle(void) const
 {
-	return (mClient->getSocket());
+    return (mClient->getSocket());
 }
 
 //===[ getMode: return Handler Mode ]============================================
 IMultiplexer::Mode http::SendHandler::getMode(void) const
 {
-	return (IMultiplexer::Write);
+    return (IMultiplexer::Write);
 }
 
 //===[ handleEvent: return IEventHandlerQueue ]=================================
-
 IEventHandler::IEventHandlerQueue http::SendHandler::handleEvent(void)
 {
-	// JUST FOR TEST
-	std::string response = "HTTP/1.1 200 OK\r\nConnection: keep-alive\r\nContent-length: 15\r\n\r\nHello client! " +  std::to_string(mClient->getSocket());
+    IEventHandlerQueue eventHandlers;
 
-	IEventHandlerQueue eventHandlers;
-	
-	if  (mClient->send(response) == -1)
-	{
-		Logger::log("error", "HTTP: Failed to send !!", 2);
-		mTerminated = true;
-		return (eventHandlers);
-	}
-	mTerminated = true;
-	return (eventHandlers);
+    ssize_t bytesSent = mClient->send(mResponse->toRaw());
+    if  (bytesSent == -1)
+    {
+        Logger::log("error", "HTTP: Failed to send !!", 2);
+        mTerminated = true;
+        return (eventHandlers);
+    }
+
+    mResponse->removeBytesSent(bytesSent);
+    if (mResponse->eof())
+    {
+        if (mResponse->getHeader("connection") != "close")
+            eventHandlers.push(http::Factory::createRecvHandler(mClient));
+        else
+            mTerminated = true;
+    }
+
+    mClient->updateActivityTime();
+    return (eventHandlers);
 }
 
 //===[ isTerminated: return Handler Status ]====================================
 bool http::SendHandler::isTerminated(void) const
 {
-	return (mTerminated);
+    if (mTerminated == true)
+        return (true);
+
+    time_t lastActivity = mClient->getLastActivityTime();
+    time_t timeout      = mResponse->getSendTimeout();
+    time_t currentTime  = time(NULL);
+
+    return (currentTime - lastActivity >= timeout);
 }

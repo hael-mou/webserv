@@ -52,6 +52,7 @@ namespace http
 
     private:
         Handle          mHandle;
+        bool            mTerminated;
     };
 }
 

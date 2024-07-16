@@ -22,6 +22,7 @@
 http::AcceptHandler::AcceptHandler(Handle aHandle)
     : mHandle(aHandle)
 {
+    mTerminated = (aHandle == -1) ? true : false;
 }
 
 //===[ Destructor: AcceptHandler ]==============================================
@@ -86,5 +87,5 @@ const Handle&  http::AcceptHandler::getHandle(void) const
 //===[ Method: check if Handler is Terminated ]=================================
 bool  http::AcceptHandler::isTerminated(void) const
 {
-    return (false);
+    return (mTerminated);
 }

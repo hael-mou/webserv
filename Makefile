@@ -46,6 +46,8 @@ SRC_FILES	:=	$(SRC_DIR)/utils/Utils.cpp\
 				$(SRC_DIR)/http/module/HttpRequest.cpp\
 				$(SRC_DIR)/http/module/HttpErrorPage.cpp\
 				$(SRC_DIR)/http/module/HttpLocation.cpp\
+				$(SRC_DIR)/http/module/HttpAResponse.cpp\
+				$(SRC_DIR)/http/module/HttpRawResponse.cpp\
 				\
 				$(SRC_DIR)/http/handler/HttpAcceptHandler.cpp\
 				$(SRC_DIR)/http/handler/HttpRecvHandler.cpp\

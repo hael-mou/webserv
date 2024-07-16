@@ -89,7 +89,8 @@ IEventHandler* http::Factory::createRecvHandler(IClient::SharedPtr aClient)
 }
 
 //===[ Method: createSendHandler ]==============================================
-IEventHandler* http::Factory::createSendHandler(IClient::SharedPtr aClient)
+IEventHandler* http::Factory::createSendHandler(IClient::SharedPtr aClient,
+                                                IResponse::SharedPtr aResponse)
 {
-    return (new http::SendHandler(aClient));
+    return (new http::SendHandler(aClient, aResponse));
 }
