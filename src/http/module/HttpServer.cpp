@@ -170,9 +170,9 @@ void    http::Server::setServerRoot(const StringVector& aRoot)
     if (aRoot.size() == 1)
     {
         mRoot = aRoot[0];
-        if (mRoot.back() == '/')
-            mRoot.pop_back();
-        return ;
+        if (!mRoot.empty() && mRoot[mRoot.size() - 1] == '/')
+            mRoot.erase(mRoot.size() - 1);
+        return;
     }
     mRoot = DEFAULT_SERVER_ROOT;
 }

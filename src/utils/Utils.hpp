@@ -21,15 +21,18 @@
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
-# include <netinet/in.h> 
-# include <unistd.h>
 # include <sstream>
+# include <cstring>
 # include <string>
+# include <cstdio>
 # include <ctime>
 
-# include <sys/types.h>
 # include <sys/socket.h>
+# include <netinet/in.h> 
+# include <sys/types.h>
 # include <arpa/inet.h>
+# include <stdlib.h> 
+# include <unistd.h>
 # include <fcntl.h>
 # include <netdb.h>
 

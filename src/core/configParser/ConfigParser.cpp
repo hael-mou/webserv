@@ -122,7 +122,7 @@ int	ConfigParser::_getLevel(const_string& aLine)
     int							column;
 
     column = aLine.find_first_not_of(' ') + mStartColumn.back();
-    iter = find(mLevels.begin(), mLevels.end(), column);
+    iter = std::find(mLevels.begin(), mLevels.end(), column);
     if (mLevels.empty() == false && iter != mLevels.end())
         return (iter - mLevels.begin());
     mLevels.push_back(column); 

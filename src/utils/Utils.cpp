@@ -68,11 +68,14 @@ std::string str::toLower(const_string &str)
 //===[ address to string : ]===================================================
 std::string str::addrtoString(const in_addr_t& addr, const socklen_t& addrLen)
 {
-    mem::shared_ptr<char> buffer = new char[addrLen];
-    unsigned char *ip = (unsigned char *)&addr;
-    snprintf(buffer.get(), sizeof(buffer), "%d.%d.%d.%d",
-             ip[0], ip[1], ip[2], ip[3]);
-    return (buffer.get());
+    char* buffer = new char[addrLen];
+    unsigned char* ip = (unsigned char*)&addr;
+    
+    snprintf(buffer, addrLen, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+    std::string result(buffer);
+    delete[] buffer;
+
+    return (result);
 }
 
 //===[ replace : ]==============================================================
