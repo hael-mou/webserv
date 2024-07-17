@@ -15,33 +15,33 @@
 # define __ICLIENT_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
 /*******************************************************************************
-	* http::IClient Interface :
+    * http::IClient Interface :
 *******************************************************************************/
 
 namespace http
 {
-	class IClient
-	{
-	public:
-		typedef mem::shared_ptr<IClient>    SharedPtr;
+    class IClient
+    {
+    public:
+        typedef mem::shared_ptr<IClient>    SharedPtr;
 
-		virtual	~IClient(void) {};
+        virtual	~IClient(void) {};
 
-		virtual void                    updateActivityTime(void) = 0;
+        virtual void                    updateActivityTime(void) = 0;
 
-		virtual const Handle&           getSocket(void) const = 0;
+        virtual const Handle&           getSocket(void) const = 0;
         virtual const std::string&      getInfo(void) const = 0;
-		virtual time_t                  getLastActivityTime(void) const = 0;
+        virtual time_t                  getLastActivityTime(void) const = 0;
 
-		virtual std::string             recv(void) const = 0;
-		virtual ssize_t                 send(const std::string& aData) const = 0;
-	};
+        virtual std::string             recv(void) const = 0;
+        virtual ssize_t                 send(const std::string& aData) const = 0;
+    };
 }
 
 #endif	/* __ICLIENT_HPP__ */

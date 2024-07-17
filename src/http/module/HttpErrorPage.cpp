@@ -12,7 +12,7 @@
 ** ************************************************************************* **/
 
 #include "HttpErrorPage.hpp"
-#include <iostream>
+
 /*******************************************************************************
 	* Construction :
 *******************************************************************************/
@@ -47,14 +47,26 @@ http::ErrorPages::~ErrorPages(void) {}
 	* Public Methods :
 *******************************************************************************/
 
-//===[ setErrorPage: set the error page ]=======================================
-void	http::ErrorPages::setErrorPage(unsigned int aCode, const_string& aPath)
+
+void	http::ErrorPages::setErrorPage(u_int aCode, const_string& aPath)
 {
 	mErrorPages[aCode] = aPath;
 }
 
-//===[ getErrorPagePath: get the error page path ]==============================
-const_string&	http::ErrorPages::getErrorPagePath(unsigned int aCode) const
+//===[ Method: build error page ]===============================================
+http::IResponse::SharedPtr http::ErrorPages::build(u_int aCode) const
 {
-	return (mErrorPages.at(aCode));
+    try
+    {
+        std::string path = mErrorPages.at(aCode);
+        return (NULL);
+    }
+    catch (...)
+    {
+        http::RawResponse* response = new http::RawResponse();
+        response->setTemplateOn();
+        response->setStatusCode(aCode);
+        response->setBody(CUSTOM_ERROR_PAGE);
+        return (response);
+    }
 }

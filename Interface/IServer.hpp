@@ -15,38 +15,38 @@
 # define   __ISERVER_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
-# include "HttpErrorPage.hpp" //remove
+# include "IResponse.hpp"
 
 /*******************************************************************************
-	* http::IServer Interface :
+    * http::IServer Interface :
 *******************************************************************************/
 
 namespace http
 {
-	class IServer
-	{
-	public:
-		typedef mem::shared_ptr<IServer>    SharedPtr;
+    class IServer
+    {
+    public:
+        typedef mem::shared_ptr<IServer>    SharedPtr;
 
-		virtual	~IServer(void) {};
+        virtual	~IServer(void) {};
 
         virtual bool                  isKeepAlive(void) const = 0;
-		virtual bool 				  isMatch(const_string& aHost) const = 0;
+        virtual bool 				  isMatch(const_string& aHost) const = 0;
 
-		virtual const StringVector&   getListens(void) const = 0;
+        virtual const StringVector&   getListens(void) const = 0;
         virtual const StringVector&   getServerNames(void) const = 0;
         virtual time_t                getKeepAliveTimeout(void) const = 0;
         virtual unsigned long         getBodyBufferSize(void) const = 0;
         virtual unsigned long         getMaxBodySize(void) const = 0;
         virtual const std::string&    getMimeType(const_string aExtansion) const = 0;
-        virtual const ErrorPages&     getErrorPages(void) const = 0;
+        virtual IResponse::SharedPtr  getErrorPage(u_int aCode) const = 0;
 
-	};
+    };
 }
 
 #endif	/* __ISERVER_HPP__ */

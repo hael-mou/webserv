@@ -33,11 +33,17 @@ http::RawResponse::~RawResponse(void) {}
 *******************************************************************************/
 
 //===[ Methode : set Body ]====================================================
-http::RawResponse& http::RawResponse::setBody(const_string& aBody)
+void		http::RawResponse::setBody(const_string& aBody)
 {
 	mBody = aBody;
-	setHeader("Content-Length", std::to_string(mBody.size()));
-	return (*this);
+
+	if (misTemplate == true)
+	{
+		str::replace(mBody, "$(STATUS_CODE)", str::to_string(mStatusCode));
+		str::replace(mBody, "$(MESSAGE)", mStatusline);
+		str::replace(mBody, "$(SERVER)", getHeader("Server"));
+	}
+	setHeader("Content-Length", str::to_string(mBody.size()));
 }
 
 //===[ Methode : toRaw ]=======================================================

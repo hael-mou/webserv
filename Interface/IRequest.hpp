@@ -5,7 +5,7 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IRequest Interface ]                                                 #
+#      | [ IRequest Interface ]                                                #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-05-18                                                   #
 #                                                                              #

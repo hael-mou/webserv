@@ -14,6 +14,7 @@
 
 #ifndef   __HTTPFACTORY_HPP__
 # define   __HTTPFACTORY_HPP__
+
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
@@ -50,9 +51,9 @@ namespace http
         static IRequest* createRequest(std::string& aReceivedData);
 
         // Handlers Factory :
-        static IEventHandler*     createAcceptHandler(Handle Socket);
-        static IEventHandler*     createRecvHandler(IClient::SharedPtr Client);
-        static IEventHandler*     createSendHandler(IClient::SharedPtr Client, IResponse::SharedPtr Response);
+        static IEventHandler*     createAcceptHandler(Handle aSocket);
+        static IEventHandler*     createRecvHandler(IClient::SharedPtr aClient);
+        static IEventHandler*     createSendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
 
     };
 };

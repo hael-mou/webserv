@@ -43,6 +43,16 @@ namespace str
     StringPair     lineToPair(const_string& line, const char sep);
     StringVector   split(const_string str, const char sep);
     std::string    addrtoString(const in_addr_t& addr, const socklen_t& addrLen);
+    std::string&   replace(std::string& str, const_string& from, const_string& to);
+
+    template <typename T>
+    std::string    to_string(const T& number)
+    {
+        std::ostringstream oss;
+        oss << number;
+        return oss.str();
+    }
+
 };
 
 /*******************************************************************************

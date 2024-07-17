@@ -15,7 +15,7 @@
 # define __HTTPSENDHANDLER_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
@@ -27,26 +27,26 @@
 # include "HttpFactory.hpp"
 
 /*******************************************************************************
-	* class : SendHandler :
+    * class : SendHandler :
 *******************************************************************************/
 namespace http
 {
-	class SendHandler : public IEventHandler
-	{
-	public:
-		SendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
-		virtual ~SendHandler(void);
+    class SendHandler : public IEventHandler
+    {
+    public:
+        SendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
+        virtual ~SendHandler(void);
 
-		const Handle&           getHandle(void) const;
-		IMultiplexer::Mode      getMode(void) const;
-		IEventHandlerQueue      handleEvent(void);
-		bool                    isTerminated(void) const;
+        const Handle&           getHandle(void) const;
+        IMultiplexer::Mode      getMode(void) const;
+        IEventHandlerQueue      handleEvent(void);
+        bool                    isTerminated(void) const;
 
-	private:
-		bool                    mTerminated;
-		IClient::SharedPtr      mClient;
-		IResponse::SharedPtr    mResponse;
-	};
+    private:
+        bool                    mTerminated;
+        IClient::SharedPtr      mClient;
+        IResponse::SharedPtr    mResponse;
+    };
 }
 
 #endif	/* __HTTPSENDHANDLER_HPP__ */

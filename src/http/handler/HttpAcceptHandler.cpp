@@ -30,7 +30,7 @@ http::AcceptHandler::~AcceptHandler(void)
 {
     close(mHandle);
     Logger::log("notice","HTTP: Closing Socket["
-        + std::to_string(mHandle)
+        + str::to_string(mHandle)
         + "], Done.", 2);
 }
 

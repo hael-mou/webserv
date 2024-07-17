@@ -22,7 +22,7 @@ http::Client::Client(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLe
     : mSocket(aSocket), mLastActivityTime(time(NULL))
 {
     mInfo += str::addrtoString(aAddr.sin_addr.s_addr, aAddrLen);
-    mInfo += ":" + std::to_string(ntohs(aAddr.sin_port));
+    mInfo += ":" + str::to_string(ntohs(aAddr.sin_port));
 }
 
 //===[ Destructor: Client ]================================================

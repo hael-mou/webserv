@@ -15,7 +15,7 @@
 # define __ICLUSTER_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
@@ -23,13 +23,13 @@
 # include "IEventHandler.hpp"
 
 /*******************************************************************************
-	* ICluster Interface :
+    * ICluster Interface :
 *******************************************************************************/
 class ICluster
 {
 public:
-	virtual ~ICluster(void) {};
-	virtual IEventHandler::IEventHandlerQueue  createHandlers(void) = 0;
+    virtual ~ICluster(void) {};
+    virtual IEventHandler::IEventHandlerQueue  createHandlers(void) = 0;
 };
 
 #endif /* __ICLUSTER_HPP__ */

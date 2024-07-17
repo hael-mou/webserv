@@ -36,23 +36,28 @@ namespace http
         AResponse(void);
         virtual	~AResponse(void);
 
-        AResponse&	   setVersion(const std::string& aVersion);
-        AResponse&	   setStatusCode(unsigned int aStatusCode);
-        AResponse&	   setHeader(const std::string& aHeader, const_string& aValue);
+        void    	   setVersion(const std::string& aVersion);
+        void    	   setStatusCode(u_int aStatusCode);
+        void    	   setHeader(const std::string& aHeader, const_string& aValue);
+        void    	   setTemplateOn(void);
 
         const_string&  getHeader(const_string& aHeader) const;
         time_t         getSendTimeout(void) const;
+
 
         std::string    toRaw(void);
         void           display(void) const;
 
     protected:
         std::string    mVersion;
+        u_int          mStatusCode;
         std::string    mStatusline;
         StringMap      mHeaders;
         time_t         mSendTimeout;
         std::string    mRawMessage;
-
+        bool           misTemplate;
+    
+    public:
         static const UintStringMap    sStatusMessage;
         static const UintStringMap    _sinitStatusMessage(void);
     };

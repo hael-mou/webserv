@@ -75,11 +75,27 @@ std::string str::addrtoString(const in_addr_t& addr, const socklen_t& addrLen)
     return (buffer.get());
 }
 
+//===[ replace : ]==============================================================
+std::string& str::replace(std::string& str,
+                          const_string& from,
+                          const_string& to)
+{
+    if (from.empty())
+        return (str);
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+    {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+    return (str);
+}
+
 /*******************************************************************************
     * integer Utils :
 *******************************************************************************/
 
-//===[ strToInt : ]===========================================================
+//===[ strToInt : ]=============================================================
 int integer::strToInt(const_string& str)
 {
     if (str.empty() == true)
@@ -94,7 +110,7 @@ int integer::strToInt(const_string& str)
     return (atoi(str.c_str()));
 }
 
-/*********************************************************************************
+/*******************************************************************************
     * Logger Utils :
 *******************************************************************************/
 

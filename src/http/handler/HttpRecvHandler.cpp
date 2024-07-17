@@ -30,8 +30,7 @@ http::RecvHandler::~RecvHandler(void) {}
 /*******************************************************************************
     * Public Methods of Interface: IEventHandler
 *******************************************************************************/
-# include "HttpRawResponse.hpp" // for test
-# include <iostream> // for test
+
 //===[ Method: handle The Read Events ]========================================
 IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
 {
@@ -53,13 +52,10 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
 
             //for test only:
             RawResponse* response = new RawResponse();
-            response->setVersion("HTTP/1.1").setStatusCode(200);
+            response->setVersion("HTTP/1.1");
+            response->setStatusCode(200);
             response->setBody("Hello World");
-            
-            eventHandlers.push(
-                http::Factory::createSendHandler(mClient, response)
-            );
-            //
+            eventHandlers.push(http::Factory::createSendHandler(mClient, response));
         }
         mClient->updateActivityTime();
     }
@@ -70,13 +66,9 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
     }
     catch(const http::IRequest::Error& aErrorCode)
     {
-        Logger::log("error", std::to_string(aErrorCode), 2);
-        mTerminated = true;
-        // const IServer& server = _getMatchedServer();
-        // IResponse* response = server->getErrorPage(aErrorCode);
-        // eventHandlers.push(
-        //     http::Factory::createSendHandler(mClient)
-        // );
+        IResponse::SharedPtr errRes;
+        errRes = _getMatchedServer().getErrorPage(aErrorCode);
+        eventHandlers.push(http::Factory::createSendHandler(mClient, errRes));
     }
 
     return (eventHandlers);

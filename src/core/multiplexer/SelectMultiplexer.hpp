@@ -15,31 +15,31 @@
 #define    __SELECTMULTIPLEXER_HPP__
 
 /*******************************************************************************
-	* Includes
+    * Includes
 *******************************************************************************/
 # include "IMultiplexer.hpp"
 # include <sys/select.h>
 
 /*******************************************************************************
-	* Class SelectMultiplexer
+    * Class SelectMultiplexer
 *******************************************************************************/
 class SelectMultiplexer : public IMultiplexer
 {
 public:
-	SelectMultiplexer(void);
-	virtual ~SelectMultiplexer(void);
+    SelectMultiplexer(void);
+    virtual ~SelectMultiplexer(void);
 
-	HandleQueue		waitEvent(long long aTimeout_ms);
-	void			registerHandle(const Handle& aHandle, Mode aMode);
-	void			removeHandle(const Handle& aHandle, Mode aMode);
+    HandleQueue		waitEvent(long long aTimeout_ms);
+    void			registerHandle(const Handle& aHandle, Mode aMode);
+    void			removeHandle(const Handle& aHandle, Mode aMode);
 
 private:
-	int				mMaxHandle;
-	fd_set			mReadSet;
-	fd_set			mWriteSet;
+    int				mMaxHandle;
+    fd_set			mReadSet;
+    fd_set			mWriteSet;
 
-	HandleQueue		_collectReadyHandles(fd_set& aReadSet, fd_set& aWriteSet);
-	void			_updateMaxHandleFromSets(void);
+    HandleQueue		_collectReadyHandles(fd_set& aReadSet, fd_set& aWriteSet);
+    void			_updateMaxHandleFromSets(void);
 };
 
 #endif /* __SELECTMULTIPLEXER_HPP__ */

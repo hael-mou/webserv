@@ -11,7 +11,6 @@
 #                                                                              #
 ** ************************************************************************* **/
 
-
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
@@ -28,7 +27,7 @@
 void	signalHandler(int aSignal)
 {
     ServerCore::getInstance()->stop();
-    Logger::log("notice", "SERVERCORE: signal [" + std::to_string(aSignal)
+    Logger::log("notice", "SERVERCORE: signal [" + str::to_string(aSignal)
         + "] received !", 1);
 }
 

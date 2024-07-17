@@ -242,9 +242,9 @@ const std::string &http::Server::getMimeType(const_string aExtansion) const
 }
 
 //===[ Method: get Error Pages ]================================================
-const http::ErrorPages& http::Server::getErrorPages(void) const
+http::IResponse::SharedPtr http::Server::getErrorPage(u_int aCode) const
 {
-    return (mErrorPages);
+    return (mErrorPages.build(aCode));
 }
 
 //===[ Method : Get Locations ]==================================================

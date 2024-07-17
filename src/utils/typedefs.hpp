@@ -20,15 +20,22 @@
 # include <queue>
 # include <map>
 
-//===[ Stirng : ] ==============================================================
+//===[ definitions : ] ==========================================================
 const std::string							    EmptyString = "";
+const std::string							    CRLF = "\r\n";
+const std::string							    ServerVersion = "WebServ/1.1";
+
+//===[ Stirng : ] ==============================================================
 typedef const std::string						const_string;
 typedef std::pair<std::string, std::string>		StringPair;
 typedef std::vector<std::string>				StringVector;
 typedef std::map<std::string, std::string>		StringMap;
 
+//===[ integer : ] =============================================================
+typedef unsigned int							u_int;
+
 //===[ int/Stirng : ] ==========================================================
-typedef std::map<unsigned int, std::string>		UintStringMap;
+typedef std::map<u_int, std::string>		UintStringMap;
 
 //===[ Handle : ] ==============================================================
 typedef int										Handle;

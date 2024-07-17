@@ -26,7 +26,6 @@
 # include "IRequest.hpp"
 
 # include "HttpFactory.hpp"
-# include "HttpCluster.hpp"
 
 /*******************************************************************************
     * class : RecvHandler :

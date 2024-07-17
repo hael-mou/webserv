@@ -36,7 +36,7 @@ namespace http
 		RawResponse(void);
 		virtual ~RawResponse(void);
 
-		RawResponse&    setBody(const_string& aBody);
+		void    		setBody(const_string& aBody);
 		std::string     toRaw(void);
 		void			removeBytesSent(size_t bytesSent);
         bool            eof(void) const;

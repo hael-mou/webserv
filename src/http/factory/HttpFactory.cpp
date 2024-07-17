@@ -43,7 +43,7 @@ Handle http::Factory::createSocket(const_string& aListen)
         sock::bind(socketHandle, hostPort[0], hostPort[1]);
         sock::startListening(socketHandle, SOMAXCONN);
         
-        Logger::log("notice", "HTTP: Socket[" + std::to_string(socketHandle)
+        Logger::log("notice", "HTTP: Socket[" + str::to_string(socketHandle)
             + "] '" + aListen + "' created", 1);
         return (socketHandle);
     }
@@ -65,9 +65,9 @@ http::IClient*  http::Factory::createClient(Handle aSocket,
 //===[ Method: createRequest ]=================================================
 http::IRequest* http::Factory::createRequest(std::string& aReceivedData)
 {
-    if (aReceivedData.find("\r\n\r\n") != std::string::npos)
+    if (aReceivedData.find(CRLF + CRLF) != std::string::npos)
         return (new http::Request(aReceivedData));
-    if (aReceivedData.find("\n\n") != std::string::npos)
+    if (aReceivedData.find(CRLF) != std::string::npos)
         return (new http::Request(aReceivedData));
     return (NULL);
 }
