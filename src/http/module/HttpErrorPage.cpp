@@ -39,7 +39,7 @@ http::ErrorPages::ErrorPages(const StringVector& aErrorPages, const_string& aRoo
             if (code <= 0 || code > 999)
                 continue ;
 			
-            setErrorPage(code, aRoot + "/" + path);
+            setErrorPage(code, aRoot + path);
         }
     }
 }
@@ -63,7 +63,11 @@ http::IResponse::SharedPtr http::ErrorPages::build(u_int aCode) const
     try
     {
         std::string path = mErrorPages.at(aCode);
-        return (NULL);
+        http::FileResponse* response = new http::FileResponse();
+        response->setStatusCode(aCode);
+        response->setHeader("Content-Type", "text/html");
+        response->setPath(path);
+        return (response);
     }
     catch (...)
     {

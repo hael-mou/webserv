@@ -170,8 +170,8 @@ void    http::Server::setServerRoot(const StringVector& aRoot)
     if (aRoot.size() == 1)
     {
         mRoot = aRoot[0];
-        if (!mRoot.empty() && mRoot[mRoot.size() - 1] == '/')
-            mRoot.erase(mRoot.size() - 1);
+        if (!mRoot.empty() && mRoot[mRoot.length() - 1] != '/')
+            mRoot += "/";
         return;
     }
     mRoot = DEFAULT_SERVER_ROOT;

@@ -32,7 +32,7 @@
 # define   DEFAULT_TIMEOUT             7
 # define   DEFAULT_BODY_BUFFER_SIZE    1024
 # define   DEFAULT_MIME_TYPE           "text/html"
-# define   DEFAULT_SERVER_ROOT         "."
+# define   DEFAULT_SERVER_ROOT         "./"
 
 /*******************************************************************************
     * PorotocolFactory Class :
