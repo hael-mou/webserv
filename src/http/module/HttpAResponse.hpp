@@ -39,7 +39,6 @@ namespace http
         void    	   setVersion(const std::string& aVersion);
         void    	   setStatusCode(u_int aStatusCode);
         void    	   setHeader(const std::string& aHeader, const_string& aValue);
-        void    	   setTemplateOn(void);
 
         const_string&  getHeader(const_string& aHeader) const;
         time_t         getSendTimeout(void) const;
@@ -54,8 +53,6 @@ namespace http
         std::string    mStatusline;
         StringMap      mHeaders;
         time_t         mSendTimeout;
-        std::string    mRawMessage;
-        bool           misTemplate;
     
     public:
         static const UintStringMap    sStatusMessage;

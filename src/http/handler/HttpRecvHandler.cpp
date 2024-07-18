@@ -51,11 +51,13 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
             // );
 
             //for test only:
-            RawResponse* response = new RawResponse();
+            FileResponse* response = new FileResponse();
             response->setVersion("HTTP/1.1");
             response->setStatusCode(200);
-            response->setBody("Hello World");
+            response->setPath("/Users/hael-mou/Desktop/webserv/image.jpg");
+            response->setHeader("Content-Type", "image/jpeg");
             eventHandlers.push(http::Factory::createSendHandler(mClient, response));
+            //for test only
         }
         mClient->updateActivityTime();
     }

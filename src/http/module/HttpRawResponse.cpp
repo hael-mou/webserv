@@ -7,7 +7,7 @@
 #                                                                              #
 #      | [ HttpRawResponse header file ]                                        #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-18                                                   #
+#      | Created: 2024-07-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
@@ -20,7 +20,9 @@
 //===[ Constructor: RawResponse ]==============================================
 http::RawResponse::RawResponse(void)
 	: mBody(""),
-	  misConverted(false)
+	  mRawMessage(""),
+	  misConverted(false),
+	  misTemplate(false)
 {
 	setHeader("Content-Length", "0");
 }
@@ -59,15 +61,21 @@ std::string http::RawResponse::toRaw(void)
 }
 
 //===[ Methode : removeBytesSent ]=============================================
-void http::RawResponse::removeBytesSent(size_t bytesSent)
+void http::RawResponse::removeBytesSent(size_t aBytesSent)
 {
-	mRawMessage.erase(0, bytesSent);
+	mRawMessage.erase(0, aBytesSent);
 }
 
 //===[ Methode : eof ]=========================================================
 bool http::RawResponse::eof(void) const
 {
 	return (misConverted && mRawMessage.empty());
+}
+
+//===[ Methode : setTemplateOn ]===============================================
+void http::RawResponse::setTemplateOn(void)
+{
+	misTemplate = true;
 }
 
 //===[ Methode : display ]=====================================================

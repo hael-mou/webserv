@@ -22,13 +22,13 @@
 # include "typedefs.hpp"
 
 # include "IProtocolFactory.hpp"
+# include "IResponse.hpp"
 # include "Directive.hpp"
 
 # include "HttpCluster.hpp"
 # include "HttpServer.hpp"
 # include "HttpClient.hpp"
 # include "HttpRequest.hpp"
-# include "IResponse.hpp"
 
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"

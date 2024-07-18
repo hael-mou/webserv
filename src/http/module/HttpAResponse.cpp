@@ -28,9 +28,7 @@ http::AResponse::AResponse(void)
     : mVersion("HTTP/1.1"),
       mStatusCode(501),
       mStatusline("501 Not Implemented"),
-      mSendTimeout(60),
-      mRawMessage(""),
-      misTemplate(false)
+      mSendTimeout(60)
 {
     setHeader("date", Logger::getcurrentTime());
     setHeader("Server", ServerVersion);
@@ -67,12 +65,6 @@ void    http::AResponse::setHeader(const std::string& aHeader,
     mHeaders[str::toLower(aHeader)] = aValue;
 }
 
-//===[ Methode : set Template On ]=============================================
-void    http::AResponse::setTemplateOn(void)
-{
-    misTemplate = true;
-}
-
 //===[ Methode : get Header ]==================================================
 const_string& http::AResponse::getHeader(const_string& aHeader) const
 {
@@ -93,15 +85,15 @@ time_t  http::AResponse::getSendTimeout(void) const
 //===[ Methode : toRaw ]=======================================================
 std::string http::AResponse::toRaw(void)
 {
-    mRawMessage = mVersion + " " + mStatusline + CRLF;
+    std::string rawHeader = mVersion + " " + mStatusline + CRLF;
     StringMap::const_iterator it = mHeaders.begin();
     while (it != mHeaders.end())
     {
-        mRawMessage += it->first + ": " + it->second + CRLF;
+        rawHeader += it->first + ": " + it->second + CRLF;
         ++it;
     }
-    mRawMessage += CRLF;
-    return (mRawMessage); 
+    rawHeader += CRLF;
+    return (rawHeader); 
 }
 
 //===[ Methode : display ]=====================================================

@@ -24,6 +24,7 @@
 # include "IResponse.hpp"
 # include "HttpAResponse.hpp"
 # include "HttpRawResponse.hpp"
+# include "HttpFileResponse.hpp"
 
 /*******************************************************************************
     * CUSTOM Error PAGE :
