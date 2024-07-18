@@ -25,17 +25,21 @@ http::ErrorPages::ErrorPages(const StringVector& aErrorPages, const_string& aRoo
 {
 	for (size_t index = 0; index < aErrorPages.size(); ++index)
     {
-        StringVector values = str::split(aErrorPages[index], ' ');
-        if (values.size() < 2 || values.back().back() == '/')
+        StringVector values = str::split(aErrorPages[index], ' '); 
+        if (values.size() < 2)
             continue;
 
+        std::string path = values[values.size() - 1];
+        if (path[path.length() - 1] == '/')
+            continue;
+    
         for (size_t i = 0; i < values.size() - 1; ++i)
         {
             int code = integer::strToInt(values[i]);
             if (code <= 0 || code > 999)
                 continue ;
 			
-            setErrorPage(code, aRoot + "/" + values.back());
+            setErrorPage(code, aRoot + "/" + path);
         }
     }
 }

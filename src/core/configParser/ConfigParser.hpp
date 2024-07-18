@@ -25,6 +25,7 @@
 # include "Directive.hpp"
 
 # include <exception>
+# include <algorithm>
 # include <fstream>
 
 /*******************************************************************************

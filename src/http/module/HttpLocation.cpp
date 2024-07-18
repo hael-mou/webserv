@@ -51,23 +51,29 @@ void    http::Location::setRoot(const StringVector&  aRoot)
     if (aRoot.size() == 1)
     {
         mRoot = aRoot[0];
-        if (mRoot.back() == '/')
-            mRoot.pop_back();
+        if (!mRoot.empty() && mRoot[mRoot.length() - 1] == '/')
+        {
+            mRoot.resize(mRoot.length() - 1);
+        }
         return;
     }
+    
     mRoot = DEFAULT_ROOT;
 }
 
 //===[Method : setUpload]=======================================================
-void    http::Location::setUpload(const StringVector&  aUpload)
+void    http::Location::setUpload(const StringVector& aUpload)
 {
     if (aUpload.size() == 1)
     {
         mUpload = aUpload[0];
-        if (mUpload.back() == '/')
-            mUpload.pop_back();
+        if (!mUpload.empty() && mUpload[mUpload.length() - 1] == '/')
+        {
+            mUpload.resize(mUpload.length() - 1);
+        }
         return;
     }
+    
     mUpload = DEFAULT_UPLOAD;
 }
 

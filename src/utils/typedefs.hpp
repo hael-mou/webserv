@@ -33,6 +33,7 @@ typedef std::map<std::string, std::string>		StringMap;
 
 //===[ integer : ] =============================================================
 typedef unsigned int							u_int;
+typedef long                                    ssize_t;
 
 //===[ int/Stirng : ] ==========================================================
 typedef std::map<u_int, std::string>		UintStringMap;
