@@ -31,12 +31,13 @@ namespace http
     class IRequest
     {
     public:
-        typedef mem::shared_ptr<IRequest>           sharedPtr;
+        typedef mem::shared_ptr<IRequest>           SharedPtr;
         typedef std::vector<IServer::SharedPtr>     ServerVector;
 
         enum Error
         {
             BAD_REQUEST = 400,
+            NOT_FOUND = 404,
             PAYLOAD_TOO_LARGE = 413,
             URI_TOO_LONG = 414,
             NOT_IMPLEMENTED = 501,
@@ -45,7 +46,7 @@ namespace http
 
         virtual ~IRequest(void) {};
 
-        virtual void            setMatchedServer(const ServerVector& aServers) = 0;
+        virtual void            selectMatechedRoute(const ServerVector& aServers) = 0;
         virtual void            setHeader(std::string& aLine) = 0;
 
         virtual std::string     getVersion(void) const = 0;
@@ -55,6 +56,7 @@ namespace http
         virtual StringMap 		getHeaders(void) const = 0;
         virtual std::string		getHeader(std::string const& key) = 0;
         virtual const IServer&  getMatchedServer(void) const = 0;
+        virtual const Location& getMatchedLocation(void) const = 0;
         virtual void            display(void) const = 0;
     };
 }

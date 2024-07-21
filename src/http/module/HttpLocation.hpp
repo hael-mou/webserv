@@ -44,14 +44,14 @@ namespace http
             Location(Directive::SharedPtr aLocationDir);
             ~Location(void);
 
-            bool                   getAutoIndex(void) const;
-            const std::string&     getUri(void) const;
-            const std::string&     getRoot(void) const;
-            const std::string&     getUpload(void) const;
-            const StringVector&    getCgiExt(void) const;
-            const std::string&     getRedirect(void) const;
-            const StringVector&    getIndexFiles(void) const;
-            const StringVector&    getAllowedMethods(void) const;
+            bool                    isAllowedMethod(const_string& aMethod) const;
+            bool                    isAutoIndex(void) const;
+            const_string&           getUri(void) const;
+            const_string&           getRoot(void) const;
+            const_string&           getUpload(void) const;
+            const_string&           getRedirect(void) const;
+            const StringVector&     getCgiExt(void) const;
+            const StringVector&     getIndexFiles(void) const;
 
             void    setUri(const StringVector&  aUri);
             void    setRoot(const StringVector&  aRoot);

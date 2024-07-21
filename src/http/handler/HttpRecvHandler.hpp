@@ -46,7 +46,7 @@ namespace http
     private:
         bool                    mTerminated;
         IClient::SharedPtr      mClient;
-        IRequest::sharedPtr     mRequest;
+        IRequest::SharedPtr     mRequest;
         std::string             mReceivedData;
 
         const IServer&          _getMatchedServer(void) const;

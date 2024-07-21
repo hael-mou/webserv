@@ -31,7 +31,7 @@
 # define   DEFAULT_LISTEN              "0.0.0.0:80"
 # define   DEFAULT_TIMEOUT             7
 # define   DEFAULT_BODY_BUFFER_SIZE    1024
-# define   DEFAULT_MIME_TYPE           "text/html"
+# define   DEFAULT_MIME_TYPE           "application/octet-stream"
 # define   DEFAULT_SERVER_ROOT         "./"
 
 /*******************************************************************************

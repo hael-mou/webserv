@@ -46,14 +46,11 @@ http::Request::~Request(void) {}
     * Public Methods :
 *******************************************************************************/
 
-//===[ Method: setMatchedServer ]==============================================
-void	http::Request::setMatchedServer(const ServerVector& aServerList)
+//===[ Method: selectMatechedRoute ]============================================
+void	http::Request::selectMatechedRoute(const ServerVector& aServerList)
 {
-    for (size_t i= 0; i < aServerList.size(); ++i)
-    {
-        if (aServerList[i]->isMatch(getHeader("host")))
-            mMatchedServer = aServerList[i];
-    }
+    mMatchedServer = _selectMatchedServer(aServerList);
+    mMatchedLocation = _selectMatchedLocation();
 }
 
 //===[ Method: setHeader ]======================================================
@@ -116,6 +113,12 @@ StringMap http::Request::getHeaders() const
 const http::IServer& http::Request::getMatchedServer(void) const
 {
     return (*mMatchedServer);
+}
+
+//===[ Method : getMatchedLocation ]===========================================
+const http::Location& http::Request::getMatchedLocation(void) const
+{
+    return (*mMatchedLocation);
 }
 
 //====[ Method: display ]======================================================
@@ -204,3 +207,60 @@ void http::Request::_parseQuery(std::string& aUri)
         mQuery[key] = query.substr(delimiterPosition + 1);
     }
 }
+
+//====[ Method: selectMatechedServer]==========================================
+http::IServer::SharedPtr  
+http::Request::_selectMatchedServer(const ServerVector& aServerList)
+{
+    for (size_t i= 0; i < aServerList.size(); ++i)
+    {
+        if (aServerList[i]->isMatch(getHeader("host")))
+            mMatchedServer = aServerList[i];
+    }
+    if (!mMatchedServer)
+        mMatchedServer = aServerList[0];
+    return (mMatchedServer);
+}
+
+//===[ Method: _isInnerPath ]===================================================
+bool http::Request::_isInnerPath(const std::string& uri, const std::string& requestUri)
+{
+    std::string remaining = requestUri.substr(uri.size());
+    remaining.erase(0, remaining.find_first_not_of('/'));
+
+    size_t firstSlashPos = remaining.find('/');
+    if (firstSlashPos == std::string::npos)
+        return (false);
+    
+    if (firstSlashPos == remaining.length() - 1)
+        return (false);
+    
+    return (true);
+}
+
+//====[ Method: setMatchedLocation ]============================================
+http::Location::SharedPtr    http::Request::_selectMatchedLocation()
+{
+    IServer::LocationMap locations  = mMatchedServer->getLocations();
+    IServer::LocationMap::const_iterator it = locations.begin();
+    std::string bestLocation;
+
+    std::string x = mUri.substr(0, mUri.find_last_of('/') + 1);
+
+    for (; it != locations.end(); ++it)
+    {
+        if (x.find(it->first) == 0 && it->first.length() > bestLocation.length())
+        {
+            std::string select = it->first;
+            if (select[select.length() - 1] == '/' && !_isInnerPath(select, x))
+                bestLocation = it->first;
+            else if (select[select.length() - 1] != '/' || select.length() == 1)
+                bestLocation = it->first;
+        }
+    }
+    std::cout << "bestLocation: " << bestLocation << std::endl;
+    if (bestLocation.empty() == true)
+        throw(http::IRequest::NOT_FOUND);
+    return (locations[bestLocation]);
+}
+

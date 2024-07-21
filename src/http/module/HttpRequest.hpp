@@ -39,7 +39,7 @@ namespace http
         Request(std::string& aBuffer);
         virtual ~Request(void);
         
-        void			setMatchedServer(const ServerVector& aServerList);
+        void			selectMatechedRoute(const ServerVector& aServerList);
         void            setHeader(std::string& aLine);
      
         std::string		getVersion(void) const;
@@ -49,20 +49,25 @@ namespace http
         StringMap		getUriQuery(void) const;
         StringMap 		getHeaders(void) const;
         const IServer&  getMatchedServer(void) const;
+        const Location& getMatchedLocation(void) const;
      
         void            display(void) const;
 
     private:
         IServer::SharedPtr  mMatchedServer;
+        Location::SharedPtr mMatchedLocation;
         std::string		    mVersion;
         std::string		    mMethod;
         std::string		    mUri;	
         StringMap		    mHeaders;
         StringMap		    mQuery;
     
-        void            _setRequestLine(const std::string& aLine);
-        std::string&    _parseUri(std::string& aUri);
-        void            _parseQuery(std::string& aUri);
+        bool                _isInnerPath(const std::string& uri, const std::string& requestUri);
+        void                _setRequestLine(const std::string& aLine);
+        std::string&        _parseUri(std::string& aUri);
+        void                _parseQuery(std::string& aUri);
+        Location::SharedPtr _selectMatchedLocation();
+        IServer::SharedPtr  _selectMatchedServer(const ServerVector& aServerList);
     
     };
 };

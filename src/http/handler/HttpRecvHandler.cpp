@@ -28,7 +28,7 @@ http::RecvHandler::RecvHandler(IClient::SharedPtr aClient)
 http::RecvHandler::~RecvHandler(void) {}
 
 /*******************************************************************************
-    * Public Methods of Interface: IEventHandler
+    * Public Methods :
 *******************************************************************************/
 
 //===[ Method: handle The Read Events ]========================================
@@ -44,20 +44,13 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
         mRequest = http::Factory::createRequest(mReceivedData);
         if (mRequest.get() != NULL)
         {
-           // mRequst->selectMatechedRoute(mServers);
-        // 	//mRequest->buildBody();
-        // 	eventHandlers.push(
-            //     http::Factory::createProcessHandler(mClient, mRequest)
-            // );
-
-            //for test only:
-            FileResponse* response = new FileResponse();
-            response->setVersion("HTTP/1.1");
-            response->setStatusCode(200);
-            response->setPath("/Users/hael-mou/Desktop/webserv/image.jpg");
-            response->setHeader("Content-Type", "image/jpeg");
-            eventHandlers.push(http::Factory::createSendHandler(mClient, response));
-            //for test only
+            const std::vector<IServer::SharedPtr>&
+            servers = Cluster::getServers(mClient->getSocket());
+            mRequest->selectMatechedRoute(servers);
+        	// mRequest->buildBody();
+            eventHandlers.push(
+                http::Factory::createProcessHandler(mClient, mRequest)
+            );
         }
         mClient->updateActivityTime();
     }

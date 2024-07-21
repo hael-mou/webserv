@@ -65,9 +65,9 @@ http::IClient*  http::Factory::createClient(Handle aSocket,
 //===[ Method: createRequest ]=================================================
 http::IRequest* http::Factory::createRequest(std::string& aReceivedData)
 {
-    if (aReceivedData.find(CRLF + CRLF) != std::string::npos)
+    if (aReceivedData.find("\r\n\r\n") != std::string::npos)
         return (new http::Request(aReceivedData));
-    if (aReceivedData.find(CRLF) != std::string::npos)
+    if (aReceivedData.find("\n\n") != std::string::npos)
         return (new http::Request(aReceivedData));
     return (NULL);
 }
@@ -93,4 +93,11 @@ IEventHandler* http::Factory::createSendHandler(IClient::SharedPtr aClient,
                                                 IResponse::SharedPtr aResponse)
 {
     return (new http::SendHandler(aClient, aResponse));
+}
+
+// ===[ Method: createProcessHandler ]===========================================
+IEventHandler* http::Factory::createProcessHandler(IClient::SharedPtr aClient,
+                                                   IRequest::SharedPtr aRequest)
+{
+    return (new http::GetHandler(aClient, aRequest));
 }

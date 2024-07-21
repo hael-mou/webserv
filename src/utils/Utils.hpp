@@ -31,6 +31,7 @@
 # include <netinet/in.h> 
 # include <sys/types.h>
 # include <arpa/inet.h>
+# include <sys/stat.h>
 # include <stdlib.h> 
 # include <unistd.h>
 # include <fcntl.h>
@@ -93,9 +94,11 @@ namespace sock
 ********************************************************************************/
 namespace httptools
 {
-    bool    isSpecialChars(const char &c);
-    bool    isValidHeader(const char &c);
-    void    httpDecoder(std::string &str);
+    bool          isSpecialChars(const char &c);
+    bool          isValidHeader(const char &c);
+    void          httpDecoder(std::string &str);
+    bool          isDirectory(const_string& path);
+    std::string   getExtension(const_string& path);
 
 
     enum HttpSpecialChars{

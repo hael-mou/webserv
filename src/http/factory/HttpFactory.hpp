@@ -23,6 +23,7 @@
 
 # include "IProtocolFactory.hpp"
 # include "IResponse.hpp"
+# include "IRequest.hpp"
 # include "Directive.hpp"
 
 # include "HttpCluster.hpp"
@@ -33,6 +34,8 @@
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"
 # include "HttpSendHandler.hpp"
+# include "HttpGetHandler.hpp"
+
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -53,6 +56,7 @@ namespace http
         // Handlers Factory :
         static IEventHandler*     createAcceptHandler(Handle aSocket);
         static IEventHandler*     createRecvHandler(IClient::SharedPtr aClient);
+        static IEventHandler*     createProcessHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
         static IEventHandler*     createSendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
 
     };

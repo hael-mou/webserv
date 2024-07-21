@@ -237,3 +237,23 @@ void    httptools::httpDecoder(std::string &str)
 		str.replace(percentSignPosition, 3, 1, character);				
 	}
 }
+
+//===[ Method : isDir ]=========================================================
+bool    httptools::isDirectory(const_string& path)
+{
+    struct stat st;
+    if (path[path.length() - 1] == '/')
+        return (true);
+    if (stat(path.c_str(), &st) != 0)
+        return (false);
+    return (S_ISDIR(st.st_mode));
+}
+
+//===[ Method : get extension ]=================================================
+std::string httptools::getExtension(const_string& path)
+{
+    std::size_t position = path.find_last_of('.');
+    if (position == std::string::npos)
+        return ("");
+    return (path.substr(position + 1));
+}

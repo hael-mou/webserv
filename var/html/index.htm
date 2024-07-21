@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animated Text Example</title>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+    body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #eee;
+    }
+
+    .typing.animate {
+    width: 21ch;
+    border-right: 0.1em solid black;
+    font-family: monospace;
+    font-size: 2em;
+    animation: type 2.5s steps(20), writer 1s infinite alternate, delete 0.5s steps(5) 2.5s, type2 1s steps(4) 3s forwards, type3 3s steps(22, end) 6s forwards;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    }
+
+    .typing.animate::before { 
+    content: "Hello, I'm Nassima";
+    animation: type2 1s steps(4) 3s forwards, type3 3s steps(22, end) 6s forwards;
+    }
+
+    @keyframes type {
+    from {
+        width: 0;
+    }
+    to {
+        width: 21ch;
+    }
+    }
+
+    @keyframes type2 {
+    from {
+        width: 16ch;
+        content: "Hello, I'm Nassima. "
+    }
+    to {
+        width: 20ch;
+        content: "Hello, I'm Nassima. "
+    }
+    }
+
+    @keyframes type3 {
+    from {
+        width: 20ch;
+        content: "Hello, I'm Nassima. Welcome to my Index.htm!"
+    }
+    to {
+        width: 42ch;
+        content: "Hello, I'm Nassima. Welcome to my Index,htm!"
+    }
+    }
+
+    @keyframes writer {
+    50% {
+        border-color: transparent;
+    }
+    }
+
+    @keyframes delete {
+    from {
+        width: 21ch;
+    }
+    to {
+        width: 16ch;
+    }
+}    
+</style>
+</head>
+<body>
+    <script>
+    $(document).ready(() => {
+    let typingElement = $('.typing');
+
+    typingElement.on('click', (e) => {
+        typingElement.removeClass('animate');
+        setTimeout(() => typingElement.addClass('animate'), 1);
+    })
+    });       
+    </script>
+    <div class="typing animate"></div>
+</body>
+</html>
