@@ -127,7 +127,7 @@ http::GetHandler::_handleFile(void)
     response->setHeader("Content-Type", contentType);
     response->setStatusCode(http::OK);
     response->setPath(mRessourcePath);
-    return (response);
+    response->setHeader("connection", mRequest->getHeader("connection")); // add to the all responses    return (response);
 }
 
 // === [ Method: _handleDirectory ] ==============================================
