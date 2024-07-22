@@ -170,9 +170,9 @@ void    http::Server::setServerRoot(const StringVector& aRoot)
     if (aRoot.size() == 1)
     {
         mRoot = aRoot[0];
-        if (mRoot.back() == '/')
-            mRoot.pop_back();
-        return ;
+        if (!mRoot.empty() && mRoot[mRoot.length() - 1] != '/')
+            mRoot += "/";
+        return;
     }
     mRoot = DEFAULT_SERVER_ROOT;
 }
@@ -242,9 +242,9 @@ const std::string &http::Server::getMimeType(const_string aExtansion) const
 }
 
 //===[ Method: get Error Pages ]================================================
-const http::ErrorPages& http::Server::getErrorPages(void) const
+http::IResponse::SharedPtr http::Server::getErrorPage(u_int aCode) const
 {
-    return (mErrorPages);
+    return (mErrorPages.build(aCode));
 }
 
 //===[ Method : Get Locations ]==================================================

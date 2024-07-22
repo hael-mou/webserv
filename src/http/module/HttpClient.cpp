@@ -22,14 +22,15 @@ http::Client::Client(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLe
     : mSocket(aSocket), mLastActivityTime(time(NULL))
 {
     mInfo += str::addrtoString(aAddr.sin_addr.s_addr, aAddrLen);
-    mInfo += ":" + std::to_string(ntohs(aAddr.sin_port));
+    mInfo += ":" + str::to_string(ntohs(aAddr.sin_port));
 }
 
 //===[ Destructor: Client ]================================================
 http::Client::~Client(void)
 {
-    Logger::log("notice", "HTTP: Client '" + mInfo + "' disconnected", 2);
+    http::Cluster::eraseServers(mSocket);
     close(mSocket);
+    Logger::log("notice", "HTTP: Client '" + mInfo + "' disconnected", 2);
 }
 
 /*******************************************************************************
@@ -65,9 +66,15 @@ std::string http::Client::recv(void) const
 {
     char buffer[1025];
 	memset(buffer, 0, 1025); 
-	int bytesReaded = ::recv(mSocket, buffer, 1024, 0);
+	ssize_t bytesReaded = ::recv(mSocket, buffer, 1024, 0);
 	if (bytesReaded < 0) {
-		throw(std::runtime_error("recv error"));
+		throw(std::runtime_error("HTTP: recv error"));
     }
     return (std::string(buffer));
+}
+
+//===[ Method: send ]=========================================================
+ssize_t http::Client::send(const std::string& aData) const
+{
+    return (::send(mSocket, aData.c_str(), aData.size(), 0));
 }

@@ -5,48 +5,54 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IServer Interface ]                                                 #
+#      | [ HttpFileResponse header file ]                                       #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-18                                                   #
+#      | Created: 2024-07-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __ISERVER_HPP__
-# define   __ISERVER_HPP__
+#ifndef   __HttpFileResponse_HPP__
+# define   __HttpFileResponse_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
+# include "Utils.hpp"
 
-# include "HttpErrorPage.hpp" //remove
+# include "HttpAResponse.hpp"
+
+# include <iostream>
+# include <fstream>
 
 /*******************************************************************************
-	* http::IServer Interface :
+    * FileResponse Class :
 *******************************************************************************/
-
 namespace http
 {
-	class IServer
-	{
-	public:
-		typedef mem::shared_ptr<IServer>    SharedPtr;
+    class FileResponse : public AResponse
+    {
+    public:
+        FileResponse(void);
+        virtual ~FileResponse(void);
 
-		virtual	~IServer(void) {};
+        void            setPath(const_string& aFilePath);
+        std::string     toRaw(void);
+        void            removeBytesSent(size_t aBytesSent);
+        bool            eof(void) const;
+        void            display(void) const;
+    
+    private:
+        std::string		mFilePath;
+        std::fstream	mFileStream;
+        std::string		mReadBuffer;
+        bool			misConverted;
 
-        virtual bool                  isKeepAlive(void) const = 0;
-		virtual bool 				  isMatch(const_string& aHost) const = 0;
+        std::string		_readFromFile(size_t aSize);
+        std::string		_fileSize(void);
 
-		virtual const StringVector&   getListens(void) const = 0;
-        virtual const StringVector&   getServerNames(void) const = 0;
-        virtual time_t                getKeepAliveTimeout(void) const = 0;
-        virtual unsigned long         getBodyBufferSize(void) const = 0;
-        virtual unsigned long         getMaxBodySize(void) const = 0;
-        virtual const std::string&    getMimeType(const_string aExtansion) const = 0;
-        virtual const ErrorPages&     getErrorPages(void) const = 0;
-
-	};
+    };
 }
 
-#endif	/* __ISERVER_HPP__ */
+#endif	/* __HttpFileResponse_HPP__ */

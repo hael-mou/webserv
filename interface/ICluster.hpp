@@ -5,42 +5,31 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IClient Interface ]                                                 #
+#      | [ ICluster Interface ]                                                #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-18                                                   #
+#      | Created: 2024-07-09                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef __ICLIENT_HPP__
-# define __ICLIENT_HPP__
+#ifndef __ICLUSTER_HPP__
+# define __ICLUSTER_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
+# include "IEventHandler.hpp"
+
 /*******************************************************************************
-	* http::IClient Interface :
+    * ICluster Interface :
 *******************************************************************************/
-
-namespace http
+class ICluster
 {
-	class IClient
-	{
-	public:
-		typedef mem::shared_ptr<IClient>    SharedPtr;
+public:
+    virtual ~ICluster(void) {};
+    virtual IEventHandler::IEventHandlerQueue  createHandlers(void) = 0;
+};
 
-		virtual	~IClient(void) {};
-
-		virtual void                    updateActivityTime(void) = 0;
-
-		virtual const Handle&           getSocket(void) const = 0;
-        virtual const std::string&      getInfo(void) const = 0;
-		virtual time_t                  getLastActivityTime(void) const = 0;
-
-		virtual std::string             recv(void) const = 0;
-	};
-}
-
-#endif	/* __ICLIENT_HPP__ */
+#endif /* __ICLUSTER_HPP__ */

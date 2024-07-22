@@ -21,15 +21,18 @@
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
-# include <netinet/in.h> 
-# include <unistd.h>
 # include <sstream>
+# include <cstring>
 # include <string>
+# include <cstdio>
 # include <ctime>
 
-# include <sys/types.h>
 # include <sys/socket.h>
+# include <netinet/in.h> 
+# include <sys/types.h>
 # include <arpa/inet.h>
+# include <stdlib.h> 
+# include <unistd.h>
 # include <fcntl.h>
 # include <netdb.h>
 
@@ -43,6 +46,16 @@ namespace str
     StringPair     lineToPair(const_string& line, const char sep);
     StringVector   split(const_string str, const char sep);
     std::string    addrtoString(const in_addr_t& addr, const socklen_t& addrLen);
+    std::string&   replace(std::string& str, const_string& from, const_string& to);
+
+    template <typename T>
+    std::string    to_string(const T& number)
+    {
+        std::ostringstream oss;
+        oss << number;
+        return oss.str();
+    }
+
 };
 
 /*******************************************************************************

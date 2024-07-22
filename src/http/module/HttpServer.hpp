@@ -32,7 +32,7 @@
 # define   DEFAULT_TIMEOUT             7
 # define   DEFAULT_BODY_BUFFER_SIZE    1024
 # define   DEFAULT_MIME_TYPE           "text/html"
-# define   DEFAULT_SERVER_ROOT         "."
+# define   DEFAULT_SERVER_ROOT         "./"
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -64,14 +64,14 @@ namespace http
         void    setLocations(Directive::SharedPtr aServerDir,
                                 Directive::DirPtrVector aLocation);
 
-        const StringVector&   getListens(void) const;
-        const StringVector&   getServerNames(void) const;
-        time_t                getKeepAliveTimeout(void) const;
-        unsigned long         getBodyBufferSize(void) const;
-        unsigned long         getMaxBodySize(void) const;
-        const std::string&    getMimeType(const_string aExtansion) const;
-        const ErrorPages&     getErrorPages(void) const;
-        const LocationMap&    getLocations(void) const;
+        const StringVector&            getListens(void) const;
+        const StringVector&            getServerNames(void) const;
+        time_t                         getKeepAliveTimeout(void) const;
+        unsigned long                  getBodyBufferSize(void) const;
+        unsigned long                  getMaxBodySize(void) const;
+        const std::string&             getMimeType(const_string aExtansion) const;
+        IResponse::SharedPtr           getErrorPage(u_int aCode) const;
+        const LocationMap&             getLocations(void) const;
 
     private:
 	    StringVector    mListens;
@@ -84,7 +84,6 @@ namespace http
         StringMap       mMimeTypes;
         ErrorPages      mErrorPages;
         LocationMap     mLocations;
-        // location
     };
 }
 

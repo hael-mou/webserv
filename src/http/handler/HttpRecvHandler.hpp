@@ -26,9 +26,6 @@
 # include "IRequest.hpp"
 
 # include "HttpFactory.hpp"
-# include "HttpCluster.hpp"
-
-# define EMPTY ""
 
 /*******************************************************************************
     * class : RecvHandler :
@@ -37,10 +34,8 @@ namespace http
 {
     class RecvHandler : public IEventHandler
     {
-    public:
-        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
-
-        RecvHandler(IClient::SharedPtr aClient, const ServerVector& aServers);
+    public: 
+        RecvHandler(IClient::SharedPtr aClient);
         virtual ~RecvHandler(void);
         
         const Handle&           getHandle(void) const;
@@ -53,7 +48,6 @@ namespace http
         IClient::SharedPtr      mClient;
         IRequest::sharedPtr     mRequest;
         std::string             mReceivedData;
-        ServerVector            mServers;
 
         const IServer&          _getMatchedServer(void) const;
     };

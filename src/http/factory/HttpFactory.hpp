@@ -14,6 +14,7 @@
 
 #ifndef   __HTTPFACTORY_HPP__
 # define   __HTTPFACTORY_HPP__
+
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
@@ -21,6 +22,7 @@
 # include "typedefs.hpp"
 
 # include "IProtocolFactory.hpp"
+# include "IResponse.hpp"
 # include "Directive.hpp"
 
 # include "HttpCluster.hpp"
@@ -30,6 +32,7 @@
 
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"
+# include "HttpSendHandler.hpp"
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -40,8 +43,6 @@ namespace http
     class Factory : public IProtocolFactory
     {
     public:
-        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
-
         // Modules Factory :
         ICluster*	     createCluster(Directive::SharedPtr aHttpDir);
         static Handle    createSocket(const_string& aListen);
@@ -50,10 +51,10 @@ namespace http
         static IRequest* createRequest(std::string& aReceivedData);
 
         // Handlers Factory :
-        static IEventHandler*     createAcceptHandler(Handle Socket);
-        static IEventHandler*     createRecvHandler(IClient::SharedPtr Client, const ServerVector& Servers);
-        //static IEventHandler*     createSendHandler(Client::SharedPtr Client);
-        //static IEventHandler*     createErrorHandler(IClient::SharedPtr Client);
+        static IEventHandler*     createAcceptHandler(Handle aSocket);
+        static IEventHandler*     createRecvHandler(IClient::SharedPtr aClient);
+        static IEventHandler*     createSendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
+
     };
 };
 

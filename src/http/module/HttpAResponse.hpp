@@ -5,14 +5,14 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ HttpClient header file ]                                             #
+#      | [ HttpAResponse header file ]                                          #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-07-06                                                   #
+#      | Created: 2024-05-18                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef	  __HTTPCLIENT_HPP__
-# define   __HTTPCLIENT_HPP__
+#ifndef   __HttpAResponse_HPP__
+# define   __HttpAResponse_HPP__
 
 /*******************************************************************************
     * Includes :
@@ -21,35 +21,43 @@
 # include "typedefs.hpp"
 # include "Utils.hpp"
 
-# include "IClient.hpp"
-# include "HttpCluster.hpp"
+# include "IResponse.hpp"
+
+# include <iostream>
 
 /*******************************************************************************
-    * Client Class :
+    * HttpAResponse Class :
 *******************************************************************************/
 namespace http
 {
-    class Client : public IClient
+    class AResponse : public IResponse
     {
+    public:   
+        AResponse(void);
+        virtual	~AResponse(void);
+
+        void    	   setVersion(const std::string& aVersion);
+        void    	   setStatusCode(u_int aStatusCode);
+        void    	   setHeader(const std::string& aHeader, const_string& aValue);
+
+        const_string&  getHeader(const_string& aHeader) const;
+        time_t         getSendTimeout(void) const;
+
+
+        std::string    toRaw(void);
+        void           display(void) const;
+
+    protected:
+        std::string    mVersion;
+        u_int          mStatusCode;
+        std::string    mStatusline;
+        StringMap      mHeaders;
+        time_t         mSendTimeout;
+    
     public:
-        Client(Handle aSocket, const sockaddr_in &aAddr, socklen_t aAddrLen);
-        virtual ~Client(void);
-
-        void                    updateActivityTime(void);
-
-        const Handle&           getSocket(void) const;
-        const std::string&      getInfo(void) const;
-        time_t                  getLastActivityTime(void) const;
-
-        std::string             recv(void) const;
-        ssize_t                 send(const std::string& aData) const;
-
-    private:
-        Handle                  mSocket;
-        std::string             mInfo;
-        time_t                  mLastActivityTime;
-
+        static const UintStringMap    sStatusMessage;
+        static const UintStringMap    _sinitStatusMessage(void);
     };
 }
 
-#endif /* __HTTPCLIENT_HPP__ */
+#endif	/* __HttpAResponse_HPP__ */

@@ -28,6 +28,7 @@ http::Cluster::Cluster(Directive::SharedPtr aHttpDir)
     DirPtrVector serverDir = aHttpDir->getNonTerminal("server");
     if (serverDir.size() == 0)
         throw (std::invalid_argument("HTTP: No server directive found"));
+
     for (size_t i = 0; i < serverDir.size(); ++i)
     {
         serverDir[i]->copyMatchingAttributes(aHttpDir);
@@ -71,9 +72,21 @@ IEventHandler::IEventHandlerQueue http::Cluster::createHandlers(void)
 }
 
 //===[ Method: get Servers ]====================================================
-http::Cluster::ServerVector http::Cluster::getServers(Handle aSocket)
+const http::Cluster::ServerVector& http::Cluster::getServers(Handle aSocket)
 {
     return (mServers[aSocket]);
+}
+
+//===[ Method: set Servers ]====================================================
+void http::Cluster::setServers(Handle aSocket, const ServerVector& aServers)
+{
+    mServers[aSocket] = aServers;
+}
+
+//===[ Method: erase Servers ]==================================================
+void http::Cluster::eraseServers(Handle aSocket)
+{
+    mServers.erase(aSocket);
 }
 
 /*******************************************************************************

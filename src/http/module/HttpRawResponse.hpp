@@ -5,48 +5,50 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ Reactor header file ]                                                #
+#      | [ HttpRawResponse header file ]                                        #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
-#      | Created: 2024-05-16                                                   #
+#      | Created: 2024-07-16                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __REACTOR_HPP__
-# define   __REACTOR_HPP__
+#ifndef   __HttpRawResponse_HPP__
+# define   __HttpRawResponse_HPP__
 
 /*******************************************************************************
-    * Includes :
+	* Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
+# include "Utils.hpp"
 
-# include "IReactor.hpp"
-# include "IMultiplexer.hpp"
+# include "HttpAResponse.hpp"
 
-# include <stdexcept>
+# include <iostream>
 
 /*******************************************************************************
-    * Class Reactor :
+	* HttpRawResponse Class :
 *******************************************************************************/
-class Reactor : public IReactor
+namespace http
 {
-public:
-    typedef IEventHandler                       IEH;
-    typedef IMultiplexer                        IMux;
-    typedef std::map<Handle, IEH::SharedPtr>	IEventHandlerMap;
+	class RawResponse : public AResponse
+	{
+	public:
+		RawResponse(void);
+		virtual ~RawResponse(void);
 
-    Reactor(IMultiplexer* aMultiplexer);
-    virtual ~Reactor(void);
+		void    		setBody(const_string& aBody);
+		std::string     toRaw(void);
+		void			removeBytesSent(size_t aBytesSent);
+        bool            eof(void) const;
+		void    	   	setTemplateOn(void);
+		void			display(void) const;
+	
+	private:
+		std::string		mBody;
+		std::string		mRawMessage;
+		bool			misConverted;
+		bool            misTemplate;
+	};
+}
 
-    void              registerEventHandler(IEH::SharedPtr aHandler);
-    void              registerEventHandler(IEventHandlerQueue& aHandlers);
-    IEH::SharedPtr    unregisterEventHandler(IEH::SharedPtr aHandler);
-    void              handleEvents(long long aTimeout_ms);
-    void              cleanupTerminatedHandlers(void);
-
-private:
-    IMux::SharedPtr   mMultiplexer;
-    IEventHandlerMap  mEventHandlers;
-};
-
-#endif /* __REACTOR_HPP__ */
+#endif	/* __HttpRawResponse_HPP__ */

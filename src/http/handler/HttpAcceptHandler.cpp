@@ -22,6 +22,7 @@
 http::AcceptHandler::AcceptHandler(Handle aHandle)
     : mHandle(aHandle)
 {
+    mTerminated = (aHandle == -1) ? true : false;
 }
 
 //===[ Destructor: AcceptHandler ]==============================================
@@ -29,7 +30,7 @@ http::AcceptHandler::~AcceptHandler(void)
 {
     close(mHandle);
     Logger::log("notice","HTTP: Closing Socket["
-        + std::to_string(mHandle)
+        + str::to_string(mHandle)
         + "], Done.", 2);
 }
 
@@ -64,8 +65,9 @@ IEventHandler::IEventHandlerQueue  http::AcceptHandler::handleEvent(void)
 
         Logger::log("notice","HTTP: New Client '" + client->getInfo()
                   + "' connected", 2);
-        ServerVector servers = http::Cluster::getServers(mHandle);
-        eventHandlers.push(http::Factory::createRecvHandler(client, servers));
+        const ServerVector& servers = http::Cluster::getServers(mHandle);
+        http::Cluster::setServers(client->getSocket(), servers);
+        eventHandlers.push(http::Factory::createRecvHandler(client));
     }
     return (eventHandlers);
 }
@@ -85,5 +87,5 @@ const Handle&  http::AcceptHandler::getHandle(void) const
 //===[ Method: check if Handler is Terminated ]=================================
 bool  http::AcceptHandler::isTerminated(void) const
 {
-    return (false);
+    return (mTerminated);
 }

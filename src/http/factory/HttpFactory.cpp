@@ -42,8 +42,8 @@ Handle http::Factory::createSocket(const_string& aListen)
         sock::setNonBlocking(socketHandle);
         sock::bind(socketHandle, hostPort[0], hostPort[1]);
         sock::startListening(socketHandle, SOMAXCONN);
-
-        Logger::log("notice", "HTTP: Socket[" + std::to_string(socketHandle)
+        
+        Logger::log("notice", "HTTP: Socket[" + str::to_string(socketHandle)
             + "] '" + aListen + "' created", 1);
         return (socketHandle);
     }
@@ -65,9 +65,9 @@ http::IClient*  http::Factory::createClient(Handle aSocket,
 //===[ Method: createRequest ]=================================================
 http::IRequest* http::Factory::createRequest(std::string& aReceivedData)
 {
-    if (aReceivedData.find("\r\n\r\n") != std::string::npos)
+    if (aReceivedData.find(CRLF + CRLF) != std::string::npos)
         return (new http::Request(aReceivedData));
-    if (aReceivedData.find("\n\n") != std::string::npos)
+    if (aReceivedData.find(CRLF) != std::string::npos)
         return (new http::Request(aReceivedData));
     return (NULL);
 }
@@ -83,8 +83,14 @@ IEventHandler* http::Factory::createAcceptHandler(Handle aSocket)
 }
 
 //===[ Method: createRecvHandler ]==============================================
-IEventHandler* http::Factory::createRecvHandler(IClient::SharedPtr aClient,
-                                                const ServerVector& Servers)
+IEventHandler* http::Factory::createRecvHandler(IClient::SharedPtr aClient)
 {
-    return (new http::RecvHandler(aClient, Servers));
+    return (new http::RecvHandler(aClient));
+}
+
+//===[ Method: createSendHandler ]==============================================
+IEventHandler* http::Factory::createSendHandler(IClient::SharedPtr aClient,
+                                                IResponse::SharedPtr aResponse)
+{
+    return (new http::SendHandler(aClient, aResponse));
 }
