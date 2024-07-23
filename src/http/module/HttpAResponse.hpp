@@ -39,6 +39,7 @@ namespace http
         void    	   setVersion(const std::string& aVersion);
         void    	   setStatusCode(u_int aStatusCode);
         void    	   setHeader(const std::string& aHeader, const_string& aValue);
+        void           setSendTimeout(time_t aSendTimeout);
 
         const_string&  getHeader(const_string& aHeader) const;
         time_t         getSendTimeout(void) const;

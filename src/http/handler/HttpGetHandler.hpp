@@ -29,6 +29,7 @@
 # include "HttpRawResponse.hpp"
 
 # include <dirent.h>
+
 /*******************************************************************************
     * class : GEtHandler :
 *******************************************************************************/
@@ -46,17 +47,15 @@ namespace http
         bool                    isTerminated(void) const;
 
     private:
-        bool                    mTerminated;
         IClient::SharedPtr      mClient;
         IRequest::SharedPtr     mRequest;
         std::string             mRessourcePath;
 
     
-        void                        _isAllowedMethod(void) const;
         std::string                 _getRequestedPath(void) ;
-        http::AResponse::SharedPtr  _resourceHandler(void);
+        http::AResponse::SharedPtr  _generateResponse(void);
         http::AResponse::SharedPtr  _handleDirectory(void);
-        http::AResponse::SharedPtr  _handleFile(void);
+        http::AResponse::SharedPtr  _handleFile(const_string& aPath);
         std::string                 _autoIndex(DIR *dir);
     };
 };

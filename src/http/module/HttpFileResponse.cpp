@@ -38,7 +38,7 @@ void http::FileResponse::setPath(const_string& aFilePath)
     mFileStream.open(aFilePath.c_str(), std::ios::in);
     if (!mFileStream.is_open() && errno == ENOENT)
         throw (http::NOT_FOUND);
-    if (!mFileStream.is_open() && errno == EACCES)
+    if (!mFileStream.is_open() && errno != ENOENT)
         throw (http::FORBIDDEN);
     setHeader("Content-Length", _fileSize());
 }

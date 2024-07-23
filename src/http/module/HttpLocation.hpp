@@ -46,6 +46,7 @@ namespace http
 
             bool                    isAllowedMethod(const_string& aMethod) const;
             bool                    isAutoIndex(void) const;
+        
             const_string&           getUri(void) const;
             const_string&           getRoot(void) const;
             const_string&           getUpload(void) const;
