@@ -40,6 +40,7 @@ namespace http
             NOT_FOUND = 404,
             PAYLOAD_TOO_LARGE = 413,
             URI_TOO_LONG = 414,
+            UNSUPPORTED_MEDIA_TYPE = 415,
             NOT_IMPLEMENTED = 501,
             VERSION_NOT_SUPPORTED = 505
         };
@@ -47,7 +48,9 @@ namespace http
         virtual ~IRequest(void) {};
 
         virtual void            selectMatechedRoute(const ServerVector& aServers) = 0;
-        virtual void            setHeader(std::string& aLine) = 0;
+        virtual void            setHeader(std::string& aLine) = 0;\
+        
+        virtual void            buildBody(const std::string& aBody) = 0;
 
         virtual std::string     getVersion(void) const = 0;
         virtual std::string		getMethod(void) const = 0;

@@ -5,46 +5,41 @@
 #       / _  / _ `/ -_) /   / /|_/ / _ \/ // /                                 #
 #      /_//_/\_,_/\__/_/   /_/  /_/\___/\_,_/                                  #
 #                                                                              #
-#      | [ IReader Interface ]                                                 #
+#      | [ HttpReader header file ]                                            #
 #      | By: hael-mou <hamzaelmoudden2@gmail.com>                              #
 #      | Created: 2024-07-22                                                   #
 #                                                                              #
 ** ************************************************************************* **/
 
-#ifndef   __IREADER_HPP__
-# define   __IREADER_HPP__
+# ifndef __HTTPREADER_HPP__
+# define __HTTPREADER_HPP__
 
 
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
-# include "shared_ptr.hpp"
-# include "typedefs.hpp"
+# include "Utils.hpp"
 
-
-#define TEMP_FILE_PATH "/tmp/body_XXXXXX"
+# include "IReader.hpp"
 /*******************************************************************************
-    * http::IReader Interface :
+    * Class Reader :
 *******************************************************************************/
 namespace http
 {
-    class IReader
+    class Reader : public IReader
     {
-    public:
-        typedef mem::shared_ptr<IReader>           SharedPtr;
+        public:
+            Reader(const int aContentLength);
+            ~Reader();
 
-        virtual ~IReader(void) {};
-        virtual void     read(void) = 0;
-        virtual void     write(const std::string& aBody) = 0;
-        // virtual FILE*    getFile(void) = 0;
-        // virtual off_t    getFilesize(void) = 0;
-        // virtual off_t    getFilePos() = 0;
-        // virtual char*    getPath() const = 0;
-
-    protected:
-            FILE*   mFile;
-            char*   mPath;
+            void        write(const std::string& aBody);
+            void        read();
+            // FILE*       getFile();
+            size_t      getSizeFile();
+            // fpos_t      getFilePos();
+            // char*       getPath() const;
+        private: 
+            int     mContentLength;
     };
 }
-
-#endif	/* __IReader_HPP__ */
+# endif /* __HTTPREADER_HPP__ */

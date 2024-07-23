@@ -46,6 +46,33 @@ http::Request::~Request(void) {}
     * Public Methods :
 *******************************************************************************/
 
+//===[ Method : buildBody ]=====================================================
+void	http::Request::buildBody(const_string& aBody)
+{
+    // [Ignoe body for GetBody]
+    std::cout << "enter here" << std::endl;
+    if (aBody.empty())
+        return ;
+    if (getMethod() == "GET")
+        return;
+    // [Check if body exists]
+    if (!mReader)
+    {
+        std::string contentLength = getHeader("content-length");
+        std::string transferEncoding = getHeader("transfer-encoding");
+
+        // [Define body type based on headers]
+        if (!contentLength.empty())
+            mReader = new Reader(::atoi(contentLength.c_str()));
+        // else if (!transferEncoding.empty() && transferEncoding == "chunked")
+        //     mReader = new ChunkedReader();
+        // else
+        //     throw http::IRequest::UNSUPPORTED_MEDIA_TYPE; // to be revised Later 
+    }
+    mReader->write(aBody);
+    mReader->read();
+}
+
 //===[ Method: selectMatechedRoute ]============================================
 void	http::Request::selectMatechedRoute(const ServerVector& aServerList)
 {
