@@ -43,7 +43,9 @@ namespace http
         virtual const StringVector&   getListens(void) const = 0;
         virtual const StringVector&   getServerNames(void) const = 0;
         virtual time_t                getKeepAliveTimeout(void) const = 0;
-        virtual unsigned long         getBodyBufferSize(void) const = 0;
+        virtual time_t                getReadTimeout(void) const = 0;
+        virtual time_t                getSendTimeout(void) const = 0;
+        virtual time_t                getCgiTimeout(void) const = 0;
         virtual unsigned long         getMaxBodySize(void) const = 0;
         virtual const std::string&    getMimeType(const_string aExtansion) const = 0;
         virtual IResponse::SharedPtr  getErrorPage(u_int aCode) const = 0;

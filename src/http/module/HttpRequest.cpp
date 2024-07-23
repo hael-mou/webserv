@@ -155,10 +155,10 @@ void	http::Request::_setRequestLine(const std::string& aLine)
     if (parts.size() != 3)
         throw(http::IRequest::BAD_REQUEST);
     mMethod = parts[0];
-    if (mMethod != "GET" && mMethod != "POST" && mMethod != "DELETE")
+    if (mMethod != "GET" && mMethod != "POST" && mMethod != "DELETE") // use in cluster
         throw (http::IRequest::NOT_IMPLEMENTED);
     mVersion = parts[2];
-    if (mVersion != "HTTP/1.1")
+    if (mVersion != "HTTP/1.1") // use in cluster
         throw(http::IRequest::VERSION_NOT_SUPPORTED);
     mUri = _parseUri(parts[1]);
 }
@@ -245,20 +245,20 @@ http::Location::SharedPtr    http::Request::_selectMatchedLocation()
     IServer::LocationMap::const_iterator it = locations.begin();
     std::string bestLocation;
 
-    std::string x = mUri.substr(0, mUri.find_last_of('/') + 1);
+    std::string dir = mUri.substr(0, mUri.find_last_of('/') + 1);
 
     for (; it != locations.end(); ++it)
     {
-        if (x.find(it->first) == 0 && it->first.length() > bestLocation.length())
+        if (dir.find(it->first) == 0 && it->first.length() > bestLocation.length())
         {
             std::string select = it->first;
-            if (select[select.length() - 1] == '/' && !_isInnerPath(select, x))
+            if (select[select.length() - 1] == '/' && !_isInnerPath(select, dir))
                 bestLocation = it->first;
             else if (select[select.length() - 1] != '/' || select.length() == 1)
                 bestLocation = it->first;
         }
     }
-    std::cout << "bestLocation: " << bestLocation << std::endl;
+
     if (bestLocation.empty() == true)
         throw(http::IRequest::NOT_FOUND);
     return (locations[bestLocation]);

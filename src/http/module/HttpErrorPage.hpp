@@ -33,7 +33,7 @@
 # define CUSTOM_ERROR_PAGE "\
     <!DOCTYPE html>\n\
             <head>\n\
-                <title>$(STATUS_CODE)</title>\n\
+                <title>$(MESSAGE)</title>\n\
                 <style>\n\
                     body {\n\
                         font-family: Arial, sans-serif;\n\

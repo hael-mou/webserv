@@ -41,7 +41,6 @@ void		http::RawResponse::setBody(const_string& aBody)
 
 	if (misTemplate == true)
 	{
-		str::replace(mBody, "$(STATUS_CODE)", str::to_string(mStatusCode));
 		str::replace(mBody, "$(MESSAGE)", mStatusline);
 		str::replace(mBody, "$(SERVER)", getHeader("Server"));
 	}

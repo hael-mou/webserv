@@ -99,5 +99,18 @@ IEventHandler* http::Factory::createSendHandler(IClient::SharedPtr aClient,
 IEventHandler* http::Factory::createProcessHandler(IClient::SharedPtr aClient,
                                                    IRequest::SharedPtr aRequest)
 {
+    const http::IServer& servers   = aRequest->getMatchedServer();
+    const http::Location& location = aRequest->getMatchedLocation();
+
+    if (!location.getRedirect().empty())
+    {
+        http::RawResponse* response = new http::RawResponse();
+        response->setStatusCode(http::MOVED_TEMPORARILY);
+        response->setHeader("Location", location.getRedirect());
+        response->setHeader("Connection", aRequest->getHeader("Connection"));
+        response->setSendTimeout(servers.getSendTimeout());
+        return (new http::SendHandler(aClient, response));
+    }
+
     return (new http::GetHandler(aClient, aRequest));
 }

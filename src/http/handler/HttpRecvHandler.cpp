@@ -44,10 +44,9 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
         mRequest = http::Factory::createRequest(mReceivedData);
         if (mRequest.get() != NULL)
         {
-            const std::vector<IServer::SharedPtr>&
-            servers = Cluster::getServers(mClient->getSocket());
+            const ServerVector& servers = Cluster::getServers(mClient->getSocket());
             mRequest->selectMatechedRoute(servers);
-        	// mRequest->buildBody();
+            // mRequest->buildBody();
             eventHandlers.push(
                 http::Factory::createProcessHandler(mClient, mRequest)
             );
@@ -89,12 +88,14 @@ bool http::RecvHandler::isTerminated(void) const
 
     if (mTerminated == true)
         return (true);
- 
-    time_t lastActivity = mClient->getLastActivityTime();
-    time_t timeout      = server.getKeepAliveTimeout();
-    time_t currentTime  = time(NULL);
+    bool   isDataReceived    = !mReceivedData.empty();
+    time_t lastActivity      = mClient->getLastActivityTime();
+    time_t keepAliveTimeout  = server.getKeepAliveTimeout();
+    time_t readTimeout       = server.getReadTimeout();
+    time_t currentTime       = time(NULL);
 
-    return (currentTime - lastActivity >= timeout);
+    return (isDataReceived ? (currentTime - lastActivity >= readTimeout)
+                           : (currentTime - lastActivity >= keepAliveTimeout));
 }
 
 /*******************************************************************************
@@ -107,9 +108,9 @@ const http::IServer& http::RecvHandler::_getMatchedServer(void) const
     const std::vector<IServer::SharedPtr>&
     servers = Cluster::getServers(mClient->getSocket());
 
-    // if (mRequest) {
-    //     return (mRequest->getMatchedServer());
-    // }
+    if (mRequest) {
+        return (mRequest->getMatchedServer());
+    }
     if (servers.size() != 0) {
         return (*(servers[0]));
     }

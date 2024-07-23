@@ -34,7 +34,9 @@ namespace http
 {
     class RecvHandler : public IEventHandler
     {
-    public: 
+    public:
+        typedef std::vector<IServer::SharedPtr>     ServerVector;
+
         RecvHandler(IClient::SharedPtr aClient);
         virtual ~RecvHandler(void);
         

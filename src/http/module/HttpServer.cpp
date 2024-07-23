@@ -22,14 +22,18 @@ http::Server::Server(Directive::SharedPtr aServerDir)
 {
     setListens(aServerDir->getTerminal("listen"));
     setServerNames(aServerDir->getTerminal("server_names"));
-    setConnectionType(aServerDir->getTerminal("connection"));
-    setKeepAliveTimeout(aServerDir->getTerminal("keepalive_timeout"));
-    setBodyBufferSize(aServerDir->getTerminal("body_buffer_size"));
     setMaxBodySize(aServerDir->getTerminal("max_body_size"));
     setDefaultMimeType(aServerDir->getTerminal("default_type"));
     setMimeTypes(aServerDir->getTerminal("meme_type"));
     setServerRoot(aServerDir->getTerminal("root"));
+
+    mTimeout[0] = toTime(aServerDir->getTerminal("keepalive_timeout"), KL_TIMEOUT);
+    mTimeout[1] = toTime(aServerDir->getTerminal("read_timeout"), READ_TIMEOUT);
+    mTimeout[2] = toTime(aServerDir->getTerminal("send_timeout"), SEND_TIMEOUT);
+    mTimeout[3] = toTime(aServerDir->getTerminal("cgi_timeout"), CGI_TIMEOUT);
+
     mErrorPages = ErrorPages(aServerDir->getTerminal("error_page"), mRoot);
+
     setLocations(aServerDir, aServerDir->getNonTerminal("location"));
 }
 
@@ -55,6 +59,20 @@ bool  http::Server::isMatch(const_string& aHostName) const
 bool    http::Server::isKeepAlive(void) const
 {
     return (mKeepAlive);
+}
+
+//===[ Method: to time ]=======================================================
+time_t  http::Server::toTime(const StringVector& aTime, time_t aDefault) const
+{
+    time_t time = aDefault;
+
+    if (aTime.size() == 1)
+    {
+        if ((time = integer::strToInt(aTime[0])) > 5)
+            return (aDefault);
+        Logger::log("warning", "HTTP: ignored: '" +  aTime[0] + "'", 2);
+    }
+    return (time);
 }
 
 /*** * Setters :
@@ -88,47 +106,6 @@ void    http::Server::setServerNames(const StringVector& aServerName)
 {
     if (aServerName.size() == 1)
         mServerName = str::split(aServerName[0], ' ');
-}
-
-//===[ Method: set connection type ]============================================
-void    http::Server::setConnectionType(const StringVector& aConnection)
-{
-    mKeepAlive = true;
-    if (aConnection.size() == 1)
-    {
-        if (str::toLower(aConnection[0]) == "close")
-            mKeepAlive = false;
-        else {
-            Logger::log("warning", "HTTP: Connection directive ignored: '"
-                +  aConnection[0] + "'", 2);
-        }
-    }
-}
-
-//===[ Method: set keep alive timeout ]=========================================
-void    http::Server::setKeepAliveTimeout(const StringVector& aTimeout)
-{
-    if (aTimeout.size() == 1)
-    {
-        if ((mKeepAliveTimeout = integer::strToInt(aTimeout[0])) > 5)
-            return ;
-        Logger::log("warning", "HTTP: Keepalive_timeout ignored: '"
-            +  aTimeout[0] + "'", 2);
-    }
-    mKeepAliveTimeout = DEFAULT_TIMEOUT;
-}
-
-//===[ Method: set client body buffer size ]====================================
-void http::Server::setBodyBufferSize(const StringVector& aBodyBufferSize)
-{
-    if (aBodyBufferSize.size() == 1)
-    {
-        if ((mBodyBufferSize = integer::strToInt(aBodyBufferSize[0])) > 0)
-            return ;
-        Logger::log("warning", "HTTP: Client body buffer size ignored: '"
-            +  aBodyBufferSize[0] + "'", 2);
-    }
-    mBodyBufferSize = DEFAULT_BODY_BUFFER_SIZE;
 }
 
 //===[ Method: set client max body size ]=======================================
@@ -212,22 +189,34 @@ const StringVector&  http::Server::getServerNames(void) const
     return (mServerName);
 }
 
-//===[ Method: get keep alive timeout ]=========================================
-time_t  http::Server::getKeepAliveTimeout(void) const
-{
-    return (mKeepAliveTimeout);
-}
-
-//===[ Method: get client body buffer size ]====================================
-unsigned long  http::Server::getBodyBufferSize(void) const
-{
-    return (mBodyBufferSize);
-}
-
 //===[ Method: get client max body size ]=======================================
 unsigned long  http::Server::getMaxBodySize(void) const
 {
     return (mMaxBodySize);
+}
+
+//===[ Method: get keep alive timeout ]=========================================
+time_t         http::Server::getKeepAliveTimeout(void) const
+{
+    return (mTimeout[0]);
+}
+
+//===[ Method: get read timeout ]===============================================
+time_t         http::Server::getReadTimeout(void) const
+{
+    return (mTimeout[1]);
+}
+
+//===[ Method: get send timeout ]===============================================
+time_t         http::Server::getSendTimeout(void) const
+{
+    return (mTimeout[2]);
+}
+
+//===[ Method: get cgi timeout ]===============================================
+time_t         http::Server::getCgiTimeout(void) const
+{
+    return (mTimeout[3]);
 }
 
 //===[ Method: get Mime Types ]=================================================

@@ -65,6 +65,12 @@ void    http::AResponse::setHeader(const std::string& aHeader,
     mHeaders[str::toLower(aHeader)] = aValue;
 }
 
+//===[ Methode : set Send Timeout ]=============================================
+void    http::AResponse::setSendTimeout(time_t aSendTimeout)
+{
+    mSendTimeout = aSendTimeout;
+}
+
 //===[ Methode : get Header ]==================================================
 const_string& http::AResponse::getHeader(const_string& aHeader) const
 {

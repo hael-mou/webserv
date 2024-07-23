@@ -36,11 +36,11 @@ namespace http
     class	Cluster : public ICluster
     {
     public:
-        typedef IEventHandler                                   IEH;
-        typedef std::map<std::string, Handle>                   HandleMap;
-        typedef std::vector<Directive::SharedPtr>               DirPtrVector;
-        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
-        typedef std::map<Handle, ServerVector>                  ServerMap;
+        typedef IEventHandler                                 IEH;
+        typedef std::map<std::string, Handle>                 HandleMap;
+        typedef std::vector<Directive::SharedPtr>             DirPtrVector;
+        typedef std::vector<IServer::SharedPtr>               ServerVector;
+        typedef std::map<Handle, ServerVector>                ServerMap;
 
         Cluster(Directive::SharedPtr aHttpDir);
         virtual ~Cluster(void);

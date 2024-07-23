@@ -74,7 +74,6 @@ IEventHandler::IEventHandlerQueue http::SendHandler::handleEvent(void)
 //===[ isTerminated: return Handler Status ]====================================
 bool http::SendHandler::isTerminated(void) const
 {
-    // std::cout << "last send time =" << time(NULL) - mClient->getLastActivityTime() << ":" << mResponse->getSendTimeout() << std::endl;
     if (mTerminated == true)
         return (true);
 

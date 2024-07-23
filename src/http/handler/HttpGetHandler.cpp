@@ -18,9 +18,12 @@
 *******************************************************************************/
 
 //===[ Constructor: GetdHandler ]===============================================
-http::GetHandler::GetHandler(IClient::SharedPtr aClient
-                , IRequest::SharedPtr aRequest)
-                : mClient(aClient), mRequest(aRequest) {}
+http::GetHandler::GetHandler(IClient::SharedPtr aClient,
+                             IRequest::SharedPtr aRequest)
+    : mClient(aClient),
+      mRequest(aRequest)
+{
+}
 
 //===[ Destructor: GetdHandler ]================================================
 http::GetHandler::~GetHandler(void) {}
@@ -33,29 +36,22 @@ IEventHandler::IEventHandlerQueue http::GetHandler::handleEvent(void)
 {
     IEventHandlerQueue eventHandlers;
     try {
-        if (mRequest->getMatchedLocation().isAllowedMethod("GET") == false) {
+        if (mRequest->getMatchedLocation().isAllowedMethod("GET") == false)
             throw http::METHOD_NOT_ALLOWED;
-        }
-        mRessourcePath = _getRequestedPath();
-        std::cout << "Matched path: " << mRessourcePath << std::endl;
-        if (mRessourcePath.empty() || access(mRessourcePath.c_str(), F_OK)) {
-            std::cout << "Enter here can't access to the path" << std::endl;
-            throw http::NOT_FOUND;
-        }
-        IResponse::SharedPtr resourceResponse = _resourceHandler();
 
-        // resourceResponse->display();
+        mRessourcePath = _getRequestedPath();
+        if (mRessourcePath.empty() || access(mRessourcePath.c_str(), F_OK))
+        {
+            (errno == ENOENT) ? throw http::NOT_FOUND : throw http::FORBIDDEN ;
+        }
         eventHandlers.push(
-            http::Factory::createSendHandler(mClient, resourceResponse)
+            http::Factory::createSendHandler(mClient, _generateResponse())
         );
     }
     catch (const http::StatusCode& errorCode) {
-        IResponse::SharedPtr errorResponse =
-            mRequest->getMatchedServer().getErrorPage(errorCode);
-
-        eventHandlers.push(
-            http::Factory::createSendHandler(mClient, errorResponse)
-        );
+        IResponse::SharedPtr
+        response = mRequest->getMatchedServer().getErrorPage(errorCode);
+        eventHandlers.push(http::Factory::createSendHandler(mClient, response));
     }
     return (eventHandlers);
 }
@@ -74,7 +70,7 @@ const Handle& http::GetHandler::getHandle(void) const
 // ==[ isTerminated: return Handler Status ]====================================
 bool http::GetHandler::isTerminated(void) const
 {
-    return (mTerminated);
+    return (false);
 }
 
 /** *************************************************************************** 
@@ -101,77 +97,70 @@ std::string http::GetHandler::_getRequestedPath(void)
 }
 
 //===[ Method: _resourceHandler ]===============================================
-http::AResponse::SharedPtr
-
-http::GetHandler::_resourceHandler(void)
+http::AResponse::SharedPtr    http::GetHandler::_generateResponse(void)
 {
-    std::cout << httptools::isDirectory(mRessourcePath) << std::endl;
-    if (httptools::isDirectory(mRessourcePath))
-    {
-        std::cout << "Is Directory" << std::endl;
+    if (httptools::isDirectory(mRessourcePath)) {
         return (_handleDirectory());
     }
-    std::cout << "IsFile" << std::endl;
-    return (_handleFile());
+    return (_handleFile(mRessourcePath));
 }
 
 // ===[ Method : Handle File ]===================================================
-http::AResponse::SharedPtr
-http::GetHandler::_handleFile(void)
+http::AResponse::SharedPtr  http::GetHandler::_handleFile(const_string& aPath)
 {
-    std::string extension = httptools::getExtension(mRessourcePath);
-    const_string contentType = mRequest->getMatchedServer().getMimeType(extension);
+    std::string  extension = httptools::getExtension(aPath);
+    const_string contentType = mRequest->getMatchedServer()
+                                       .getMimeType(extension);
 
     http::FileResponse* response = new http::FileResponse();
+    response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
     response->setVersion(mRequest->getVersion());
     response->setHeader("Content-Type", contentType);
+    response->setHeader("Connection", mRequest->getHeader("Connection"));
     response->setStatusCode(http::OK);
-    response->setPath(mRessourcePath);
+    response->setPath(aPath);
     return (response);
 }
 
 // === [ Method: _handleDirectory ] ==============================================
-http::AResponse::SharedPtr
-http::GetHandler::_handleDirectory(void)
+http::AResponse::SharedPtr  http::GetHandler::_handleDirectory(void)
 {
     http::RawResponse* response = new http::RawResponse();
-    if (mRessourcePath.back() != '/')
+    if (mRessourcePath[mRessourcePath.length() - 1] != '/')
     {
         response->setStatusCode(http::MOVED_PERMANENTLY);
+        response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
+        response->setVersion(mRequest->getVersion());
         response->setHeader("Location", mRequest->getUriPath() + "/");
-        // response->display();
+        response->setHeader("Connection", mRequest->getHeader("Connection"));
         return (response);
     }
-    else
+
+    StringVector indexFiles = mRequest->getMatchedLocation().getIndexFiles();
+    if (!indexFiles.empty())
     {
-        StringVector indexFiles = mRequest->getMatchedLocation().getIndexFiles();
-        if (indexFiles.size() > 0)
+        for (size_t index = 0; index < indexFiles.size(); index++)
         {
-            for (StringVector::iterator it = indexFiles.begin(); it != indexFiles.end(); it++)
-            {
-                if (!access((mRessourcePath + *it).c_str(), F_OK))
-                {
-                    mRessourcePath += *it;
-                    return(_handleFile()); 
-                }
-            }
-            // throw(http::NOT_FOUND);
-        }
-        if (mRequest->getMatchedLocation().isAutoIndex())
-        {
-            DIR* dir = opendir(mRessourcePath.c_str());
-            if (dir != NULL)
-            {
-                response->setStatusCode(http::OK);
-                response->setHeader("Content-Type", "text/html");
-                std::string autoIndexBody = _autoIndex(dir);
-                response->setHeader("content-length", str::to_string(autoIndexBody.size()));
-                response->setBody(autoIndexBody);
-                // response->display();
-                return (response);
-            }
+            if (!access((mRessourcePath + indexFiles[index]).c_str(), F_OK))
+                 return(_handleFile(mRessourcePath + indexFiles[index])); 
         }
     }
+    
+    if (mRequest->getMatchedLocation().isAutoIndex())
+    {
+        DIR* dir = opendir(mRessourcePath.c_str());
+        if (dir != NULL)
+        {
+            response->setStatusCode(http::OK);
+            response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
+            response->setVersion(mRequest->getVersion());
+            response->setBody(_autoIndex(dir));
+            response->setHeader("Connection", mRequest->getHeader("Connection"));
+            closedir(dir);
+            return (response);
+        }
+    }
+
     throw(http::FORBIDDEN);
 }
 
@@ -199,6 +188,5 @@ std::string http::GetHandler::_autoIndex(DIR *dir)
     }
     str::replace(autoindex, "$(CONTENT)", content);
 
-    closedir(dir);
     return autoindex;
 }

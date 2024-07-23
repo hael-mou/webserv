@@ -78,7 +78,14 @@ void    http::Location::setUpload(const StringVector& aUpload)
 void    http::Location::setCgiExt(const StringVector&  aCgiExt)
 {
     if (aCgiExt.size() == 1)
+    {
         mCgiExt = str::split(aCgiExt[0], ' ');
+        for (size_t index = 0; index < mCgiExt.size(); ++index)
+        {
+            if (mCgiExt[index][0] != '.')
+                mCgiExt[index] = '.' + mCgiExt[index];
+        }
+    }
 }
 
 //===[Method : setRedirect]=====================================================
@@ -104,7 +111,7 @@ void    http::Location::setIndexFiles(const StringVector&  aIndexFiles)
 {
     if (aIndexFiles.size() == 1)
         mIndexFiles = str::split(aIndexFiles[0], ' ');
-}
+    }
 
 //===[Method : setAllowedMethods]=============================================
 void    http::Location::setAllowedMethods(const StringVector&  aAllowedMethods)
@@ -160,7 +167,6 @@ const std::string&     http::Location::getUpload(void) const
 {
     return (mUpload);
 }
-
 
 //===[ Method : isAllowedMethod ]===============================================
 bool    http::Location::isAllowedMethod(const std::string& aMethod) const
