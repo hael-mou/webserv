@@ -20,13 +20,12 @@
 
 http::Reader::Reader(const int aContentLength) : mContentLength(aContentLength)
 {
-    char FilePath[] = TEMP_FILE_PATH;
-    mPath = strdup(mktemp(FilePath));
-    std::cout << "The Path of File is ********" << mPath << "**********" << std::endl;
-    mFile = fopen(mPath, "w");
-    if (mFile == NULL)
+    char myTemplate[] = "/tmp/http_XXXXXX"; // to be modife later and need suggestion mn 3nd Hamza
+    mFile = mkstemp(myTemplate);
+    if (mFile == -1)
     {
-        throw std::runtime_error("Can't create temporary file");
+        perror("Error creating temporary file: ");
+        exit(1);
     }
 }
 
@@ -35,15 +34,12 @@ http::Reader::Reader(const int aContentLength) : mContentLength(aContentLength)
 *******************************************************************************/
 http::Reader::~Reader()
 {
-    std::cout << "Deleting temporary file" << std::endl;
-    std::cout << "The Path of File is ********" << mPath << "**********" << std::endl;
-    fclose(mFile);
-    if (remove(mPath) != 0)
+    // to se a solotion for unlinkage to remove the file from /tmp later 
+    if (::close(mFile) == -1)
     {
         perror("Error deleting temporary file: ");
         exit(1);
     }
-    // unlink(mPath); // to search wath do with it
 }
 
 
@@ -54,59 +50,62 @@ http::Reader::~Reader()
 //===[ Method: read ]==========================================================
 void http::Reader::read()
 {
-    mFile = fopen(mPath, "r");
-    if (mFile == NULL)
-    {
-        throw std::runtime_error("Can't open file");
-    }
-
     int size = getSizeFile() + 1;
     char buffer[size];
 
+    ::lseek(mFile, 0, SEEK_SET); // to reset the file pointer at the begeinin :)
     memset(buffer, 0, size);
-    size_t bytes_read = fread(buffer, 1, size, mFile);
+    size_t bytes_read = ::read(mFile, buffer, size);
     if (bytes_read  > 0) {
         printf("Data read from file: %s\n", buffer);
     } else {
         perror("Error reading from file");
-        fclose(mFile);
+        close(mFile);
+        throw(std::runtime_error("Failed to read from file"));
     }
-    fclose(mFile);
 }
 
-void    http::Reader::write(const std::string& aBody)
+#include "IRequest.hpp" // for thorwing ? 
+void    http::Reader::write(std::string& aBody)
 {
-    if (fseek(mFile, 0, SEEK_END) != 0)
+    // there is a problem when reading with nc or maybe telnet because both they send ,
+    // a \r\n or \n at the end
+    // when sending something ? how can i remove it ? and or just ignore it ?
+    size_t bytes_written = ::write(mFile, aBody.c_str(), aBody.size());
+    if (bytes_written != aBody.size())
     {
-        throw std::runtime_error("Can't seek file");
+        throw std::runtime_error("Failed to write to file");
     }
-    if (fwrite(aBody.c_str(), 1, aBody.size(), mFile) != aBody.size())
+    size_t file_size = getSizeFile();
+    if (file_size > mContentLength)
     {
-        perror("Error writing to file: "); // to change that 
+        throw(http::IRequest::PAYLOAD_TOO_LARGE);
     }
-
-    if (getSizeFile() > (size_t)mContentLength)
-    {
-        std::cout << "File size" << getSizeFile() << "-> " << mContentLength << std::endl;
-        // close and remove
-        std::cout << "file depasse la taille de l'en-tete" << std::endl;
-    }
-    if (fclose(mFile) != 0)
-    {
-        perror("Error closing file: ");
-        exit(1); // to be removed later
-    }
+    aBody.clear();
 }
 
 
 //===[ Method: getSizeFile ]====================================================
 size_t http::Reader::getSizeFile()
 {
-    size_t pos = ftell(mFile);      // to conserve the current position of the file
-    fseek(mFile, 0, SEEK_END);      // to move the pointer to the end of the file
-    pos = ftell(mFile);             // to get the position of the pointer
-    fseek(mFile, pos, SEEK_SET);    // to move the pointer back to the position
-    rewind(mFile);
-    return (pos);                   // return the size of the file
+    struct stat st;
+    if (fstat(mFile, &st) == -1)
+    {
+        perror("Error getting file status: ");
+        throw(std::runtime_error("Failed to get file status"));
+    }
+    return (st.st_size); // hadi ghadi dir moxkil
 }
 
+
+//===[ Method: isComplete ]=====================================================
+bool http::Reader::isComplete()
+{
+    return (getSizeFile() == mContentLength);
+}
+
+//===[ Method: getFile ]========================================================
+int http::Reader::getFile() const
+{
+    return (mFile);
+}

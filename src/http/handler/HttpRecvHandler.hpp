@@ -36,6 +36,7 @@ namespace http
     {
     public:
         typedef std::vector<IServer::SharedPtr>     ServerVector;
+        typedef IEventHandlerQueue (RecvHandler::*Operation)(void);
 
         RecvHandler(IClient::SharedPtr aClient);
         virtual ~RecvHandler(void);
@@ -44,14 +45,19 @@ namespace http
         IMultiplexer::Mode      getMode(void) const;
         IEventHandlerQueue      handleEvent(void);
         bool                    isTerminated(void) const;
-    
+
     private:
         bool                    mTerminated;
         IClient::SharedPtr      mClient;
         IRequest::SharedPtr     mRequest;
         std::string             mReceivedData;
+        Operation               mCurrentOperation;                
 
         const IServer&          _getMatchedServer(void) const;
+
+        IEventHandlerQueue      _recvHeaders(void);
+        IEventHandlerQueue      _recvBody(void);
+        IEventHandlerQueue      _recvComplete(void);
     };
 };
 

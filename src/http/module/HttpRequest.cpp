@@ -46,31 +46,34 @@ http::Request::~Request(void) {}
     * Public Methods :
 *******************************************************************************/
 
-//===[ Method : buildBody ]=====================================================
-void	http::Request::buildBody(const_string& aBody)
+//===[ Method: isComplete ]=====================================================
+bool	http::Request::isComplete(void) 
 {
-    // [Ignoe body for GetBody]
-    std::cout << "enter here" << std::endl;
-    if (aBody.empty())
+    return((mReader && mReader->isComplete()) || _isBodyExist() == false);
+}
+//===[ Method : buildBody ]=====================================================
+void	http::Request::buildBody(std::string& aBody)
+{
+    //[No need to enter if no data to read ,maybe had case m3mrha tra asln ]
+    if (aBody.empty()) 
         return ;
+    // [Ignoe body for GetBody]
     if (getMethod() == "GET")
         return;
     // [Check if body exists]
-    if (!mReader)
+    if (!mReader && _isBodyExist()) // to chek if REader 3ndi olala bax mnb9ax ncree new reader kol mra 
     {
-        std::string contentLength = getHeader("content-length");
-        std::string transferEncoding = getHeader("transfer-encoding");
-
         // [Define body type based on headers]
-        if (!contentLength.empty())
-            mReader = new Reader(::atoi(contentLength.c_str()));
-        // else if (!transferEncoding.empty() && transferEncoding == "chunked")
-        //     mReader = new ChunkedReader();
-        // else
-        //     throw http::IRequest::UNSUPPORTED_MEDIA_TYPE; // to be revised Later 
+        std::string transferEncoding = getHeader("transfer-encoding");
+        if (!getHeader("content-length").empty())
+            mReader = new Reader(::atoi(getHeader("content-length").c_str()));
+        else if (!transferEncoding.empty() && transferEncoding == "chunked")
+            mReader = new ChunkReader();
+        else 
+            throw http::IRequest::UNSUPPORTED_MEDIA_TYPE; // to be revised Later m3a Hamza 
     }
-    mReader->write(aBody);
-    mReader->read();
+    mReader->write(aBody); // to write data f file 
+    mReader->read(); // to read mn file li ktbt fih 
 }
 
 //===[ Method: selectMatechedRoute ]============================================
@@ -291,3 +294,13 @@ http::Location::SharedPtr    http::Request::_selectMatchedLocation()
     return (locations[bestLocation]);
 }
 
+//=== [ Method: isBodyExist ]===================================================
+bool    http::Request::_isBodyExist(void) 
+{
+    std::string contentLength = getHeader("content-length");
+    std::string transferEncoding = getHeader("transfer-encoding");
+
+    if (contentLength.empty() && transferEncoding.empty())
+        return (false);
+    return (true);
+}

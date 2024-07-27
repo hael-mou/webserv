@@ -21,6 +21,7 @@
 http::RecvHandler::RecvHandler(IClient::SharedPtr aClient)
     : mClient(aClient)
 {
+    mCurrentOperation = &RecvHandler::_recvHeaders;
     mTerminated = (aClient.get() == NULL) ? true : false;
 }
 
@@ -35,23 +36,15 @@ http::RecvHandler::~RecvHandler(void) {}
 IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
 {
     IEventHandlerQueue eventHandlers;
-
-    try{
+    try
+    {
         if ((mReceivedData += mClient->recv()) == EmptyString)
         {
             return ((mTerminated = true),  eventHandlers);
         }
-        mRequest = http::Factory::createRequest(mReceivedData);
-        if (mRequest.get() != NULL)
-        {
-            const ServerVector& servers = Cluster::getServers(mClient->getSocket());
-            mRequest->selectMatechedRoute(servers);
-            // mRequest->buildBody();
-            eventHandlers.push(
-                http::Factory::createProcessHandler(mClient, mRequest)
-            );
-        }
+        eventHandlers = (this->*mCurrentOperation)();
         mClient->updateActivityTime();
+        return (eventHandlers);
     }
     catch(const std::exception& aException)
     {
@@ -60,11 +53,11 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
     }
     catch(const http::IRequest::Error& aErrorCode)
     {
-        IResponse::SharedPtr errRes;
+        IResponse::SharedPtr    errRes;
+
         errRes = _getMatchedServer().getErrorPage(aErrorCode);
         eventHandlers.push(http::Factory::createSendHandler(mClient, errRes));
     }
-
     return (eventHandlers);
 }
 
@@ -115,4 +108,41 @@ const http::IServer& http::RecvHandler::_getMatchedServer(void) const
         return (*(servers[0]));
     }
     throw (std::runtime_error("HttpRecvHandler: No server found"));
+}
+
+//===[ Method: recvHeaders ]===================================================
+IEventHandler::IEventHandlerQueue http::RecvHandler::_recvHeaders(void)
+{
+    mRequest = http::Factory::createRequest(mReceivedData);
+    if (mRequest.get() == NULL)
+        return (IEventHandlerQueue());
+
+    const ServerVector& servers = Cluster::getServers(mClient->getSocket());
+    mRequest->selectMatechedRoute(servers);
+
+    mCurrentOperation = &RecvHandler::_recvBody;
+    return (_recvBody());
+}
+
+//===[ Method: recvBody ]======================================================
+IEventHandler::IEventHandlerQueue http::RecvHandler::_recvBody(void)
+{
+    if (mRequest)
+        mRequest->buildBody(mReceivedData);
+    if (mRequest->isComplete())
+    {
+        mCurrentOperation = &RecvHandler::_recvComplete;
+        return (_recvComplete());
+    }
+    return (IEventHandlerQueue());
+}
+
+//===[ Method: recvComplete ]==================================================
+IEventHandler::IEventHandlerQueue http::RecvHandler::_recvComplete(void)
+{
+    IEventHandlerQueue eventHandlers;
+    eventHandlers.push(
+        http::Factory::createProcessHandler(mClient, mRequest)
+    );
+    return (eventHandlers);
 }

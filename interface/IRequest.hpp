@@ -48,9 +48,10 @@ namespace http
         virtual ~IRequest(void) {};
 
         virtual void            selectMatechedRoute(const ServerVector& aServers) = 0;
-        virtual void            setHeader(std::string& aLine) = 0;\
+        virtual void            setHeader(std::string& aLine) = 0;
+        virtual bool            isComplete(void) = 0;
         
-        virtual void            buildBody(const std::string& aBody) = 0;
+        virtual void            buildBody(std::string& aBody) = 0;
 
         virtual std::string     getVersion(void) const = 0;
         virtual std::string		getMethod(void) const = 0;

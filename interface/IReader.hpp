@@ -34,16 +34,16 @@ namespace http
         typedef mem::shared_ptr<IReader>           SharedPtr;
 
         virtual ~IReader(void) {};
-        virtual void     read(void) = 0;
-        virtual void     write(const std::string& aBody) = 0;
-        // virtual FILE*    getFile(void) = 0;
-        // virtual off_t    getFilesize(void) = 0;
-        // virtual off_t    getFilePos() = 0;
-        // virtual char*    getPath() const = 0;
+    
+        virtual void        read(void) = 0;
+        virtual void        write(std::string& aBody) = 0;
+        virtual size_t      getSizeFile(void) = 0;
+        virtual bool        isComplete(void) = 0;
+        virtual int         getFile(void) const = 0;
 
     protected:
-            FILE*   mFile;
-            char*   mPath;
+        int     mFile;
+        char    *httpTemplate;
     };
 }
 

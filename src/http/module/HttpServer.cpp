@@ -64,15 +64,15 @@ bool    http::Server::isKeepAlive(void) const
 //===[ Method: to time ]=======================================================
 time_t  http::Server::toTime(const StringVector& aTime, time_t aDefault) const
 {
-    time_t time = aDefault;
+    time_t time;
 
     if (aTime.size() == 1)
     {
         if ((time = integer::strToInt(aTime[0])) > 5)
-            return (aDefault);
+            return (time);
         Logger::log("warning", "HTTP: ignored: '" +  aTime[0] + "'", 2);
     }
-    return (time);
+    return (aDefault);
 }
 
 /*** * Setters :

@@ -25,7 +25,7 @@
 # include "IRequest.hpp"
 
 # include "HttpReader.hpp"
-// to add ChunkdedReader Header Here
+# include "HttpChunkReader.hpp"
 
 # include <iostream>
 
@@ -54,9 +54,11 @@ namespace http
         const IServer&  getMatchedServer(void) const;
         const Location& getMatchedLocation(void) const;
      
-        void            buildBody(const std::string& aBody);
+        void            buildBody(std::string& aBody);
 
         void            display(void) const;
+
+        bool            isComplete();
 
     private:
         IReader::SharedPtr  mReader;
@@ -67,6 +69,8 @@ namespace http
         std::string		    mUri;	
         StringMap		    mHeaders;
         StringMap		    mQuery;
+
+        bool                _isBodyExist(void);
     
         bool                _isInnerPath(const std::string& uri, const std::string& requestUri);
         void                _setRequestLine(const std::string& aLine);
