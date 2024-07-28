@@ -24,8 +24,7 @@ http::Reader::Reader(const int aContentLength) : mContentLength(aContentLength)
     mFile = mkstemp(myTemplate);
     if (mFile == -1)
     {
-        perror("Error creating temporary file: ");
-        exit(1);
+        throw(std::runtime_error("Failed to create temporary file to store request body"));
     }
 }
 
@@ -37,8 +36,7 @@ http::Reader::~Reader()
     // to se a solotion for unlinkage to remove the file from /tmp later 
     if (::close(mFile) == -1)
     {
-        perror("Error deleting temporary file: ");
-        exit(1);
+        throw(std::runtime_error("Failed to close temporary file"));
     }
 }
 
@@ -56,21 +54,17 @@ void http::Reader::read()
     ::lseek(mFile, 0, SEEK_SET); // to reset the file pointer at the begeinin :)
     memset(buffer, 0, size);
     size_t bytes_read = ::read(mFile, buffer, size);
-    if (bytes_read  > 0) {
+    if (bytes_read  >= 0) 
+    {
         printf("Data read from file: %s\n", buffer);
-    } else {
-        perror("Error reading from file");
-        close(mFile);
+    } else 
+    {
         throw(std::runtime_error("Failed to read from file"));
     }
 }
 
-#include "IRequest.hpp" // for thorwing ? 
 void    http::Reader::write(std::string& aBody)
 {
-    // there is a problem when reading with nc or maybe telnet because both they send ,
-    // a \r\n or \n at the end
-    // when sending something ? how can i remove it ? and or just ignore it ?
     size_t bytes_written = ::write(mFile, aBody.c_str(), aBody.size());
     if (bytes_written != aBody.size())
     {
@@ -91,10 +85,9 @@ size_t http::Reader::getSizeFile()
     struct stat st;
     if (fstat(mFile, &st) == -1)
     {
-        perror("Error getting file status: ");
         throw(std::runtime_error("Failed to get file status"));
     }
-    return (st.st_size); // hadi ghadi dir moxkil
+    return (st.st_size);
 }
 
 

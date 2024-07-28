@@ -19,21 +19,24 @@
 *******************************************************************************/
 
 
-/*
-Temporary Files: mkstemp creates a temporary file with a unique name. This file remains on the file system until explicitly deleted. If you don't unlink the file, it will persist on disk, potentially cluttering your file system with unnecessary files.
-Unlinking: Calling unlink removes the file entry from the directory. If the file is still open by some process (e.g., your program), it will not be immediately deleted from disk, but the space will be freed up once it’s no longer in use.
+/* [mkstemp] : 
+Temporary Files: mkstemp creates a temporary file with a unique name. 
+This file remains on the file system until explicitly deleted. If you don't unlink the file, 
+it will persist on disk, potentially cluttering your file system with unnecessary files.
+Unlinking: Calling unlink removes the file entry from the directory.
+If the file is still open by some process (e.g., your program), 
+it will not be immediately deleted from disk, but the space will be freed up once it’s no longer in use.
 */
+
 http::ChunkReader::ChunkReader() : mLength(0), mChunkSize(0), mTerminated(false)
 {
     errno = 0;
-    httpTemplate = new char[sizeof("/tmp/http_XXXXXX")]; // to be modife later
-    strcpy(httpTemplate, "/tmp/http_XXXXXX");  // to be modife later
+    httpTemplate = new char[sizeof("/tmp/http_XXXXXX")];    // to be modife later
+    strcpy(httpTemplate, "/tmp/http_XXXXXX");               // to be modife later
     mFile = mkstemp(httpTemplate);
-    if (mFile < 0)
+    if (mFile == -1)
     {
-        perror("Error creating temporary file: ");
-        throw(std::runtime_error(
-            "Failed to create temporary file to store chunked data"));
+        throw(std::runtime_error("Failed to create temporary file to store chunked data"));
     }
     mCurrentOperation = &ChunkReader::_processChunkSize;
 }
@@ -43,13 +46,15 @@ http::ChunkReader::ChunkReader() : mLength(0), mChunkSize(0), mTerminated(false)
 *******************************************************************************/
 http::ChunkReader::~ChunkReader()
 {
-    if (::close(mFile) == -1)
+    if (close(mFile) == -1)
     {
-        perror("Error deleting temporary file: ");
-        exit(1);
+        throw (std::runtime_error("Failed to close temporary file"));
     }
-    unlink(httpTemplate);
-    delete [] httpTemplate;
+    if (unlink(httpTemplate) == -1)
+    {
+        throw (std::runtime_error("Failed to unlink temporary file"));
+    }
+    delete[] httpTemplate;
 }
 
 
@@ -60,17 +65,20 @@ http::ChunkReader::~ChunkReader()
 //===[ Method: read ]==========================================================
 void http::ChunkReader::read() 
 {
+    size_t bytes_read;
     int size = getSizeFile() + 1;
     char buffer[size];
 
-    ::lseek(mFile, 0, SEEK_SET);
     memset(buffer, 0, size);
-    size_t bytes_read = ::read(mFile, buffer, size);
-    if (bytes_read  >= 0) { // had equal fiha moxkil 
+    ::lseek(mFile, 0, SEEK_SET); // to reset the file pointer at the begeinin :)
+
+    bytes_read = ::read(mFile, buffer, size);
+    if (bytes_read  >= 0)  // had equal khass i3adat nadar
+    {
         printf("Data read from file: %s\n", buffer);
-    } else {
-        perror("Error reading from file");
-        close(mFile);
+    } 
+    else 
+    {
         throw(std::runtime_error("Failed to read from file"));
     }
 }
@@ -91,12 +99,14 @@ void    http::ChunkReader::write(std::string& aBody)
 size_t http::ChunkReader::getSizeFile()
 {
     struct stat st;
+
     if (fstat(mFile, &st) == -1)
     {
         perror("Error getting file status: ");
         throw(std::runtime_error("Failed to get file status"));
     }
-    return (st.st_size); // hadi ghadi dir moxkil
+
+    return (st.st_size);
 }
 
 
@@ -123,10 +133,9 @@ void    http::ChunkReader::_processChunkSize(std::string& aLine)
             aLine.pop_back();
     if (aLine.empty())
         throw(http::IRequest::BAD_REQUEST);
-    mChunkSize = std::strtol(aLine.c_str(), NULL, 16);
-    if (mChunkSize < 0 || mChunkSize > 1024 || errno != 0)
-    {   // to be modified later [max 1024]
-        perror("Error parsing chunk size: ");
+    mChunkSize = std::strtol(aLine.c_str(), NULL, 16);      // hadi gal 7mza ghybdlha 
+    if (mChunkSize < 0 || mChunkSize > 1024 || errno != 0)  // to be modified later [max 1024]
+    {
         throw(http::IRequest::BAD_REQUEST);
     }
     mCurrentOperation = &ChunkReader::_processChunkBody;
@@ -138,18 +147,11 @@ void    http::ChunkReader::_processChunkBody(std::string& aLine)
     if (aLine.back() == '\r')
     {
         aLine.pop_back();
-        if (aLine.empty())
-        {
+        if (aLine.empty() && mChunkSize == 0)
             mTerminated = true;
-            return;
-        }
         else
             mCurrentOperation = &ChunkReader::_processChunkSize;
-    }
-    if (aLine.empty() && mChunkSize == 0) // the last chunk and to be removed maybe
-    {
-        mTerminated = true;
-        return;
+        return ;
     }
     else if (!aLine.empty())
     {
