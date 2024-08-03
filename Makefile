@@ -15,7 +15,7 @@ NAME		:=	webserv
 
 #=== Directories : ===========================================================
 SRC_DIR		:=	src
-OBJ_DIR		:=	build
+OBJ_DIR		:=	.build
 INC_DIR		:=	$(SRC_DIR)/utils\
 				$(SRC_DIR)/core/configParser\
 				$(SRC_DIR)/core/multiplexer\
@@ -40,6 +40,7 @@ SRC_FILES	:=	$(SRC_DIR)/utils/Utils.cpp\
 				$(SRC_DIR)/core/serverCore/main.cpp\
 				\
 				$(SRC_DIR)/http/factory/HttpFactory.cpp\
+				$(SRC_DIR)/http/module/HttpException.cpp\
 				$(SRC_DIR)/http/module/HttpCluster.cpp\
 				$(SRC_DIR)/http/module/HttpServer.cpp\
 				$(SRC_DIR)/http/module/HttpClient.cpp\
@@ -49,13 +50,12 @@ SRC_FILES	:=	$(SRC_DIR)/utils/Utils.cpp\
 				$(SRC_DIR)/http/module/HttpAResponse.cpp\
 				$(SRC_DIR)/http/module/HttpRawResponse.cpp\
 				$(SRC_DIR)/http/module/HttpFileResponse.cpp\
-				$(SRC_DIR)/http/module/HttpChunkReader.cpp\
-				$(SRC_DIR)/http/module/HttpReader.cpp\
+				$(SRC_DIR)/http/module/HttpBufferReader.cpp\
 				\
 				$(SRC_DIR)/http/handler/HttpAcceptHandler.cpp\
 				$(SRC_DIR)/http/handler/HttpRecvHandler.cpp\
 				$(SRC_DIR)/http/handler/HttpSendHandler.cpp\
-				$(SRC_DIR)/http/handler/HttpGetHandler.cpp\
+				$(SRC_DIR)/http/handler/HttpGetHandler.cpp
 
 INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))
 

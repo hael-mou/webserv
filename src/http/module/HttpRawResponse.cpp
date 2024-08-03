@@ -35,7 +35,7 @@ http::RawResponse::~RawResponse(void) {}
 *******************************************************************************/
 
 //===[ Methode : set Body ]====================================================
-void		http::RawResponse::setBody(const_string& aBody)
+void		http::RawResponse::setBody(const string& aBody)
 {
 	mBody = aBody;
 

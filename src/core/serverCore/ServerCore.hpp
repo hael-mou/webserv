@@ -35,11 +35,11 @@
 class ServerCore
 {
 public:
-    typedef IEventHandler                                  IEH;
-    typedef IProtocolFactory::SharedPtr                    IProtocolFactoryPtr;
-    typedef std::map<std::string, IProtocolFactoryPtr>     IProtocolFactoryMap;
-    typedef std::vector<Directive::SharedPtr>              DirPtrVector;
-    typedef mem::shared_ptr<ServerCore>                    SharedPtr;
+    typedef IEventHandler                             IEH;
+    typedef IProtocolFactory::SharedPtr               IProtocolFactoryPtr;
+    typedef std::map<string, IProtocolFactoryPtr>     IProtocolFactoryMap;
+    typedef std::vector<Directive::SharedPtr>         DirPtrVector;
+    typedef mem::shared_ptr<ServerCore>               SharedPtr;
 
     ~ServerCore(void);
 
@@ -56,7 +56,7 @@ private:
   
     ServerCore(void);
 
-    void    _setupProtocol(const std::string& aProtocolName,
+    void    _setupProtocol(const string& aProtocolName,
                            IProtocolFactoryPtr aProtocolFactory,
                            Directive::SharedPtr aGlobalDir);
 };

@@ -36,16 +36,16 @@ class	ConfigParser
 public:
     class Exception;
     
-    typedef Directive                               Dir;
-    typedef std::string                             string;
-    typedef std::vector<DirectivePart>              DirPartVect;
-    typedef std::pair<std::string, std::fstream*>   FilePair;
+    typedef Directive                           Dir;
+    typedef string                              string;
+    typedef std::vector<DirectivePart>          DirPartVect;
+    typedef std::pair<string, std::fstream*>    FilePair;
 
     ConfigParser(void);
-    ConfigParser(const_string& aConfigParser);
-    virtual ~ConfigParser(void);
+    ConfigParser(const string& aConfigParser);
+    ~ConfigParser(void);
 
-    void                 openFile(const_string& aFileName, int aStartColumn = 0);
+    void                 openFile(const string& aPath, int aStartColumn = 0);
     Directive::SharedPtr parse(void);
 
 private:
@@ -54,11 +54,11 @@ private:
     std::vector<int>            mStartColumn;
     std::vector<int>            mlineCount;
 
-    void _processLine(string& aLine, Dir::SharedPtr& aDir, DirPartVect& aDirParts);
-    bool _isFileAlreadyOpen(const_string& aFileName) const;
-    int  _getLevel(const_string& aLine);
+    void _processLine(string& aLine, Dir::SharedPtr& aDir, DirPartVect& aParts);
+    bool _isFileAlreadyOpen(const string& aFileName) const;
+    int  _getLevel(const string& aLine);
     bool _isValidDirective(const DirPartVect &aDirParts, int aLevel) const;
-    bool _includeDirective(const_string& aLine, int aLevel);
+    bool _includeDirective(const string& aLine, int aLevel);
     void _CloseLastOpenFile(void);
 };
 
@@ -68,12 +68,12 @@ private:
 class	ConfigParser::Exception : public std::exception
 {
 public:
-    Exception(std::string aMessage, std::string aFileName);
+    Exception(string aMessage, string aFileName);
     virtual ~Exception(void) throw();
     const char* what(void) const throw();
 
 private:
-    std::string mMessage;
+    string mMessage;
 };
 
 #endif /* __CONFIGPARSER_HPP__ */

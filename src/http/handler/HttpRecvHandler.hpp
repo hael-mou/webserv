@@ -24,6 +24,9 @@
 # include "IClient.hpp"
 # include "IServer.hpp"
 # include "IRequest.hpp"
+# include "IReader.hpp"
+
+# include "HttpException.hpp"
 
 # include "HttpFactory.hpp"
 
@@ -50,8 +53,9 @@ namespace http
         bool                    mTerminated;
         IClient::SharedPtr      mClient;
         IRequest::SharedPtr     mRequest;
-        std::string             mReceivedData;
         Operation               mCurrentOperation;                
+        string                  mReceivedData;
+        IReader::SharedPtr      mBodyReader;
 
         const IServer&          _getMatchedServer(void) const;
 

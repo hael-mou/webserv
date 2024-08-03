@@ -18,63 +18,73 @@
 *******************************************************************************/
 
 //===[ Constructor: Client ]====================================================
-http::Client::Client(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLen)
-    : mSocket(aSocket), mLastActivityTime(time(NULL))
+http::Client::Client(Handle aSocket,
+                     const sockaddr_in& aAddr,
+                     socklen_t aAddrLen)
+    : mSocket(aSocket),
+      mLastActivityTime(time(NULL))
 {
     mInfo += str::addrtoString(aAddr.sin_addr.s_addr, aAddrLen);
     mInfo += ":" + str::to_string(ntohs(aAddr.sin_port));
 }
 
-//===[ Destructor: Client ]================================================
+//===[ Destructor: Client ]=====================================================
 http::Client::~Client(void)
 {
     http::Cluster::eraseServers(mSocket);
     close(mSocket);
-    Logger::log("notice", "HTTP: Client '" + mInfo + "' disconnected", 2);
+    Logger::log("notice ", "HTTP: Client '" + mInfo + "' disconnected", 1);
 }
 
 /*******************************************************************************
     * Public Methods :
 *******************************************************************************/
 
-//===[ Method: updateActivityTime ]===========================================
+//===[ Method: updateActivityTime ]=============================================
 void http::Client::updateActivityTime(void)
 {
     mLastActivityTime = time(NULL);
 }
 
-//===[ Method: getSocket ]====================================================
+//===[ Method: recv ]===========================================================
+string http::Client::recv(void) const
+{
+    char buffer[2048];
+	memset(buffer, 0, 2048);
+
+	ssize_t bytesReaded = ::recv(mSocket, buffer, 2048, 0);
+	if (bytesReaded < 0)
+    {
+        std::string msg = "Error while receiving data";
+        throw (http::Exception(msg, http::INTERNAL_SERVER_ERROR)); 
+    }
+    return (string(buffer, bytesReaded));
+}
+
+
+//===[ Method: send ]===========================================================
+ssize_t http::Client::send(const std::string& aData) const
+{
+    return (::send(mSocket, aData.c_str(), aData.size(), 0));
+}
+
+/*** * Getters :
+*******************************************************************************/
+
+//===[ Method: getSocket ]======================================================
 const Handle& http::Client::getSocket(void) const
 {
     return (mSocket);
 }
 
-//===[ Method: getInfo ]======================================================
+//===[ Method: getInfo ]========================================================
 const std::string& http::Client::getInfo(void) const
 {
     return (mInfo);
 }
 
-//===[ Method: getLastActivityTime ]==========================================
+//===[ Method: getLastActivityTime ]============================================
 time_t http::Client::getLastActivityTime(void) const
 {
     return (mLastActivityTime);
-}
-
-//===[ Method: recv ]=========================================================
-std::string http::Client::recv(void) const
-{
-    char buffer[1025];
-	memset(buffer, 0, 1025); 
-	ssize_t bytesReaded = ::recv(mSocket, buffer, 1024, 0);
-	if (bytesReaded < 0) {
-		throw(std::runtime_error("HTTP: recv error"));
-    }
-    return (std::string(buffer));
-}
-
-//===[ Method: send ]=========================================================
-ssize_t http::Client::send(const std::string& aData) const
-{
-    return (::send(mSocket, aData.c_str(), aData.size(), 0));
 }

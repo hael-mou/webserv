@@ -22,24 +22,31 @@ http::FileResponse::FileResponse(void)
     : mFilePath(""),
       misConverted(false)
 {
+    setHeader("Content-Length", "0");
 }
 
 //=== [ Destructor: FileResponse ] =============================================
-http::FileResponse::~FileResponse(void) {}
+http::FileResponse::~FileResponse(void)
+{
+    if (mFileStream.is_open())
+        mFileStream.close();
+}
 
 /*******************************************************************************
     * Public Methods :
 *******************************************************************************/
 
 //===[ setPath: set file path ]================================================
-void http::FileResponse::setPath(const_string& aFilePath)
+void http::FileResponse::setPath(const string& aFilePath)
 {
     mFilePath = aFilePath;
     mFileStream.open(aFilePath.c_str(), std::ios::in);
-    if (!mFileStream.is_open() && errno == ENOENT)
-        throw (http::NOT_FOUND);
-    if (!mFileStream.is_open() && errno != ENOENT)
-        throw (http::FORBIDDEN);
+    if (!mFileStream.is_open() && errno == ENOENT) {
+        throw (http::Exception("File not found", http::NOT_FOUND)); 
+    }
+    if (!mFileStream.is_open() && errno != ENOENT) {
+        throw (http::Exception("Access denied", http::FORBIDDEN));
+    }
     setHeader("Content-Length", _fileSize());
 }
 
@@ -52,8 +59,8 @@ std::string http::FileResponse::toRaw(void)
         misConverted = true;
     }
 
-    if (mReadBuffer.empty())
-       mReadBuffer = _readFromFile(1024);
+    if (mReadBuffer.empty() && mFileStream.is_open())
+       mReadBuffer = _readFromFile(READ_BUFFER_SIZE);
     
     return (mReadBuffer);
 }
@@ -67,7 +74,11 @@ void http::FileResponse::removeBytesSent(size_t aBytesSent)
 //===[ eof: end of file ]======================================================
 bool http::FileResponse::eof(void) const
 {
-    return (misConverted && mFileStream.eof());
+    if (!misConverted || !mReadBuffer.empty())
+        return (false);
+    if (!mFileStream.is_open())
+        return (true);
+    return (mFileStream.eof());
 }
 
 //===[ display: display file ]=================================================
@@ -82,10 +93,11 @@ void http::FileResponse::display(void) const
 std::string http::FileResponse::_readFromFile(size_t aSize)
 {
     std::string buffer;
-    char        readBuffer[aSize];
+    char*       readBuffer = new char[aSize];
 
     mFileStream.read(readBuffer, aSize);
     buffer.assign(readBuffer, mFileStream.gcount());
+    delete[] readBuffer;
     return (buffer);
 }
 

@@ -15,7 +15,7 @@
 # define   __HttpRawResponse_HPP__
 
 /*******************************************************************************
-	* Includes :
+    * Includes :
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
@@ -26,29 +26,29 @@
 # include <iostream>
 
 /*******************************************************************************
-	* HttpRawResponse Class :
+    * HttpRawResponse Class :
 *******************************************************************************/
 namespace http
 {
-	class RawResponse : public AResponse
-	{
-	public:
-		RawResponse(void);
-		virtual ~RawResponse(void);
+    class RawResponse : public AResponse
+    {
+    public:
+        RawResponse(void);
+        virtual ~RawResponse(void);
 
-		void    		setBody(const_string& aBody);
-		std::string     toRaw(void);
-		void			removeBytesSent(size_t aBytesSent);
-        bool            eof(void) const;
-		void    	   	setTemplateOn(void);
-		void			display(void) const;
-	
-	private:
-		std::string		mBody;
-		std::string		mRawMessage;
-		bool			misConverted;
-		bool            misTemplate;
-	};
+        void        setBody(const string& aBody);
+        string      toRaw(void);
+        void        removeBytesSent(size_t aBytesSent);
+        bool        eof(void) const;
+        void        setTemplateOn(void);
+        void        display(void) const;
+    
+    private:
+        string      mBody;
+        string      mRawMessage;
+        bool        misConverted;
+        bool        misTemplate;
+    };
 }
 
 #endif	/* __HttpRawResponse_HPP__ */

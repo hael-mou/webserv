@@ -35,19 +35,18 @@ namespace http
         Client(Handle aSocket, const sockaddr_in &aAddr, socklen_t aAddrLen);
         virtual ~Client(void);
 
-        void                    updateActivityTime(void);
+        string              recv(void) const;
+        ssize_t             send(const std::string& aData) const;
+        void                updateActivityTime(void);
 
-        const Handle&           getSocket(void) const;
-        const std::string&      getInfo(void) const;
-        time_t                  getLastActivityTime(void) const;
-
-        std::string             recv(void) const;
-        ssize_t                 send(const std::string& aData) const;
+        const Handle&       getSocket(void) const;
+        const string&       getInfo(void) const;
+        time_t              getLastActivityTime(void) const;
 
     private:
-        Handle                  mSocket;
-        std::string             mInfo;
-        time_t                  mLastActivityTime;
+        Handle             mSocket;
+        string             mInfo;
+        time_t             mLastActivityTime;
 
     };
 }

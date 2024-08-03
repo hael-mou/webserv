@@ -19,6 +19,7 @@
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
+# include "Utils.hpp"
 
 # include "IEventHandler.hpp"
 # include "IResponse.hpp"
@@ -27,6 +28,7 @@
 
 # include "HttpFactory.hpp"
 # include "HttpRawResponse.hpp"
+# include "HttpException.hpp"
 
 # include <dirent.h>
 
@@ -39,7 +41,7 @@ namespace http
     {
     public:
         GetHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
-        virtual ~GetHandler();
+        virtual ~GetHandler(void);
 
         const Handle&           getHandle(void) const;
         IMultiplexer::Mode      getMode(void) const;
@@ -49,13 +51,14 @@ namespace http
     private:
         IClient::SharedPtr      mClient;
         IRequest::SharedPtr     mRequest;
+        bool                    mTerminated;
         std::string             mRessourcePath;
 
     
-        std::string                 _getRequestedPath(void) ;
+        std::string                 _getAbsolutePath(void);
         http::AResponse::SharedPtr  _generateResponse(void);
         http::AResponse::SharedPtr  _handleDirectory(void);
-        http::AResponse::SharedPtr  _handleFile(const_string& aPath);
+        http::AResponse::SharedPtr  _handleFile(const string& aPath);
         std::string                 _autoIndex(DIR *dir);
     };
 };

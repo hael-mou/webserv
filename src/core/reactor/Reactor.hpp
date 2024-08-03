@@ -36,7 +36,7 @@ public:
     typedef std::map<Handle, IEH::SharedPtr>	IEventHandlerMap;
 
     Reactor(IMultiplexer* aMultiplexer);
-    virtual ~Reactor(void);
+    ~Reactor(void);
 
     void              registerEventHandler(IEH::SharedPtr aHandler);
     void              registerEventHandler(IEventHandlerQueue& aHandlers);

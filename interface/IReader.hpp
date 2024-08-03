@@ -21,8 +21,6 @@
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
 
-
-#define TEMP_FILE_PATH "/tmp/body_XXXXXX"
 /*******************************************************************************
     * http::IReader Interface :
 *******************************************************************************/
@@ -35,16 +33,10 @@ namespace http
 
         virtual ~IReader(void) {};
     
-        virtual void        read(void) = 0;
-        virtual void        write(std::string& aBody) = 0;
-        virtual size_t      getSizeFile(void) = 0;
-        virtual bool        isComplete(void) = 0;
-        virtual int         getFile(void) const = 0;
-
-    protected:
-        int     mFile;
-        char    *httpTemplate;
+        virtual void            build(string& ReceivedData) = 0;
+        virtual bool            isComplete(void) const = 0;
+        virtual const string&   getFilePath(void) const = 0;
     };
 }
 
-#endif	/* __IReader_HPP__ */
+#endif /* __IREADER_HPP__ */

@@ -25,12 +25,13 @@ http::AResponse::sStatusMessage = http::AResponse::_sinitStatusMessage();
 
 //===[ Constructor: AResponse ]================================================
 http::AResponse::AResponse(void)
-    : mVersion("HTTP/1.1"),
+    : mMode(1),
+      mVersion("HTTP/1.1"),
       mStatusCode(501),
       mStatusline("501 Not Implemented"),
       mSendTimeout(60)
 {
-    setHeader("date", Logger::getcurrentTime());
+    setHeader("Date", Logger::getcurrentTime("%a, %d %b %Y %H:%M:%S %z"));
     setHeader("Server", ServerVersion);
 }
 
@@ -60,7 +61,7 @@ void    http::AResponse::setStatusCode(u_int aStatusCode)
 
 //===[ Methode : set Header ]==================================================
 void    http::AResponse::setHeader(const std::string& aHeader,
-                                            const_string& aValue)
+                                            const string& aValue)
 {
     mHeaders[str::toLower(aHeader)] = aValue;
 }
@@ -71,8 +72,14 @@ void    http::AResponse::setSendTimeout(time_t aSendTimeout)
     mSendTimeout = aSendTimeout;
 }
 
+//===[ Methode : set To Error Mode ]===========================================
+void    http::AResponse::setToErrorMode(void)
+{
+    mMode = 2;
+}
+
 //===[ Methode : get Header ]==================================================
-const_string& http::AResponse::getHeader(const_string& aHeader) const
+const string& http::AResponse::getHeader(const string& aHeader) const
 {
     StringMap::const_iterator it = mHeaders.find(str::toLower(aHeader));
     if (it != mHeaders.end())
@@ -100,6 +107,14 @@ std::string http::AResponse::toRaw(void)
     }
     rawHeader += CRLF;
     return (rawHeader); 
+}
+
+//===[ Methode : log ]=========================================================
+void http::AResponse::log(const string& aClientInfo) const
+{
+    string title = (mMode == 1) ? "notice " : "error  ";
+    Logger::log(title, "HTTP: Response: '" + mVersion + " " + mStatusline
+                     + "' Client: '" + aClientInfo + "'");
 }
 
 //===[ Methode : display ]=====================================================
@@ -174,6 +189,7 @@ http::AResponse::_sinitStatusMessage(void)
     statusMessage[BAD_GATEWAY]            = "502 Bad Gateway";
     statusMessage[SERVICE_UNAVAILABLE]    = "503 Service Unavailable";
     statusMessage[GATEWAY_TIMEOUT]        = "504 Gateway Timeout";
+    statusMessage[VERSION_NOT_SUPPORTED]  = "505 HTTP Version Not Supported";
     statusMessage[INSUFFICIENT_STORAGE]   = "507 Insufficient Storage";
     statusMessage[LOOP_DETECTED]          = "508 Loop Detected";
     statusMessage[NOT_EXTENDED]           = "510 Not Extended";

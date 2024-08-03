@@ -18,32 +18,35 @@
     * String Utils :
 *******************************************************************************/
 
-//===[ strtrim : ]============================================================
-std::string str::strtrim(const_string& input)
+//===[ strtrim : ]==============================================================
+string str::strtrim(const string& input)
 {
     size_t start = input.find_first_not_of(' ');
-    if (std::string::npos == start)
-        return (std::string());
-    size_t end = input.find_last_not_of(' ');
+    size_t end   = input.find_last_not_of(' ');
+
+    if (string::npos == start)
+    {
+        return (EmptyString);
+    }
     return (input.substr(start, end - start + 1));
 }
 
-//===[ lineToPair : ]=========================================================
-StringPair str::lineToPair(const_string& line, const char sep)
+//===[ lineToPair : ]===========================================================
+StringPair str::lineToPair(const string& line, const char sep)
 {
     StringPair          pair;
     std::stringstream   ss(line);
     getline(ss, pair.first, sep);
     getline(ss, pair.second);
-    return (std::make_pair(strtrim(pair.first), strtrim(pair.second)));
+    return (StringPair(strtrim(pair.first), strtrim(pair.second)));
 }
 
-//===[ split : ]==============================================================
-std::vector<std::string> str::split(const_string str, const char sep)
+//===[ split : ]================================================================
+std::vector<string> str::split(const string str, const char sep)
 {
-    std::vector<std::string>    arr;
+    std::vector<string>    arr;
     std::stringstream           ss(str);
-    std::string                 buff;
+    string                 buff;
 
     while (getline(ss, buff, sep))
     {
@@ -55,87 +58,163 @@ std::vector<std::string> str::split(const_string str, const char sep)
     return (arr);
 }
 
-//===[ stirngTolower : ]=======================================================
-std::string str::toLower(const_string &str)
+//===[ stirngTolower : ]========================================================
+string str::toLower(const string &str)
 {
-    std::string result = str;
-    for (size_t i = 0; i < result.length(); ++i) {
+    string result = str;
+    for (size_t i = 0; i < result.size(); ++i) {
         result[i] = std::tolower(result[i]);
     }
     return (result);
 }
 
-//===[ address to string : ]===================================================
-std::string str::addrtoString(const in_addr_t& addr, const socklen_t& addrLen)
+//===[ address to string : ]====================================================
+string str::addrtoString(const in_addr_t& addr, const socklen_t& addrLen)
 {
     char* buffer = new char[addrLen];
     unsigned char* ip = (unsigned char*)&addr;
     
     snprintf(buffer, addrLen, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-    std::string result(buffer);
+    string result(buffer);
     delete[] buffer;
 
     return (result);
 }
 
 //===[ replace : ]==============================================================
-std::string& str::replace(std::string& str,
-                          const_string& from,
-                          const_string& to)
+string& str::replace(string& str,
+                          const string& from,
+                          const string& to)
 {
     if (from.empty())
         return (str);
     size_t start_pos = 0;
-    while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+    while ((start_pos = str.find(from, start_pos)) != string::npos)
     {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length();
+        str.replace(start_pos, from.size(), to);
+        start_pos += to.size();
     }
     return (str);
 }
 
-/*******************************************************************************
-    * integer Utils :
-*******************************************************************************/
-
 //===[ strToInt : ]=============================================================
-int integer::strToInt(const_string& str)
+int str::strToInt(const string& str)
 {
     if (str.empty() == true)
         return (0);
 
-    for (size_t index = 0; index < str.length(); ++index)
+    for (size_t index = 0; index < str.size(); ++index)
     {
-        if (::isdigit(str[index]) == false)
+        if (std::isdigit(str[index]) == false)
             return (0);
     }
 
-    return (atoi(str.c_str()));
+    return (std::atoi(str.c_str()));
 }
+
 
 /*******************************************************************************
     * Logger Utils :
 *******************************************************************************/
 
 //=== [ print error in file ] ==================================================
-void	Logger::log(const_string& level, const_string& message, int fd)
+void	Logger::log(const string& level, const string& message, int fd)
 {
-    std::string time = getcurrentTime();
+    string time = getcurrentTime("%Y/%m/%d %H:%M:%S");
 
     fd = (fd >= 0) ? fd : 1;
-    std::string logMsg = time + " - [" + level + "] " + message + "\n";
+    string logMsg = time + " - [" + level + "] " + message + "\n";
     ::write(fd, logMsg.c_str(), logMsg.size());
 }
 
 //=== [ get current time ] =====================================================
-std::string		Logger::getcurrentTime(void)
+string		Logger::getcurrentTime(const char* format)
 {
     time_t  now      = time(0);
     tm*     timeinfo = localtime(&now);
-    char    timestamp[20];
+    char    timestamp[50];
 
-    strftime(timestamp, sizeof(timestamp), "%Y/%m/%d %H:%M:%S", timeinfo);
+    strftime(timestamp, sizeof(timestamp), format, timeinfo);
     return (timestamp);
+}
+
+/*******************************************************************************
+    * File Utils :
+*******************************************************************************/
+
+//=== [ file exists ] ==========================================================
+bool      file::fileExists(const string& path)
+{
+    return (access(path.c_str(), F_OK) == 0);
+}
+
+//=== [ generate temp file name ] ==============================================
+string    file::generateTempFileName(const string& dir)
+{
+    std::srand(static_cast<u_int>(std::time(0)));
+    std::string tempFileName;
+
+    do {
+		tempFileName.clear();
+        tempFileName = dir + "/";
+		tempFileName += "tempfile_" + std::to_string(std::time(0));
+        tempFileName += "_" + str::to_string(std::rand()) + ".tmp";
+	} while (fileExists(tempFileName));
+
+    return (tempFileName);
+}
+
+//=== [ create file ] ==========================================================
+fd_t      file::createFile(const string& path)
+{
+    if (!fileExists(path) && errno != ENOENT)
+        return (-1);
+    return (::open(path.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666));
+}
+
+//=== [ get file size ] ========================================================
+ssize_t    file::getFileSize(fd_t fd)
+{
+    struct stat st;
+
+    if (fd == -1 || ::fstat(fd, &st) == -1) {
+        return (-1);
+    }
+    return (st.st_size);
+}
+
+//=== [ close file ] ===========================================================
+void      file::closeFile(fd_t fd)
+{
+    if (fd != -1) {
+        ::close(fd);
+    }
+}
+
+//=== [ remove file ] ==========================================================
+void      file::removeFile(const string& path)
+{
+    std::remove(path.c_str());
+}
+
+//=== [ get extension ] ========================================================
+std::string     file::getExtension(const string& path)
+{
+    std::size_t position = path.find_last_of('.');
+    if (position == std::string::npos)
+        return ("");
+    return (path.substr(position + 1));
+}
+
+//=== [ is directory ] =========================================================
+bool    file::isDirectory(const string& path)
+{    
+    struct stat st;
+    if (path[path.length() - 1] == '/')
+        return (true);
+    if (stat(path.c_str(), &st) != 0)
+        return (false);
+    return (S_ISDIR(st.st_mode));
 }
 
 /*******************************************************************************
@@ -153,7 +232,7 @@ Handle sock::createSocket(int family, int type, int protocol)
 }
 
 //=== [ bind ] =================================================================
-void    sock::bind(Handle socket, const_string& host, const_string& port)
+void    sock::bind(Handle socket, const string& host, const string& port)
 {
     struct addrinfo     hints;
     struct addrinfo*    result;
@@ -206,54 +285,91 @@ void    sock::setNonBlocking(Handle& socket)
 }
 
 /*******************************************************************************
- * HTTP Utils
+    * HTTP Utils
 *******************************************************************************/
 
+//=== [ tmp dir ] ==============================================================
+std::string http::tmpDir(const std::string& dir)
+{
+    static string tmpDir = "/tmp";
+
+    if (dir != "")
+        tmpDir = dir;
+
+    return (tmpDir);
+}
+
 //=== [ isValidHeader ] ========================================================
-bool    httptools::isValidHeader(const char &c)
+bool    http::isValidHeader(const char &c)
 {
     if (!(::isalnum(c) || c == '-' || c == '_' ))
         return (false);
     return (true);
 }
 
-//=== [ isSpecialChar ] ========================================================
-bool    httptools::isSpecialChars(const char &c)
+//=== [ is Valid Method : ] ====================================================
+bool    http::isValidMethod(const string& method)
 {
-    if (!(::isalnum(c) || HttpSpecialChars(c)))
+    if (method == "GET" || method == "POST" || method == "DELETE")
+        return (true);
+    return (false);
+}
+
+//=== [ is Valid Version : ] ===================================================
+bool    http::isValidProtocol(const string& protocol)
+{
+    if (protocol == "HTTP/1.1")
+        return (true);
+    return (false);
+}
+
+//=== [ isSpecialChar ] ========================================================
+bool    http::isSpecialChars(const char &c)
+{
+    if (!(::isalnum(c) || http::SpecialChars(c)))
         return (false);
     return (true);
 }
 
 //===[ httpDecoder: ]===========================================================
-void    httptools::httpDecoder(std::string &str)
+void    http::decoder(string &str)
 {
 	std::size_t percentSignPosition;
-	while ((percentSignPosition = str.find('%')) != std::string::npos)
+	while ((percentSignPosition = str.find('%')) != string::npos)
 	{
-		std::string hexadecimalValue = str.substr(percentSignPosition + 1, 2);
+		string hexadecimalValue = str.substr(percentSignPosition + 1, 2);
 		char character = static_cast<char>(std::strtol(hexadecimalValue.c_str()
             ,NULL, 16));
 		str.replace(percentSignPosition, 3, 1, character);				
 	}
 }
 
-//===[ Method : isDir ]=========================================================
-bool    httptools::isDirectory(const_string& path)
+//===[ getRelativePath ] =======================================================
+std::string http::getRelativePath(const string& reqUri, const string& locUri)
 {
-    struct stat st;
-    if (path[path.length() - 1] == '/')
-        return (true);
-    if (stat(path.c_str(), &st) != 0)
-        return (false);
-    return (S_ISDIR(st.st_mode));
+    if (locUri[locUri.length() - 1] == '/') 
+    {
+        std::string path = reqUri.substr(locUri.length());
+        return (path);
+    }
+    else {
+        std::string path = reqUri.substr(locUri.length());
+        path.erase(0, path.find_first_of('/') + 1);
+        return (path);
+    }
 }
 
-//===[ Method : get extension ]=================================================
-std::string httptools::getExtension(const_string& path)
+//===[ isCgiPath ] =============================================================
+bool    http::isCgiPath(const string& path, const StringVector& cgiExt)
 {
-    std::size_t position = path.find_last_of('.');
-    if (position == std::string::npos)
-        return ("");
-    return (path.substr(position + 1));
+    for (size_t index = 0; index < cgiExt.size(); ++index)
+    {
+        size_t position = path.find(cgiExt[index]);
+        if (position == std::string::npos)
+            continue ;
+        position += cgiExt[index].length();
+        if (position == path.length() || path[position] == '/')
+            return (true);
+    }
+    return (false);
 }

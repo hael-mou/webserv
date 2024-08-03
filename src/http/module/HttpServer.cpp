@@ -45,7 +45,7 @@ http::Server::~Server(void) {}
 *******************************************************************************/
 
 //===[ Method: check if server name match ]=====================================
-bool  http::Server::isMatch(const_string& aHostName) const
+bool  http::Server::isMatch(const string& aHostName) const
 {
     for (size_t index = 0; index < mServerName.size(); ++index)
     {
@@ -64,11 +64,11 @@ bool    http::Server::isKeepAlive(void) const
 //===[ Method: to time ]=======================================================
 time_t  http::Server::toTime(const StringVector& aTime, time_t aDefault) const
 {
-    time_t time;
+    time_t time = aDefault;
 
     if (aTime.size() == 1)
     {
-        if ((time = integer::strToInt(aTime[0])) > 5)
+        if ((time = str::strToInt(aTime[0])) > 5)
             return (time);
         Logger::log("warning", "HTTP: ignored: '" +  aTime[0] + "'", 2);
     }
@@ -84,7 +84,7 @@ void    http::Server::setListens(const StringVector& aListens)
     for (size_t index = 0; index < aListens.size(); ++index)
     {
         StringPair addressPort = str::lineToPair(aListens[index], ':');
-        int port =  integer::strToInt (addressPort.second);
+        int port =  str::strToInt (addressPort.second);
         if (port <= 0 || port > 65535)
         {
             Logger::log("warning", "HTTP: Listen directive ignored: '"
@@ -114,8 +114,10 @@ void http::Server::setMaxBodySize(const StringVector& aMaxBodySize)
     mMaxBodySize = 0;
     if (aMaxBodySize.size() == 1)
     {
-        if ((mMaxBodySize = integer::strToInt(aMaxBodySize[0])) > 0)
+        if ((mMaxBodySize = str::strToInt(aMaxBodySize[0])) > 0) {
+            mMaxBodySize *= _1_MB_;
             return ;
+        }
         Logger::log("warning", "HTTP: Client max body size ignored: '"
             +  aMaxBodySize[0] + "'", 2);
     }
@@ -147,7 +149,7 @@ void    http::Server::setServerRoot(const StringVector& aRoot)
     if (aRoot.size() == 1)
     {
         mRoot = aRoot[0];
-        if (!mRoot.empty() && mRoot[mRoot.length() - 1] != '/')
+        if (!mRoot.empty() && mRoot[mRoot.size() - 1] != '/')
             mRoot += "/";
         return;
     }
@@ -220,7 +222,7 @@ time_t         http::Server::getCgiTimeout(void) const
 }
 
 //===[ Method: get Mime Types ]=================================================
-const std::string &http::Server::getMimeType(const_string aExtansion) const
+const std::string &http::Server::getMimeType(const string& aExtansion) const
 {
     StringMap::const_iterator it = mMimeTypes.find(aExtansion);
 

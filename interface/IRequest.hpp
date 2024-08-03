@@ -34,34 +34,23 @@ namespace http
         typedef mem::shared_ptr<IRequest>           SharedPtr;
         typedef std::vector<IServer::SharedPtr>     ServerVector;
 
-        enum Error
-        {
-            BAD_REQUEST = 400,
-            NOT_FOUND = 404,
-            PAYLOAD_TOO_LARGE = 413,
-            URI_TOO_LONG = 414,
-            UNSUPPORTED_MEDIA_TYPE = 415,
-            NOT_IMPLEMENTED = 501,
-            VERSION_NOT_SUPPORTED = 505
-        };
-
         virtual ~IRequest(void) {};
 
-        virtual void            selectMatechedRoute(const ServerVector& aServers) = 0;
-        virtual void            setHeader(std::string& aLine) = 0;
-        virtual bool            isComplete(void) = 0;
-        
-        virtual void            buildBody(std::string& aBody) = 0;
+        virtual void      selectMatechedRoute(const ServerVector& aServers) = 0;
+        virtual void      setHeader(string& aLine) = 0;
+        virtual void      setBodyPath(const string& aPath) = 0;
+        virtual void      uriAppend(const string& path) = 0;
 
-        virtual std::string     getVersion(void) const = 0;
-        virtual std::string		getMethod(void) const = 0;
-        virtual std::string		getUriPath(void) const = 0;
-        virtual StringMap		getUriQuery(void) const = 0;
-        virtual StringMap 		getHeaders(void) const = 0;
-        virtual std::string		getHeader(std::string const& key) = 0;
-        virtual const IServer&  getMatchedServer(void) const = 0;
-        virtual const Location& getMatchedLocation(void) const = 0;
-        virtual void            display(void) const = 0;
+        virtual string            getVersion(void) const = 0;
+        virtual string		      getMethod(void) const = 0;
+        virtual string		      getUriPath(void) const = 0;
+        virtual StringMap		  getUriQuery(void) const = 0;
+        virtual const string&     getHeader(string const& key) const = 0;
+        virtual const IServer&    getMatchedServer(void) const = 0;
+        virtual const Location&   getMatchedLocation(void) const = 0;
+        virtual const string&     getBodyPath(void) const = 0;
+
+        virtual void   display(void) const = 0;
     };
 }
 

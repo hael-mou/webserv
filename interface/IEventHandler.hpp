@@ -28,7 +28,7 @@
 class IEventHandler
 {
 public:
-    typedef mem::shared_ptr<IEventHandler>  SharedPtr;
+    typedef mem::shared_ptr<IEventHandler>   SharedPtr;
     typedef std::queue<SharedPtr>            IEventHandlerQueue;
 
     virtual ~IEventHandler(void) {};

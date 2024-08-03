@@ -29,9 +29,9 @@ http::AcceptHandler::AcceptHandler(Handle aHandle)
 http::AcceptHandler::~AcceptHandler(void)
 {
     close(mHandle);
-    Logger::log("notice","HTTP: Closing Socket["
+    Logger::log("notice ","HTTP: Closing Socket["
         + str::to_string(mHandle)
-        + "], Done.", 2);
+        + "], Done.", 1);
 }
 
 /*******************************************************************************
@@ -63,8 +63,8 @@ IEventHandler::IEventHandlerQueue  http::AcceptHandler::handleEvent(void)
             continue;
         }
 
-        Logger::log("notice","HTTP: New Client '" + client->getInfo()
-                  + "' connected", 2);
+        Logger::log("notice ","HTTP: New Client '" + client->getInfo()
+                  + "' connected", 1);
         const ServerVector& servers = http::Cluster::getServers(mHandle);
         http::Cluster::setServers(client->getSocket(), servers);
         eventHandlers.push(http::Factory::createRecvHandler(client));

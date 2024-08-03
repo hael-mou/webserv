@@ -21,27 +21,30 @@
 # include <map>
 
 //===[ definitions : ] ==========================================================
-const std::string							    EmptyString = "";
-const std::string							    CRLF = "\r\n";
-const std::string							    ServerVersion = "WebServ/1.1";
+const std::string                       ServerVersion = "WebServ/1.0.0";
+const std::string                       CgiVersion = "CGI/1.0.0";
+const std::string                       EmptyString = "";
+const std::string                       CRLF_CRLF = "\r\n\r\n";
+const std::string                       CRLF = "\r\n";
 
 //===[ Stirng : ] ==============================================================
-typedef const std::string						const_string;
-typedef std::pair<std::string, std::string>		StringPair;
-typedef std::vector<std::string>				StringVector;
-typedef std::map<std::string, std::string>		StringMap;
+typedef std::string                     string;
+typedef std::pair<string, string>       StringPair;
+typedef std::vector<string>             StringVector;
+typedef std::map<string, string>        StringMap;
 
 //===[ integer : ] =============================================================
-typedef unsigned int							u_int;
-typedef long                                    ssize_t;
+typedef unsigned int                    u_int;
+typedef long                            ssize_t;
 
 //===[ int/Stirng : ] ==========================================================
-typedef std::map<u_int, std::string>		UintStringMap;
+typedef std::map<u_int, string>         UintStringMap;
 
 //===[ Handle : ] ==============================================================
-typedef int										Handle;
-typedef std::string								Address;
-typedef std::string								Port;
-typedef std::queue<Handle>						HandleQueue;
+typedef int                             Handle;
+typedef int							    fd_t;
+typedef string                          Address;
+typedef string                          Port;
+typedef std::queue<Handle>              HandleQueue;
 
 #endif /* __TYPEDEFS_HPP__ */

@@ -23,6 +23,7 @@ http::GetHandler::GetHandler(IClient::SharedPtr aClient,
     : mClient(aClient),
       mRequest(aRequest)
 {
+    mTerminated = (mClient && mRequest) ? false : true;
 }
 
 //===[ Destructor: GetdHandler ]================================================
@@ -31,37 +32,57 @@ http::GetHandler::~GetHandler(void) {}
 /*******************************************************************************
     * Public Methods :
 *******************************************************************************/
-//===[ handleEvent: return IEventHandlerQueue ]=================================
+
+//=== [ Method : handleEvent ] =================================================
 IEventHandler::IEventHandlerQueue http::GetHandler::handleEvent(void)
 {
     IEventHandlerQueue eventHandlers;
-    try {
-        if (mRequest->getMatchedLocation().isAllowedMethod("GET") == false)
-            throw http::METHOD_NOT_ALLOWED;
 
-        mRessourcePath = _getRequestedPath();
+    try
+    {
+        if (mRequest->getMethod() != "GET") {
+            throw (http::Exception("Unknown Method", http::FORBIDDEN));
+        }
+        if (mRequest->getMatchedLocation().isAllowedMethod("GET") == false) {
+            string msg = "Method Not Allowed";
+            throw (http::Exception(msg, http::METHOD_NOT_ALLOWED));
+        }
+
+        mRessourcePath = _getAbsolutePath();
         if (mRessourcePath.empty() || access(mRessourcePath.c_str(), F_OK))
         {
-            (errno == ENOENT) ? throw http::NOT_FOUND : throw http::FORBIDDEN ;
+            (errno == ENOENT) ?
+            throw (http::Exception("File not found", http::NOT_FOUND)) :
+            throw (http::Exception("Access denied", http::FORBIDDEN))  ;
         }
         eventHandlers.push(
             http::Factory::createSendHandler(mClient, _generateResponse())
         );
     }
-    catch (const http::StatusCode& errorCode) {
-        IResponse::SharedPtr
-        response = mRequest->getMatchedServer().getErrorPage(errorCode);
-        eventHandlers.push(http::Factory::createSendHandler(mClient, response));
+     catch(http::Exception& aException)
+    {
+        aException.setClientInfo(mClient->getInfo());
+        string msg = aException.what();
+        Logger::log("error  ", "HTTP: "+ msg , 2);
+
+        IResponse::SharedPtr errRes = mRequest->getMatchedServer()
+                                      .getErrorPage(aException.getStatusCode());
+        eventHandlers.push(http::Factory::createSendHandler(mClient, errRes));
     }
+    catch (IEventHandler* aSwitcher)
+    {
+        eventHandlers.push(aSwitcher);  
+    }
+
     return (eventHandlers);
 }
 
-//===[ getMode: return Handler Mode ]============================================
+//===[ getMode: return Handler Mode ]===========================================
 IMultiplexer::Mode http::GetHandler::getMode(void) const
 {
     return (IMultiplexer::Write);
 }
-//===[ getHandle: return Handler Handle ]========================================
+//===[ getHandle: return Handler Handle ]=======================================
 const Handle& http::GetHandler::getHandle(void) const
 {
     return (mClient->getSocket());
@@ -70,47 +91,41 @@ const Handle& http::GetHandler::getHandle(void) const
 // ==[ isTerminated: return Handler Status ]====================================
 bool http::GetHandler::isTerminated(void) const
 {
-    return (false);
+    return (mTerminated);
 }
 
-/** *************************************************************************** 
- * Private Methods :
+/** ****************************************************************************
+    * Private Methods :
 *******************************************************************************/
 
-std::string http::GetHandler::_getRequestedPath(void)
+std::string http::GetHandler::_getAbsolutePath(void)
 {
-    const_string&   locationUri   = mRequest->getMatchedLocation().getUri();
-    const_string&   locationRoot  = mRequest->getMatchedLocation().getRoot();
+    const string&   locationUri   = mRequest->getMatchedLocation().getUri();
+    const string&   locationRoot  = mRequest->getMatchedLocation().getRoot();
     std::string     requestUri    = mRequest->getUriPath();
-    std::size_t locationUriLength = locationUri.length();
 
-    bool        hasTrailingSlash  = locationUri[locationUriLength - 1] == '/';
-    std::string path;
-    if (hasTrailingSlash) {
-        path = requestUri.substr(locationUriLength);
-    }
-    else {
-        path = requestUri.substr(locationUriLength);
-        path.erase(0, path.find_first_of('/') + 1);
-    }
-    return (locationRoot + path);
+    return (locationRoot + http::getRelativePath(requestUri, locationUri));
 }
 
 //===[ Method: _resourceHandler ]===============================================
 http::AResponse::SharedPtr    http::GetHandler::_generateResponse(void)
 {
-    if (httptools::isDirectory(mRessourcePath)) {
+    if (file::isDirectory(mRessourcePath)) {
         return (_handleDirectory());
     }
     return (_handleFile(mRessourcePath));
 }
 
-// ===[ Method : Handle File ]===================================================
-http::AResponse::SharedPtr  http::GetHandler::_handleFile(const_string& aPath)
+// ===[ Method : Handle File ]==================================================
+http::AResponse::SharedPtr  http::GetHandler::_handleFile(const string& aPath)
 {
-    std::string  extension = httptools::getExtension(aPath);
-    const_string contentType = mRequest->getMatchedServer()
+    std::string  extension = file::getExtension(aPath);
+    const string contentType = mRequest->getMatchedServer()
                                        .getMimeType(extension);
+
+    // if (http::isCgiPath(extension) == true){
+    //     throw (http::Factory::createCgiHandler(mClient, mRequest));
+    // }
 
     http::FileResponse* response = new http::FileResponse();
     response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
@@ -122,37 +137,43 @@ http::AResponse::SharedPtr  http::GetHandler::_handleFile(const_string& aPath)
     return (response);
 }
 
-// === [ Method: _handleDirectory ] ==============================================
+// ===[ Method : Handle Directory ]=============================================
 http::AResponse::SharedPtr  http::GetHandler::_handleDirectory(void)
 {
-    http::RawResponse* response = new http::RawResponse();
+    const http::IServer&    matchedServer     = mRequest->getMatchedServer();
+    const http::Location&   matchedlocation   = mRequest->getMatchedLocation();
+    http::RawResponse*      response          = new http::RawResponse();
+
     if (mRessourcePath[mRessourcePath.length() - 1] != '/')
     {
         response->setStatusCode(http::MOVED_PERMANENTLY);
-        response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
+        response->setSendTimeout(matchedServer.getSendTimeout());
         response->setVersion(mRequest->getVersion());
         response->setHeader("Location", mRequest->getUriPath() + "/");
         response->setHeader("Connection", mRequest->getHeader("Connection"));
         return (response);
     }
 
-    StringVector indexFiles = mRequest->getMatchedLocation().getIndexFiles();
+    StringVector indexFiles = matchedlocation.getIndexFiles();
     if (!indexFiles.empty())
     {
         for (size_t index = 0; index < indexFiles.size(); index++)
         {
             if (!access((mRessourcePath + indexFiles[index]).c_str(), F_OK))
-                 return(_handleFile(mRessourcePath + indexFiles[index])); 
+            {
+                mRequest->uriAppend(indexFiles[index]);
+                return (_handleFile(mRessourcePath + indexFiles[index]));
+            }
         }
     }
-    
-    if (mRequest->getMatchedLocation().isAutoIndex())
+
+    if (matchedlocation.isAutoIndex())
     {
         DIR* dir = opendir(mRessourcePath.c_str());
         if (dir != NULL)
         {
             response->setStatusCode(http::OK);
-            response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
+            response->setSendTimeout(matchedServer.getSendTimeout());
             response->setVersion(mRequest->getVersion());
             response->setBody(_autoIndex(dir));
             response->setHeader("Connection", mRequest->getHeader("Connection"));
@@ -161,7 +182,7 @@ http::AResponse::SharedPtr  http::GetHandler::_handleDirectory(void)
         }
     }
 
-    throw(http::FORBIDDEN);
+    throw(http::Exception("No Index Or Autoindex", http::FORBIDDEN));
 }
 
 ///===[ Method : _autoIndex ]====================================================
@@ -188,5 +209,5 @@ std::string http::GetHandler::_autoIndex(DIR *dir)
     }
     str::replace(autoindex, "$(CONTENT)", content);
 
-    return autoindex;
+    return (autoindex);
 }
