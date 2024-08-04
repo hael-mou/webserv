@@ -44,6 +44,7 @@ namespace http
         void            setHeader(std::string& aLine);
         void            setBodyPath(const string& aPath);
         void            uriAppend(const string& path);
+        bool            hasBody(void) const;
      
         string          getVersion(void) const;
         string          getMethod(void) const;

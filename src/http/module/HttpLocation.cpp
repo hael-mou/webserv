@@ -60,6 +60,7 @@ void    http::Location::setRoot(const StringVector&  aRoot)
 //===[Method : setUpload]=======================================================
 void    http::Location::setUpload(const StringVector& aUpload)
 {
+    mUpload.clear();
     if (aUpload.size() == 1)
     {
         mUpload = aUpload[0];
@@ -69,8 +70,6 @@ void    http::Location::setUpload(const StringVector& aUpload)
         }
         return;
     }
-
-    mUpload = DEFAULT_UPLOAD;
 }
 
 //===[Method : setCgiExt]========================================================

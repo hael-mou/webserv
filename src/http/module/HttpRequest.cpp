@@ -88,6 +88,12 @@ void	http::Request::uriAppend(const string& path)
     mUri += path;
 }
 
+//===[ Method: hasBody ]========================================================
+bool http::Request::hasBody(void) const
+{
+    return (!mBodyPath.empty());
+}
+
 /*** * Getters :
 *******************************************************************************/
 

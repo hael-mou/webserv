@@ -45,7 +45,6 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
         }
         eventHandlers = (this->*mCurrentOperation)();
         mClient->updateActivityTime();
-        return (eventHandlers);
     }
     catch(http::Exception& aException)
     {

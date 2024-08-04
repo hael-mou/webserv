@@ -48,16 +48,15 @@ namespace str
     StringVector  split(const string str, const char sep);
     string        addrtoString(const in_addr_t& addr, const socklen_t& addrLen);
     string&       replace(string& str, const string& from, const string& to);
-    int           strToInt(const string& str);   
+    int           strToInt(const string& str); 
 
     template <typename T>
     string    to_string(const T& number)
     {
         std::ostringstream oss;
         oss << number;
-        return oss.str();
-    }
-
+        return (oss.str());
+    };
 };
 
 /*******************************************************************************

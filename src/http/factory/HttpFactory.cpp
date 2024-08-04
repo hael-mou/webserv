@@ -142,13 +142,13 @@ IEventHandler* http::Factory::createProcessHandler(IClient::SharedPtr aClient,
         return (new http::SendHandler(aClient, response));
     }
 
-    const StringVector&    cgiExt      = servers.getCgiExt();
+    const StringVector&    cgiExt      = location.getCgiExt();
     const string&          requestUri  = aRequest->getUriPath();
     const string&          locationUri = location.getUri();
     if (http::isCgiPath(getRelativePath(requestUri, locationUri), cgiExt))
     {
         return (new http::CgiHandler(aClient, aRequest));
     }
-    
+
     return (new http::GetHandler(aClient, aRequest));
 }

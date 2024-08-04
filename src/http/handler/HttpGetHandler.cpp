@@ -59,7 +59,7 @@ IEventHandler::IEventHandlerQueue http::GetHandler::handleEvent(void)
             http::Factory::createSendHandler(mClient, _generateResponse())
         );
     }
-     catch(http::Exception& aException)
+    catch(http::Exception& aException)
     {
         aException.setClientInfo(mClient->getInfo());
         string msg = aException.what();

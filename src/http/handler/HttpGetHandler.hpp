@@ -53,7 +53,6 @@ namespace http
         IRequest::SharedPtr     mRequest;
         bool                    mTerminated;
         std::string             mRessourcePath;
-
     
         std::string                 _getAbsolutePath(void);
         http::AResponse::SharedPtr  _generateResponse(void);

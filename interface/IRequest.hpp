@@ -40,6 +40,7 @@ namespace http
         virtual void      setHeader(string& aLine) = 0;
         virtual void      setBodyPath(const string& aPath) = 0;
         virtual void      uriAppend(const string& path) = 0;
+        virtual bool      hasBody(void) const = 0;
 
         virtual string            getVersion(void) const = 0;
         virtual string		      getMethod(void) const = 0;
