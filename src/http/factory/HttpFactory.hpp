@@ -33,12 +33,13 @@
 # include "HttpRequest.hpp"
 
 # include "HttpBufferReader.hpp"
+# include "HttpChunkReader.hpp"
 
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"
 # include "HttpSendHandler.hpp"
 # include "HttpGetHandler.hpp"
-# include "HttpCgiHandler.hpp"
+// # include "HttpCgiHandler.hpp"
 
 /*******************************************************************************
     * PorotocolFactory Class :

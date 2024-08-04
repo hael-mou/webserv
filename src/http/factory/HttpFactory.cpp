@@ -90,9 +90,9 @@ http::IReader* http::Factory::createReader(IRequest::SharedPtr aRequest)
         );
     }
 
-    // if (tranferEncoding == "chunked") {
-    //     return (new http::ChunkReader(maxBodySize));
-    // }
+    if (tranferEncoding == "chunked") {
+        return (new http::ChunkReader(maxBodySize));
+    }
 
     if (!tranferEncoding.empty()) {
         std::string msg = "Unknown Transfer-Encoding";
@@ -129,26 +129,26 @@ IEventHandler* http::Factory::createSendHandler(IClient::SharedPtr aClient,
 IEventHandler* http::Factory::createProcessHandler(IClient::SharedPtr aClient,
                                                    IRequest::SharedPtr aRequest)
 {
-    const http::IServer&  servers   = aRequest->getMatchedServer();
-    const http::Location& location  = aRequest->getMatchedLocation();
-     Location::Redirect   redirect  = location.getRedirect();
-    if (redirect.code != -1)
-    {
-        http::RawResponse* response = new http::RawResponse();
-        response->setStatusCode(redirect.code);
-        response->setHeader("Location", redirect.uri);
-        response->setHeader("Connection", aRequest->getHeader("Connection"));
-        response->setSendTimeout(servers.getSendTimeout());
-        return (new http::SendHandler(aClient, response));
-    }
+    // const http::IServer&  servers   = aRequest->getMatchedServer();
+    // const http::Location& location  = aRequest->getMatchedLocation();
+    //  Location::Redirect   redirect  = location.getRedirect();
+    // if (redirect.code != -1)
+    // {
+    //     http::RawResponse* response = new http::RawResponse();
+    //     response->setStatusCode(redirect.code);
+    //     response->setHeader("Location", redirect.uri);
+    //     response->setHeader("Connection", aRequest->getHeader("Connection"));
+    //     response->setSendTimeout(servers.getSendTimeout());
+    //     return (new http::SendHandler(aClient, response));
+    // }
 
-    const StringVector&    cgiExt      = servers.getCgiExt();
-    const string&          requestUri  = aRequest->getUriPath();
-    const string&          locationUri = location.getUri();
-    if (http::isCgiPath(getRelativePath(requestUri, locationUri), cgiExt))
-    {
-        return (new http::CgiHandler(aClient, aRequest));
-    }
+    // const StringVector&    cgiExt      = servers.getCgiExt();
+    // const string&          requestUri  = aRequest->getUriPath();
+    // const string&          locationUri = location.getUri();
+    // if (http::isCgiPath(getRelativePath(requestUri, locationUri), cgiExt))
+    // {
+    //     return (new http::CgiHandler(aClient, aRequest));
+    // }
     
     return (new http::GetHandler(aClient, aRequest));
 }
