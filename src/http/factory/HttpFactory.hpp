@@ -33,6 +33,7 @@
 # include "HttpRequest.hpp"
 
 # include "HttpBufferReader.hpp"
+# include "HttpChunkReader.hpp"
 
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"

@@ -90,9 +90,9 @@ http::IReader* http::Factory::createReader(IRequest::SharedPtr aRequest)
         );
     }
 
-    // if (tranferEncoding == "chunked") {
-    //     return (new http::ChunkReader(maxBodySize));
-    // }
+    if (tranferEncoding == "chunked") {
+        return (new http::ChunkReader(maxBodySize));
+    }
 
     if (!tranferEncoding.empty()) {
         std::string msg = "Unknown Transfer-Encoding";

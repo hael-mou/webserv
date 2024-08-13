@@ -52,6 +52,7 @@ SRC_FILES	:=	$(SRC_DIR)/utils/Utils.cpp\
 				$(SRC_DIR)/http/module/HttpFileResponse.cpp\
 				$(SRC_DIR)/http/module/HttpCgiResponse.cpp\
 				$(SRC_DIR)/http/module/HttpBufferReader.cpp\
+				$(SRC_DIR)/http/module/HttpChunkReader.cpp\
 				\
 				$(SRC_DIR)/http/handler/HttpAcceptHandler.cpp\
 				$(SRC_DIR)/http/handler/HttpRecvHandler.cpp\
