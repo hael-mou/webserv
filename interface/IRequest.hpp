@@ -40,11 +40,12 @@ namespace http
         virtual void      setHeader(string& aLine) = 0;
         virtual void      setBodyPath(const string& aPath) = 0;
         virtual void      uriAppend(const string& path) = 0;
+        virtual bool      hasBody(void) const = 0;
 
         virtual string            getVersion(void) const = 0;
         virtual string		      getMethod(void) const = 0;
         virtual string		      getUriPath(void) const = 0;
-        virtual StringMap		  getUriQuery(void) const = 0;
+        virtual string	          getUriQuery(void) const = 0;
         virtual const string&     getHeader(string const& key) const = 0;
         virtual const IServer&    getMatchedServer(void) const = 0;
         virtual const Location&   getMatchedLocation(void) const = 0;

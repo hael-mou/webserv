@@ -24,7 +24,6 @@ http::RawResponse::RawResponse(void)
 	  misConverted(false),
 	  misTemplate(false)
 {
-	setHeader("Content-Length", "0");
 }
 
 //===[ Destructor: RawResponse ]===============================================

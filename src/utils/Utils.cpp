@@ -112,6 +112,19 @@ int str::strToInt(const string& str)
     return (std::atoi(str.c_str()));
 }
 
+//===[ toArray : ]============================================================
+char**  str::to_Array(const StringVector& strVector)
+{
+    char** arr = new char*[strVector.size() + 1];
+    for (size_t index = 0; index < strVector.size(); ++index)
+    {
+        arr[index] = new char[strVector[index].size() + 1];
+        ::strcpy(arr[index], strVector[index].c_str());
+    }
+    arr[strVector.size()] = NULL;
+    return (arr);
+}
+
 
 /*******************************************************************************
     * Logger Utils :
@@ -362,13 +375,11 @@ std::string http::getRelativePath(const string& reqUri, const string& locUri)
 //===[ isCgiPath ] =============================================================
 bool    http::isCgiPath(const string& path, const StringVector& cgiExt)
 {
-    for (size_t index = 0; index < cgiExt.size(); ++index)
+    string fileExt = "." + file::getExtension(path);
+
+    for (size_t index = 0; index < cgiExt.size() && !fileExt.empty(); ++index)
     {
-        size_t position = path.find(cgiExt[index]);
-        if (position == std::string::npos)
-            continue ;
-        position += cgiExt[index].length();
-        if (position == path.length() || path[position] == '/')
+        if (cgiExt[index] == fileExt)
             return (true);
     }
     return (false);

@@ -43,13 +43,13 @@ namespace http
         FileResponse(void);
         virtual ~FileResponse(void);
 
-        void            setPath(const string& aFilePath);
-        string          toRaw(void);
-        void            removeBytesSent(size_t aBytesSent);
-        bool            eof(void) const;
-        void            display(void) const;
-    
-    private:
+        virtual void   setPath(const string& aFilePath);
+        virtual string toRaw(void);
+        virtual void   removeBytesSent(size_t aBytesSent);
+        virtual bool   eof(void) const;
+        virtual void   display(void) const;
+
+    protected:
         string		    mFilePath;
         std::fstream	mFileStream;
         string		    mReadBuffer;

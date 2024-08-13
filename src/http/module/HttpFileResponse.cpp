@@ -22,7 +22,6 @@ http::FileResponse::FileResponse(void)
     : mFilePath(""),
       misConverted(false)
 {
-    setHeader("Content-Length", "0");
 }
 
 //=== [ Destructor: FileResponse ] =============================================
@@ -104,10 +103,9 @@ std::string http::FileResponse::_readFromFile(size_t aSize)
 //===[ _fileSize: get file size ]==============================================
 std::string http::FileResponse::_fileSize(void)
 {
-    long size = 0;
+    std::streampos pos = mFileStream.tellg();
     mFileStream.seekg(0, std::ios::end);
-    size = mFileStream.tellg();
-    mFileStream.seekg(0, std::ios::beg);
-
+    size_t size = mFileStream.tellg() - pos;
+    mFileStream.seekg(pos, std::ios::beg);
     return (str::to_string(size));
 }

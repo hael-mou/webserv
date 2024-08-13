@@ -73,7 +73,7 @@ private:
     static int          sCurrentLevel;
 
     // Members Variables:
-    string         mHostName;
+    string              mHostName;
     NonTerminalMap      mNonTerminal;
     TerminalMap         mTerminal;
 

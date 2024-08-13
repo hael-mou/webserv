@@ -50,13 +50,15 @@ SRC_FILES	:=	$(SRC_DIR)/utils/Utils.cpp\
 				$(SRC_DIR)/http/module/HttpAResponse.cpp\
 				$(SRC_DIR)/http/module/HttpRawResponse.cpp\
 				$(SRC_DIR)/http/module/HttpFileResponse.cpp\
+				$(SRC_DIR)/http/module/HttpCgiResponse.cpp\
 				$(SRC_DIR)/http/module/HttpBufferReader.cpp\
 				$(SRC_DIR)/http/module/HttpChunkReader.cpp\
 				\
 				$(SRC_DIR)/http/handler/HttpAcceptHandler.cpp\
 				$(SRC_DIR)/http/handler/HttpRecvHandler.cpp\
 				$(SRC_DIR)/http/handler/HttpSendHandler.cpp\
-				$(SRC_DIR)/http/handler/HttpGetHandler.cpp
+				$(SRC_DIR)/http/handler/HttpGetHandler.cpp\
+				$(SRC_DIR)/http/handler/HttpCgiHandler.cpp
 
 INC_FILES	:=	$(foreach dir, $(INC_DIR), $(wildcard $(dir)/*.hpp))
 

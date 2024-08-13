@@ -33,6 +33,8 @@ http::AResponse::AResponse(void)
 {
     setHeader("Date", Logger::getcurrentTime("%a, %d %b %Y %H:%M:%S %z"));
     setHeader("Server", ServerVersion);
+    setHeader("Content-Type", "text/html");
+    setHeader("Content-Length", "0");
 }
 
 //===[ Destructor: AResponse ]=================================================

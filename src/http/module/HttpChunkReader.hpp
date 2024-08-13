@@ -54,7 +54,6 @@ namespace http
             bool        _processChunkSize(std::string& aLine);
             bool        _processChunkBody(std::string& aLine);
             void        _unchunk(string aChunk);
-            // void        _writeChunkToFile();
     };
 }
 # endif /* __HTTPCHUNKREADER_HPP__ */

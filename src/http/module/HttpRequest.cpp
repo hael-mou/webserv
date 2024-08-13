@@ -41,7 +41,7 @@ http::Request::Request(string& aBuffer)
 //===[ Destructor: Request ]====================================================
 http::Request::~Request(void)
 {
-    // file::removeFile(mBodyPath);
+    file::removeFile(mBodyPath);
 }
 
 /*******************************************************************************
@@ -88,6 +88,12 @@ void	http::Request::uriAppend(const string& path)
     mUri += path;
 }
 
+//===[ Method: hasBody ]========================================================
+bool http::Request::hasBody(void) const
+{
+    return (!mBodyPath.empty());
+}
+
 /*** * Getters :
 *******************************************************************************/
 
@@ -110,7 +116,7 @@ string http::Request::getVersion(void) const
 }
 
 //====[ Method: getUriQuery ]==================================================
-StringMap http::Request::getUriQuery(void) const
+string  http::Request::getUriQuery(void) const
 {
     return 	(mQuery);
 }
@@ -153,10 +159,7 @@ void http::Request::display(void) const
     << getVersion() << std::endl;
 
     std::cout << "**********************> Query :" << std::endl;
-    for (it = mQuery.begin(); it != mQuery.end(); ++it)
-    {
-        std::cout << it->first << ": " << it->second << std::endl;
-    }
+    std::cout << getUriQuery() << std::endl; 
 
     std::cout << "**********************> Headers :" << std::endl;
     for (it = mHeaders.begin(); it != mHeaders.end(); ++it)
@@ -211,8 +214,6 @@ string& http::Request::_parseUri(string &aUri)
 //====[ Method: parseQuery ]====================================================
 void http::Request::_parseQuery(string& aUri)
 {
-    string query;
-
     size_t fragmentPosition = aUri.find('#');
     if (fragmentPosition != string::npos)
     {
@@ -220,21 +221,11 @@ void http::Request::_parseQuery(string& aUri)
         aUri.erase(fragmentPosition, endPosition - fragmentPosition);
     }
 
-    std::stringstream ss(aUri);
-    getline(ss, aUri, '?');
-    while (std::getline(ss, query, '&'))
-    {
-        if (query.empty())
-            continue;
+    if (aUri.find('?') == string::npos)
+        return;
 
-        size_t delimiterPosition = query.find('=');
-        if (delimiterPosition == string::npos) {
-            throw (http::Exception("Invalid query", http::BAD_REQUEST));
-        }
-
-        string key = query.substr(0, delimiterPosition);
-        mQuery[key] = query.substr(delimiterPosition + 1);
-    }
+    mQuery = aUri.substr(aUri.find('?') + 1);
+    aUri.erase(aUri.find('?'));
 }
 
 //====[ Method: selectMatechedServer]==========================================
@@ -268,7 +259,7 @@ bool http::Request::_isInnerPath(const string& uri, const string& requestUri)
 }
 
 //====[ Method: setMatchedLocation ]============================================
-http::Location::SharedPtr    http::Request::_selectMatchedLocation()
+http::Location::SharedPtr    http::Request::_selectMatchedLocation(void)
 {
     IServer::LocationMap locations  = mMatchedServer->getLocations();
     IServer::LocationMap::const_iterator it = locations.begin();

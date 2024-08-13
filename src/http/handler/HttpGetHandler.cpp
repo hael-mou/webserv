@@ -59,7 +59,7 @@ IEventHandler::IEventHandlerQueue http::GetHandler::handleEvent(void)
             http::Factory::createSendHandler(mClient, _generateResponse())
         );
     }
-     catch(http::Exception& aException)
+    catch(http::Exception& aException)
     {
         aException.setClientInfo(mClient->getInfo());
         string msg = aException.what();
@@ -119,21 +119,26 @@ http::AResponse::SharedPtr    http::GetHandler::_generateResponse(void)
 // ===[ Method : Handle File ]==================================================
 http::AResponse::SharedPtr  http::GetHandler::_handleFile(const string& aPath)
 {
-    std::string  extension = file::getExtension(aPath);
-    const string contentType = mRequest->getMatchedServer()
-                                       .getMimeType(extension);
+    const Location& location     = mRequest->getMatchedLocation();
+    std::string   extension      = file::getExtension(aPath);
+    const string  contentType    = mRequest->getMatchedServer()
+                                        .getMimeType(extension);
 
-    // if (http::isCgiPath(extension) == true){
-    //     throw (http::Factory::createCgiHandler(mClient, mRequest));
-    // }
+    if (http::isCgiPath("." + extension, location.getCgiExt())) {
+        throw (http::Factory::createCgiHandler(mClient, mRequest));
+    }
 
-    http::FileResponse* response = new http::FileResponse();
-    response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
-    response->setVersion(mRequest->getVersion());
-    response->setHeader("Content-Type", contentType);
-    response->setHeader("Connection", mRequest->getHeader("Connection"));
-    response->setStatusCode(http::OK);
-    response->setPath(aPath);
+    FileResponse* response = new http::FileResponse();
+    try {
+        response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
+        response->setVersion(mRequest->getVersion());
+        response->setHeader("Content-Type", contentType);
+        response->setHeader("Connection", mRequest->getHeader("Connection"));
+        response->setStatusCode(http::OK);
+        response->setPath(aPath);
+    } catch (std::exception& e) {
+        delete (response); throw e;
+    }
     return (response);
 }
 
@@ -142,10 +147,10 @@ http::AResponse::SharedPtr  http::GetHandler::_handleDirectory(void)
 {
     const http::IServer&    matchedServer     = mRequest->getMatchedServer();
     const http::Location&   matchedlocation   = mRequest->getMatchedLocation();
-    http::RawResponse*      response          = new http::RawResponse();
 
     if (mRessourcePath[mRessourcePath.length() - 1] != '/')
     {
+        RawResponse*  response = new http::RawResponse();
         response->setStatusCode(http::MOVED_PERMANENTLY);
         response->setSendTimeout(matchedServer.getSendTimeout());
         response->setVersion(mRequest->getVersion());
@@ -172,6 +177,7 @@ http::AResponse::SharedPtr  http::GetHandler::_handleDirectory(void)
         DIR* dir = opendir(mRessourcePath.c_str());
         if (dir != NULL)
         {
+            RawResponse*  response = new http::RawResponse();
             response->setStatusCode(http::OK);
             response->setSendTimeout(matchedServer.getSendTimeout());
             response->setVersion(mRequest->getVersion());
