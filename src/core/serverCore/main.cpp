@@ -16,7 +16,6 @@
 *******************************************************************************/
 #include "ConfigParser.hpp"
 #include "ServerCore.hpp"
-#include "Utils.hpp"
 
 #include <iostream>
 #include <signal.h>
@@ -27,8 +26,8 @@
 void	signalHandler(int aSignal)
 {
     ServerCore::getInstance()->stop();
-    Logger::log("notice", "SERVERCORE: signal [" + str::to_string(aSignal)
-        + "] received !", 1);
+    Logger::log("notice ", "SERVERCORE: signal [" + str::to_string(aSignal)
+        + "] received!", 1);
 }
 
 /*******************************************************************************
@@ -36,7 +35,7 @@ void	signalHandler(int aSignal)
 *******************************************************************************/
 int		main(int argc, char *argv[])
 {
-    std::string	configFilePath = "config/default.conf";
+    string	configFilePath = "_config/default.conf";
     configFilePath = (argc == 2) ? argv[1] : configFilePath;
 
     try
@@ -55,6 +54,6 @@ int		main(int argc, char *argv[])
     }
     catch(const std::exception& e)
     {
-        Logger::log("error" ,e.what(), 2);
+        Logger::log("error  " ,e.what(), 2);
     }
 }

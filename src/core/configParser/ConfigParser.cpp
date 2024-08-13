@@ -22,7 +22,7 @@
 ConfigParser::ConfigParser(void){}
 
 //===[ Constructor: ]===========================================================
-ConfigParser::ConfigParser(const_string& aFileName)
+ConfigParser::ConfigParser(const string& aFileName)
 {
     openFile(aFileName);
 }
@@ -40,7 +40,7 @@ ConfigParser::~ConfigParser(void)
 *******************************************************************************/
 
 //===[ Method: open a new file ]================================================
-void ConfigParser::openFile(const_string& aFileName, int aStartColumn)
+void ConfigParser::openFile(const string& aFileName, int aStartColumn)
 {
     if (_isFileAlreadyOpen(aFileName) == true)
         throw (Exception("File_Already_Open", aFileName));
@@ -58,9 +58,9 @@ void ConfigParser::openFile(const_string& aFileName, int aStartColumn)
 //===[ Method: parse the configuration ]========================================
 Directive::SharedPtr ConfigParser::parse(void)
 {
-	Dir::SharedPtr            globalDir;
-	DirPartVect	              dirParts;
-    std::string				  line;
+	Dir::SharedPtr        globalDir;
+	DirPartVect	          dirParts;
+    string				  line;
 
     globalDir = new Directive("global");
     while (!mFiles.empty())
@@ -84,7 +84,7 @@ Directive::SharedPtr ConfigParser::parse(void)
 *******************************************************************************/
 
 //==[ Method: Process a line ]==================================================
-void ConfigParser::_processLine(std::string& aLine,
+void ConfigParser::_processLine(string& aLine,
                                Dir::SharedPtr& aGlobalDir,
                                DirPartVect& aDirParts)
 {
@@ -99,13 +99,13 @@ void ConfigParser::_processLine(std::string& aLine,
 		aGlobalDir->push(iter, aDirParts.end());
 		aDirParts.clear();
 	}
-	std::string file = mFiles.back().first;
+	string file = mFiles.back().first;
 	int lineNum = mlineCount.back();
 	aDirParts.push_back(DirectivePart(aLine, file, lineNum, level));
 }
 
 //===[ Method: check if a file is already open ]================================
-bool ConfigParser::_isFileAlreadyOpen(const_string& aFileName) const
+bool ConfigParser::_isFileAlreadyOpen(const string& aFileName) const
 {
     std::vector<FilePair>::const_iterator it;
     for (it = mFiles.begin(); it != mFiles.end(); ++it) {
@@ -116,7 +116,7 @@ bool ConfigParser::_isFileAlreadyOpen(const_string& aFileName) const
 }
 
 //===[ Method: get the level of a line ]========================================
-int	ConfigParser::_getLevel(const_string& aLine)
+int	ConfigParser::_getLevel(const string& aLine)
 {
     std::vector<int>::iterator	iter;
     int							column;
@@ -130,7 +130,8 @@ int	ConfigParser::_getLevel(const_string& aLine)
 }
 
 //===[ Method: check if a line is a valid directive ]===========================
-bool ConfigParser::_isValidDirective(const DirPartVect &aDirParts, int aLevel) const
+bool ConfigParser::_isValidDirective(const DirPartVect &aDirParts,
+                                    int aLevel) const
 {
     if (aDirParts.size() == 1 && aDirParts[0].mType == DirectivePart::Terminal)
     {
@@ -141,16 +142,16 @@ bool ConfigParser::_isValidDirective(const DirPartVect &aDirParts, int aLevel) c
 }
 
 //===[ Method: handle an include directive ]====================================
-bool ConfigParser::_includeDirective(const_string& aLine, int aLevel)
+bool ConfigParser::_includeDirective(const string& aLine, int aLevel)
 {
-    if (aLine.find("include") == std::string::npos)
+    if (aLine.find("include") == string::npos)
         return (false);
     StringPair kv = str::lineToPair(aLine, ':');
     if (kv.first != "include" || kv.second.empty())
         return (false);
     if (kv.second[0] != '/')
     {
-        std::string curFile = mFiles.back().first;
+        string curFile = mFiles.back().first;
         kv.second = curFile.substr(0, curFile.find_last_of('/') +1) + kv.second;
     }
     openFile(kv.second, mLevels[aLevel]);
@@ -171,7 +172,7 @@ void ConfigParser::_CloseLastOpenFile(void)
 *******************************************************************************/
 
 //===[ Constructor: Exception ]=================================================
-ConfigParser::Exception::Exception(std::string aMessage, std::string aFileName)
+ConfigParser::Exception::Exception(string aMessage, string aFileName)
 {
     mMessage =  "\e[1m\e[4;31m" + aMessage 	+ ": " 
                 "\e[0m\e[4;3m"	+ aFileName + "\n";

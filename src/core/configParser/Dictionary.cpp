@@ -24,7 +24,7 @@ Dictionary::sGrammar = Dictionary::_initializeGrammar(CONFIG_FILE_PATH);
 *******************************************************************************/
 
 //===[ Method: getGrammar ]=====================================================
-DirType  Dictionary::find(const_string& aDir, const_string& aSubDir)
+DirType  Dictionary::find(const string& aDir, const string& aSubDir)
 {
     NonTerminalDirVector grammar = sGrammar[aDir];
 
@@ -41,19 +41,19 @@ DirType  Dictionary::find(const_string& aDir, const_string& aSubDir)
 *******************************************************************************/
 
 //===[ Method: initGrammar ]====================================================
-Dictionary::GrammarMap Dictionary::_initializeGrammar(const_string aFilePath)
+Dictionary::GrammarMap Dictionary::_initializeGrammar(const string aFilePath)
 {
     GrammarMap      grammar;
     std::ifstream   configFile(aFilePath.c_str());
 
     if (!configFile.is_open())
     {
-        Logger::log("error", "\e[1;31mGrammar_File_Failed_To_Open: \e[0m"
+        Logger::log("error  ", "\e[1;31m Grammar_File_Failed_To_Open: \e[0m"
                 + aFilePath + "\n", 2);
         std::exit(EXIT_FAILURE);
     }
 
-    std::string currentKey, line;
+    string currentKey, line;
     while (std::getline(configFile, line))
     {
         line = str::strtrim(line);
@@ -61,7 +61,7 @@ Dictionary::GrammarMap Dictionary::_initializeGrammar(const_string aFilePath)
             continue;
 
         if (_isValidKey(line))
-            currentKey = line.substr(0, line.length() - 1);
+            currentKey = line.substr(0, line.size() - 1);
         else if (!currentKey.empty())
             _processValue(line, currentKey, grammar);
     }
@@ -71,17 +71,17 @@ Dictionary::GrammarMap Dictionary::_initializeGrammar(const_string aFilePath)
 }
 
 //===[ Method: isValidKey ]=====================================================
-bool Dictionary::_isValidKey(const_string& line)
+bool Dictionary::_isValidKey(const string& line)
 {
-    size_t len = line.length();
+    size_t len = line.size();
     if (len > 1 && line[len - 1] == ':')
         return (true);
     return (false);
 }
 
 //===[ Method: processValue ]===================================================
-void Dictionary::_processValue(const_string& aLine,
-                               const_string& aKey,
+void Dictionary::_processValue(const string& aLine,
+                               const string& aKey,
                                GrammarMap& aGrammar)
 {
     StringPair KeyValue = str::lineToPair(aLine, '=');

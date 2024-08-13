@@ -20,6 +20,7 @@
 *******************************************************************************/
 # include "shared_ptr.hpp"
 # include "typedefs.hpp"
+# include "Utils.hpp"
 
 # include "IEventHandler.hpp"
 # include "ICluster.hpp"
@@ -36,11 +37,11 @@ namespace http
     class	Cluster : public ICluster
     {
     public:
-        typedef IEventHandler                                   IEH;
-        typedef std::map<std::string, Handle>                   HandleMap;
-        typedef std::vector<Directive::SharedPtr>               DirPtrVector;
-        typedef std::vector<mem::shared_ptr<http::IServer> >    ServerVector;
-        typedef std::map<Handle, ServerVector>                  ServerMap;
+        typedef IEventHandler                                IEH;
+        typedef std::map<string, Handle>                     HandleMap;
+        typedef std::vector<Directive::SharedPtr>            DirPtrVector;
+        typedef std::vector<mem::shared_ptr<IServer> >       ServerVector;
+        typedef std::map<Handle, ServerVector>               ServerMap;
 
         Cluster(Directive::SharedPtr aHttpDir);
         virtual ~Cluster(void);
@@ -50,10 +51,11 @@ namespace http
     private:
         HandleMap           mSockets;
 
-        bool    _isSocketReadyCreated(const_string& aListen) const;
+        bool    _isSocketReadyCreated(const string& aListen) const;
+        void    _buildServer(Directive::SharedPtr aServerDir);
        
     public:
-        static const ServerVector&  getServers(Handle aSocket);
+        static const ServerVector& getServers(Handle aSocket);
         static void  setServers(Handle aSocket, const ServerVector& aServers);
         static void  eraseServers(Handle aSocket);            
  

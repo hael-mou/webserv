@@ -16,13 +16,11 @@
 
 
 /******************************************************************************
- * Defaults :
+    * Defaults :
 ******************************************************************************/
-
-# define DEFAULT_ROOT  "." /* NGNIX : /home/website.com/public_html*/
-# define DEFAULT_UPLOAD "/tmp" 
+# define DEFAULT_ROOT  "./" 
 # define DEFAULT_AUTOINDEX "off"
-# define DEFAULT_INDEX_FILES "index.html"
+
 /*******************************************************************************
     * Includes :
 *******************************************************************************/
@@ -31,27 +29,30 @@
 # include "Utils.hpp"
 
 #include "Directive.hpp"
-/*******************************************************************************/
 
+/*******************************************************************************
+    * HttpLocation Class :
+*******************************************************************************/
 namespace http
 {
     class Location
     {
         public:
-
-            typedef mem::shared_ptr<http::Location>  SharedPtr; 
+            typedef mem::shared_ptr<http::Location>         SharedPtr;
+            typedef struct { int code; string uri;}   Redirect;
 
             Location(Directive::SharedPtr aLocationDir);
             ~Location(void);
 
-            bool                   getAutoIndex(void) const;
-            const std::string&     getUri(void) const;
-            const std::string&     getRoot(void) const;
-            const std::string&     getUpload(void) const;
-            const StringVector&    getCgiExt(void) const;
-            const std::string&     getRedirect(void) const;
-            const StringVector&    getIndexFiles(void) const;
-            const StringVector&    getAllowedMethods(void) const;
+            bool                    isAllowedMethod(const string& aMethod) const;
+            bool                    isAutoIndex(void) const;
+        
+            const string&           getUri(void) const;
+            const string&           getRoot(void) const;
+            const string&           getUpload(void) const;
+            const Redirect&         getRedirect(void) const;
+            const StringVector&     getCgiExt(void) const;
+            const StringVector&     getIndexFiles(void) const;
 
             void    setUri(const StringVector&  aUri);
             void    setRoot(const StringVector&  aRoot);
@@ -63,15 +64,14 @@ namespace http
             void    setAllowedMethods(const StringVector& aAllowedMethods);
 
         private:
-
             bool            mAutoIndex;
-            std::string     mUri;
-            std::string     mRoot;
-            std::string     mRedirect;
-            std::string     mUpload;
+            string          mUri;
+            string          mRoot;
+            string          mUpload;
             StringVector    mCgiExt;
             StringVector    mIndexFiles;
             StringVector    mAllowedMethods;
+            Redirect        mRedirect;
     };
 };
 

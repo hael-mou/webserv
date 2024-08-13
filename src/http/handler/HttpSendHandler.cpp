@@ -53,7 +53,7 @@ IEventHandler::IEventHandlerQueue http::SendHandler::handleEvent(void)
     ssize_t bytesSent = mClient->send(mResponse->toRaw());
     if  (bytesSent == -1)
     {
-        Logger::log("error", "HTTP: Failed to send !!", 2);
+        Logger::log("error  ", "HTTP: Failed to send !!", 2);
         mTerminated = true;
         return (eventHandlers);
     }
@@ -61,10 +61,14 @@ IEventHandler::IEventHandlerQueue http::SendHandler::handleEvent(void)
     mResponse->removeBytesSent(bytesSent);
     if (mResponse->eof())
     {
-        if (mResponse->getHeader("connection") != "close")
+        mResponse->log(mClient->getInfo());
+
+        if (mResponse->getHeader("connection") != "close") {
             eventHandlers.push(http::Factory::createRecvHandler(mClient));
-        else
+        }
+        else {
             mTerminated = true;
+        }
     }
 
     mClient->updateActivityTime();

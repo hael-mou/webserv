@@ -28,11 +28,14 @@
 /*******************************************************************************
     * DEFAULT VALUES :
 *******************************************************************************/
-# define   DEFAULT_LISTEN              "0.0.0.0:80"
-# define   DEFAULT_TIMEOUT             7
-# define   DEFAULT_BODY_BUFFER_SIZE    1024
-# define   DEFAULT_MIME_TYPE           "text/html"
-# define   DEFAULT_SERVER_ROOT         "./"
+# define   DEFAULT_LISTEN           "0.0.0.0:80"
+# define   DEFAULT_MIME_TYPE        "application/octet-stream"
+# define   DEFAULT_SERVER_ROOT      "./"
+# define   KL_TIMEOUT               6
+# define   READ_TIMEOUT             60
+# define   SEND_TIMEOUT             600
+# define   CGI_TIMEOUT              120
+# define   _1_MB_                   1048576
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -42,21 +45,17 @@ namespace http
 	class Server : public IServer
 	{
     public:
-
-        typedef std::map<std::string, http::Location::SharedPtr> LocationMap;
+        typedef std::map<string, http::Location::SharedPtr> LocationMap;
 
         Server(Directive::SharedPtr aServerDir);
         virtual ~Server(void);
 
-        bool    isMatch(const_string& aHostName) const;
+        bool    isMatch(const string& aHostName) const;
         bool    isKeepAlive(void) const;
-
+        time_t  toTime(const StringVector& aTime, time_t aDefault) const;
 
         void    setListens(const StringVector& aListens);
         void    setServerNames(const StringVector& aServerName);
-        void    setConnectionType(const StringVector& aConnection);
-        void    setKeepAliveTimeout(const StringVector& aTimeout);
-        void    setBodyBufferSize(const StringVector& aBodyBufferSize);
         void    setMaxBodySize(const StringVector& aMaxBodySize);
         void    setDefaultMimeType(const StringVector& aDefaultType);
         void    setMimeTypes(const StringVector& aTypes);
@@ -64,22 +63,23 @@ namespace http
         void    setLocations(Directive::SharedPtr aServerDir,
                                 Directive::DirPtrVector aLocation);
 
-        const StringVector&            getListens(void) const;
-        const StringVector&            getServerNames(void) const;
-        time_t                         getKeepAliveTimeout(void) const;
-        unsigned long                  getBodyBufferSize(void) const;
-        unsigned long                  getMaxBodySize(void) const;
-        const std::string&             getMimeType(const_string aExtansion) const;
-        IResponse::SharedPtr           getErrorPage(u_int aCode) const;
-        const LocationMap&             getLocations(void) const;
+        const StringVector&       getListens(void) const;
+        const StringVector&       getServerNames(void) const;
+        unsigned long             getMaxBodySize(void) const;
+        time_t                    getKeepAliveTimeout(void) const;
+        time_t                    getReadTimeout(void) const;
+        time_t                    getSendTimeout(void) const;
+        time_t                    getCgiTimeout(void) const;
+        const string&             getMimeType(const string& aExtansion) const;
+        IResponse::SharedPtr      getErrorPage(u_int aCode) const;
+        const LocationMap&        getLocations(void) const;
 
     private:
 	    StringVector    mListens;
 	    StringVector    mServerName;
-        std::string     mRoot; 
+        string          mRoot; 
         bool            mKeepAlive;
-        time_t          mKeepAliveTimeout;
-        unsigned long   mBodyBufferSize;
+        time_t          mTimeout[4];
         unsigned long   mMaxBodySize;
         StringMap       mMimeTypes;
         ErrorPages      mErrorPages;

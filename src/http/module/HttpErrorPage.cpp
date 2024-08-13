@@ -21,7 +21,7 @@
 http::ErrorPages::ErrorPages(void) {}
 
 //===[ Constructor: ErrorPages ]================================================
-http::ErrorPages::ErrorPages(const StringVector& aErrorPages, const_string& aRoot)
+http::ErrorPages::ErrorPages(const StringVector& aErrorPages, const string& aRoot)
 {
 	for (size_t index = 0; index < aErrorPages.size(); ++index)
     {
@@ -30,12 +30,12 @@ http::ErrorPages::ErrorPages(const StringVector& aErrorPages, const_string& aRoo
             continue;
 
         std::string path = values[values.size() - 1];
-        if (path[path.length() - 1] == '/')
+        if (path[path.size() - 1] == '/')
             continue;
     
         for (size_t i = 0; i < values.size() - 1; ++i)
         {
-            int code = integer::strToInt(values[i]);
+            int code = str::strToInt(values[i]);
             if (code <= 0 || code > 999)
                 continue ;
 			
@@ -52,7 +52,7 @@ http::ErrorPages::~ErrorPages(void) {}
 *******************************************************************************/
 
 
-void	http::ErrorPages::setErrorPage(u_int aCode, const_string& aPath)
+void	http::ErrorPages::setErrorPage(u_int aCode, const string& aPath)
 {
 	mErrorPages[aCode] = aPath;
 }
@@ -60,21 +60,28 @@ void	http::ErrorPages::setErrorPage(u_int aCode, const_string& aPath)
 //===[ Method: build error page ]===============================================
 http::IResponse::SharedPtr http::ErrorPages::build(u_int aCode) const
 {
+    http::FileResponse* fileRes = new http::FileResponse();
+    
     try
     {
         std::string path = mErrorPages.at(aCode);
-        http::FileResponse* response = new http::FileResponse();
-        response->setStatusCode(aCode);
-        response->setHeader("Content-Type", "text/html");
-        response->setPath(path);
-        return (response);
+        fileRes->setHeader("Connection", "close");
+        fileRes->setHeader("Content-Type", "text/html");
+        fileRes->setStatusCode(aCode);
+        fileRes->setToErrorMode();
+        fileRes->setPath(path);
+        return (fileRes);
     }
     catch (...)
     {
-        http::RawResponse* response = new http::RawResponse();
+        delete (fileRes);
+        RawResponse* response = new http::RawResponse();
         response->setTemplateOn();
+        response->setToErrorMode();
         response->setStatusCode(aCode);
         response->setBody(CUSTOM_ERROR_PAGE);
+        response->setHeader("Connection", "close");
+        response->setHeader("Content-Type", "text/html");
         return (response);
     }
 }

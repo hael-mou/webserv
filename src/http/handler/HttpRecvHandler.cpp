@@ -21,6 +21,7 @@
 http::RecvHandler::RecvHandler(IClient::SharedPtr aClient)
     : mClient(aClient)
 {
+    mCurrentOperation = &RecvHandler::_recvHeaders;
     mTerminated = (aClient.get() == NULL) ? true : false;
 }
 
@@ -28,7 +29,7 @@ http::RecvHandler::RecvHandler(IClient::SharedPtr aClient)
 http::RecvHandler::~RecvHandler(void) {}
 
 /*******************************************************************************
-    * Public Methods of Interface: IEventHandler
+    * Public Methods :
 *******************************************************************************/
 
 //===[ Method: handle The Read Events ]========================================
@@ -36,43 +37,26 @@ IEventHandler::IEventHandlerQueue  http::RecvHandler::handleEvent(void)
 {
     IEventHandlerQueue eventHandlers;
 
-    try{
+    try
+    {
         if ((mReceivedData += mClient->recv()) == EmptyString)
         {
             return ((mTerminated = true),  eventHandlers);
         }
-        mRequest = http::Factory::createRequest(mReceivedData);
-        if (mRequest.get() != NULL)
-        {
-           // mRequst->selectMatechedRoute(mServers);
-        // 	//mRequest->buildBody();
-        // 	eventHandlers.push(
-            //     http::Factory::createProcessHandler(mClient, mRequest)
-            // );
-
-            //for test only:
-            FileResponse* response = new FileResponse();
-            response->setVersion("HTTP/1.1");
-            response->setStatusCode(200);
-            response->setPath("/Users/hael-mou/Desktop/webserv/image.jpg");
-            response->setHeader("Content-Type", "image/jpeg");
-            eventHandlers.push(http::Factory::createSendHandler(mClient, response));
-            //for test only
-        }
+        eventHandlers = (this->*mCurrentOperation)();
         mClient->updateActivityTime();
     }
-    catch(const std::exception& aException)
+    catch(http::Exception& aException)
     {
-        Logger::log("error", aException.what(), 2);
-        mTerminated = true;
-    }
-    catch(const http::IRequest::Error& aErrorCode)
-    {
-        IResponse::SharedPtr errRes;
-        errRes = _getMatchedServer().getErrorPage(aErrorCode);
+        IResponse::SharedPtr    errRes;
+
+        aException.setClientInfo(mClient->getInfo());
+        string msg = aException.what();
+        Logger::log("error  ", "HTTP: "+ msg , 2);
+
+        errRes = _getMatchedServer().getErrorPage(aException.getStatusCode());
         eventHandlers.push(http::Factory::createSendHandler(mClient, errRes));
     }
-
     return (eventHandlers);
 }
 
@@ -89,19 +73,20 @@ const Handle& http::RecvHandler::getHandle(void) const
 }
 
 //===[ Method: check if Handler is Terminated ]=================================
-
 bool http::RecvHandler::isTerminated(void) const
 {
     const IServer& server = _getMatchedServer();
 
     if (mTerminated == true)
         return (true);
- 
-    time_t lastActivity = mClient->getLastActivityTime();
-    time_t timeout      = server.getKeepAliveTimeout();
-    time_t currentTime  = time(NULL);
+    bool   isDataReceived    = !mReceivedData.empty();
+    time_t lastActivity      = mClient->getLastActivityTime();
+    time_t keepAliveTimeout  = server.getKeepAliveTimeout();
+    time_t readTimeout       = server.getReadTimeout();
+    time_t currentTime       = time(NULL);
 
-    return (currentTime - lastActivity >= timeout);
+    return (isDataReceived ? (currentTime - lastActivity >= readTimeout)
+                           : (currentTime - lastActivity >= keepAliveTimeout));
 }
 
 /*******************************************************************************
@@ -114,11 +99,58 @@ const http::IServer& http::RecvHandler::_getMatchedServer(void) const
     const std::vector<IServer::SharedPtr>&
     servers = Cluster::getServers(mClient->getSocket());
 
-    // if (mRequest) {
-    //     return (mRequest->getMatchedServer());
-    // }
+    if (mRequest) {
+        return (mRequest->getMatchedServer());
+    }
     if (servers.size() != 0) {
         return (*(servers[0]));
     }
-    throw (std::runtime_error("HttpRecvHandler: No server found"));
+
+    std::string msg = "Server not found";
+    throw (http::Exception(msg, http::INTERNAL_SERVER_ERROR));
+}
+
+/*********************************************************************************
+    * Event Proscessing :
+*******************************************************************************/
+
+//===[ Method: recvHeaders ]===================================================
+IEventHandler::IEventHandlerQueue http::RecvHandler::_recvHeaders(void)
+{
+    mRequest = http::Factory::createRequest(mReceivedData);
+    if (mRequest.get() == NULL) {
+        return (IEventHandlerQueue());
+    }
+    const ServerVector& servers = Cluster::getServers(mClient->getSocket());
+    mRequest->selectMatechedRoute(servers);
+
+    mCurrentOperation = &RecvHandler::_recvBody;
+    return (_recvBody());
+}
+
+//===[ Method: recvBody ]======================================================
+IEventHandler::IEventHandlerQueue http::RecvHandler::_recvBody(void)
+{
+    if (!mBodyReader && !(mBodyReader = http::Factory::createReader(mRequest)))
+    {
+        return (_recvComplete());
+    }
+
+    mBodyReader->build(mReceivedData);
+    if (!mBodyReader->isComplete()) {
+        return (IEventHandlerQueue());
+    }
+    mRequest->setBodyPath(mBodyReader->getFilePath());
+    
+    return (_recvComplete());
+}
+
+//===[ Method: recvComplete ]==================================================
+IEventHandler::IEventHandlerQueue http::RecvHandler::_recvComplete(void)
+{
+    IEventHandlerQueue eventHandlers;
+    eventHandlers.push(
+        http::Factory::createProcessHandler(mClient, mRequest)
+    );
+    return (eventHandlers);
 }

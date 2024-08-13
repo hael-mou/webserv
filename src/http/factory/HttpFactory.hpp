@@ -25,14 +25,20 @@
 # include "IResponse.hpp"
 # include "Directive.hpp"
 
+# include "HttpException.hpp"
+
 # include "HttpCluster.hpp"
 # include "HttpServer.hpp"
 # include "HttpClient.hpp"
 # include "HttpRequest.hpp"
 
+# include "HttpBufferReader.hpp"
+
 # include "HttpAcceptHandler.hpp"
 # include "HttpRecvHandler.hpp"
 # include "HttpSendHandler.hpp"
+# include "HttpGetHandler.hpp"
+# include "HttpCgiHandler.hpp"
 
 /*******************************************************************************
     * PorotocolFactory Class :
@@ -45,16 +51,18 @@ namespace http
     public:
         // Modules Factory :
         ICluster*	     createCluster(Directive::SharedPtr aHttpDir);
-        static Handle    createSocket(const_string& aListen);
+        static Handle    createSocket(const string& aListen);
         static IServer*  createServer(Directive::SharedPtr aServerDir);
         static IClient*  createClient(Handle aSocket, const sockaddr_in& aAddr, socklen_t aAddrLen);
-        static IRequest* createRequest(std::string& aReceivedData);
+        static IRequest* createRequest(string& aReceivedData);
+        static IReader*  createReader(IRequest::SharedPtr aRequest);
 
         // Handlers Factory :
-        static IEventHandler*     createAcceptHandler(Handle aSocket);
-        static IEventHandler*     createRecvHandler(IClient::SharedPtr aClient);
-        static IEventHandler*     createSendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
-
+        static IEventHandler*  createAcceptHandler(Handle aSocket);
+        static IEventHandler*  createRecvHandler(IClient::SharedPtr aClient);
+        static IEventHandler*  createProcessHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
+        static IEventHandler*  createSendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
+        static IEventHandler*  createCgiHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
     };
 };
 

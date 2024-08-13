@@ -38,16 +38,19 @@ namespace http
 
         void    	   setVersion(const std::string& aVersion);
         void    	   setStatusCode(u_int aStatusCode);
-        void    	   setHeader(const std::string& aHeader, const_string& aValue);
+        void    	   setHeader(const std::string& aHeader, const string& aValue);
+        void           setSendTimeout(time_t aSendTimeout);
+        void           setToErrorMode(void);
 
-        const_string&  getHeader(const_string& aHeader) const;
+        const string&  getHeader(const string& aHeader) const;
         time_t         getSendTimeout(void) const;
 
-
         std::string    toRaw(void);
+        void           log(const string& aClientInfo) const;
         void           display(void) const;
 
     protected:
+        int            mMode;
         std::string    mVersion;
         u_int          mStatusCode;
         std::string    mStatusline;

@@ -23,13 +23,13 @@ int Directive::sCurrentLevel = 0;
 *******************************************************************************/
 
 //===[ Constructor: DirectivePart ]=============================================
-DirectivePart::DirectivePart(const_string& aLine,
-                             const_string& aFile,
+DirectivePart::DirectivePart(const string& aLine,
+                             const string& aFile,
                              int aLineNumber,
                              int aLevel)
 {
     size_t colonPos = str::strtrim(aLine).find(':');
-    if (colonPos == 0 || colonPos == std::string::npos) {
+    if (colonPos == 0 || colonPos == string::npos) {
         throw (Directive::Exception("Syntax_Error",
                                     aFile,
                                     aLineNumber));
@@ -44,10 +44,10 @@ DirectivePart::DirectivePart(const_string& aLine,
 }
 
 //===[ Constructor: Directive Default ] ========================================
-Directive::Directive(const_string& aHostName) : mHostName(aHostName) {}
+Directive::Directive(const string& aHostName) : mHostName(aHostName) {}
 
 //===[ Constructor: Directive ] ================================================
-Directive::Directive(const_string& aName,
+Directive::Directive(const string& aName,
                      DirPartVectIt& aDirectiveIter,
                      DirPartVectIt aDirectiveEnd)
     : mHostName(aName)
@@ -87,21 +87,21 @@ void Directive::push(DirPartVectIt &aDirectiveIter, DirPartVectIt aDirectiveEnd)
 
 //===[ Method: get terminal directive ]========================================
 StringVector
-Directive::getTerminal(const_string& directiveKey) const
+Directive::getTerminal(const string& directiveKey) const
 {
-    std::map<std::string, StringVector >::const_iterator it;
+    std::map<string, StringVector >::const_iterator it;
 
     it = mTerminal.find(directiveKey);
     if (it == mTerminal.end())
-        return (std::vector<std::string>());
+        return (std::vector<string>());
     return (it->second);
 }
 
 //===[ Method: get non terminal directive ]====================================
 Directive::DirPtrVector
-Directive::getNonTerminal(const_string& directiveKey) const
+Directive::getNonTerminal(const string& directiveKey) const
 {
-    std::map<std::string, DirPtrVector >::const_iterator it;
+    std::map<string, DirPtrVector >::const_iterator it;
     it = mNonTerminal.find(directiveKey);
     if (it == mNonTerminal.end())
         return (DirPtrVector());
@@ -141,7 +141,7 @@ void Directive::_processNonTerminalDirective(DirPartVectIt& aDirectiveIter,
                                              DirPartVectIt aDirectiveEnd)
 {
     ++sCurrentLevel;
-    const_string& directiveKey = aDirectiveIter->mKey;
+    const string& directiveKey = aDirectiveIter->mKey;
 
     if (Dictionary::find(mHostName, directiveKey) != Block)
     {
@@ -166,7 +166,7 @@ void Directive::_processNonTerminalDirective(DirPartVectIt& aDirectiveIter,
 //===[ _processNonTerminalDirective ] =========================================
 void Directive::_processTerminalDirective(DirPartVectIt& aDirectiveIter)
 {
-    std::string directiveKey = aDirectiveIter->mKey;
+    string directiveKey = aDirectiveIter->mKey;
     DirType type = Dictionary::find(mHostName, directiveKey);
 
     if (type != Inline && type != List)
@@ -185,7 +185,7 @@ void Directive::_processTerminalDirective(DirPartVectIt& aDirectiveIter)
 
     if (type == List) 
     {
-        std::vector<std::string> values = str::split(aDirectiveIter->mRest, ',');
+        std::vector<string> values = str::split(aDirectiveIter->mRest, ',');
         mTerminal[directiveKey].insert(mTerminal[directiveKey].end(),
                                        values.begin(),
                                        values.end());
@@ -203,8 +203,8 @@ void Directive::_processTerminalDirective(DirPartVectIt& aDirectiveIter)
 *******************************************************************************/
 
 //===[ Constructor: Directive::Exception ]======================================
-Directive::Exception::Exception(const_string& aMessage,
-                                const_string& aFile,
+Directive::Exception::Exception(const string& aMessage,
+                                const string& aFile,
                                 int aNline)
 {
     char mNline[16];

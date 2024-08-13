@@ -24,46 +24,55 @@
 # include "IServer.hpp"
 # include "IRequest.hpp"
 
+# include "HttpException.hpp"
+
 # include <iostream>
 
 /*******************************************************************************
     * Class Request :
 *******************************************************************************/
-
 namespace http
 {
 
     class Request : public IRequest
     {
     public:
-        Request(std::string& aBuffer);
+        Request(string& aBuffer);
         virtual ~Request(void);
         
-        void			setMatchedServer(const ServerVector& aServerList);
+        void            selectMatechedRoute(const ServerVector& aServerList);
         void            setHeader(std::string& aLine);
+        void            setBodyPath(const string& aPath);
+        void            uriAppend(const string& path);
+        bool            hasBody(void) const;
      
-        std::string		getVersion(void) const;
-        std::string		getMethod(void) const;
-        std::string		getUriPath(void) const;
-        std::string		getHeader(std::string const& key);
-        StringMap		getUriQuery(void) const;
-        StringMap 		getHeaders(void) const;
+        string          getVersion(void) const;
+        string          getMethod(void) const;
+        string          getUriPath(void) const;
+        const string&   getHeader(string const& key) const;
+        string          getUriQuery(void) const;
         const IServer&  getMatchedServer(void) const;
+        const Location& getMatchedLocation(void) const;
+        const string&   getBodyPath(void) const;
      
         void            display(void) const;
 
     private:
         IServer::SharedPtr  mMatchedServer;
-        std::string		    mVersion;
-        std::string		    mMethod;
-        std::string		    mUri;	
+        Location::SharedPtr mMatchedLocation;
+        string		        mVersion;
+        string		        mMethod;
+        string		        mUri;	
         StringMap		    mHeaders;
-        StringMap		    mQuery;
+        string		        mQuery;
+        string              mBodyPath;
     
-        void            _setRequestLine(const std::string& aLine);
-        std::string&    _parseUri(std::string& aUri);
-        void            _parseQuery(std::string& aUri);
-    
+        bool _isInnerPath(const std::string& uri, const std::string& requestUri);
+        void _setRequestLine(const std::string& aLine);
+        string& _parseUri(std::string& aUri);
+        void _parseQuery(std::string& aUri);
+        Location::SharedPtr _selectMatchedLocation(void);
+        IServer::SharedPtr _selectMatchedServer(const ServerVector& aServerList);
     };
 };
 

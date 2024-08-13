@@ -21,6 +21,7 @@
 # include "typedefs.hpp"
 
 # include "IResponse.hpp"
+# include "HttpLocation.hpp"
 
 /*******************************************************************************
     * http::IServer Interface :
@@ -31,21 +32,25 @@ namespace http
     class IServer
     {
     public:
-        typedef mem::shared_ptr<IServer>    SharedPtr;
+        typedef mem::shared_ptr<IServer>                SharedPtr;
+        typedef std::map<string, Location::SharedPtr>   LocationMap;
+
 
         virtual	~IServer(void) {};
 
         virtual bool                  isKeepAlive(void) const = 0;
-        virtual bool 				  isMatch(const_string& aHost) const = 0;
+        virtual bool 				  isMatch(const string& aHost) const = 0;
 
         virtual const StringVector&   getListens(void) const = 0;
         virtual const StringVector&   getServerNames(void) const = 0;
         virtual time_t                getKeepAliveTimeout(void) const = 0;
-        virtual unsigned long         getBodyBufferSize(void) const = 0;
+        virtual time_t                getReadTimeout(void) const = 0;
+        virtual time_t                getSendTimeout(void) const = 0;
+        virtual time_t                getCgiTimeout(void) const = 0;
         virtual unsigned long         getMaxBodySize(void) const = 0;
-        virtual const std::string&    getMimeType(const_string aExtansion) const = 0;
+        virtual const string&         getMimeType(const string& aExtansion) const = 0;
         virtual IResponse::SharedPtr  getErrorPage(u_int aCode) const = 0;
-
+        virtual const LocationMap&    getLocations(void) const = 0;
     };
 }
 

@@ -37,20 +37,20 @@ enum DirType { Inline = 0, List, Block, Invalid };
 class Dictionary
 {
 public:
-    typedef std::pair<std::string, DirType>                TerminalDirPair;
-    typedef std::vector<TerminalDirPair>                   NonTerminalDirVector;
-    typedef std::map<std::string, NonTerminalDirVector>    GrammarMap;
+    typedef std::pair<string, DirType>                TerminalDirPair;
+    typedef std::vector<TerminalDirPair>              NonTerminalDirVector;
+    typedef std::map<string, NonTerminalDirVector>    GrammarMap;
 
-    static DirType  find(const_string& aDir, const_string& aSubDir);
+    static DirType  find(const string& aDir, const string& aSubDir);
 
 private:
     static GrammarMap sGrammar;
 
     Dictionary(void);
 
-    static GrammarMap   _initializeGrammar(const_string aFilePath);
-    static bool         _isValidKey(const_string& aLine);
-    static void         _processValue(const_string& aLine, const_string& aKey,
+    static GrammarMap   _initializeGrammar(const string aFilePath);
+    static bool         _isValidKey(const string& aLine);
+    static void         _processValue(const string& aLine, const string& aKey,
                                       GrammarMap& aGrammar);
 };
 

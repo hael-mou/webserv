@@ -24,6 +24,9 @@
 # include "IClient.hpp"
 # include "IServer.hpp"
 # include "IRequest.hpp"
+# include "IReader.hpp"
+
+# include "HttpException.hpp"
 
 # include "HttpFactory.hpp"
 
@@ -34,7 +37,10 @@ namespace http
 {
     class RecvHandler : public IEventHandler
     {
-    public: 
+    public:
+        typedef std::vector<IServer::SharedPtr>     ServerVector;
+        typedef IEventHandlerQueue (RecvHandler::*Operation)(void);
+
         RecvHandler(IClient::SharedPtr aClient);
         virtual ~RecvHandler(void);
         
@@ -42,14 +48,20 @@ namespace http
         IMultiplexer::Mode      getMode(void) const;
         IEventHandlerQueue      handleEvent(void);
         bool                    isTerminated(void) const;
-    
+
     private:
         bool                    mTerminated;
         IClient::SharedPtr      mClient;
-        IRequest::sharedPtr     mRequest;
-        std::string             mReceivedData;
+        IRequest::SharedPtr     mRequest;
+        Operation               mCurrentOperation;                
+        string                  mReceivedData;
+        IReader::SharedPtr      mBodyReader;
 
         const IServer&          _getMatchedServer(void) const;
+
+        IEventHandlerQueue      _recvHeaders(void);
+        IEventHandlerQueue      _recvBody(void);
+        IEventHandlerQueue      _recvComplete(void);
     };
 };
 

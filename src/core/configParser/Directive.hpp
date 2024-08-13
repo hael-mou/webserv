@@ -31,17 +31,17 @@ class	DirectivePart
 public:
     typedef enum { Terminal = 0, NonTerminal=1 }    Type;
 
-    DirectivePart(const_string& aLine,
-                  const_string& aFile,
+    DirectivePart(const string& aLine,
+                  const string& aFile,
                   int aNline,
                   int aLevel);
     
-    Type         mType;
-    std::string  mFile;
-    std::string  mKey;
-    std::string  mRest;
-    int          mLevel;
-    int          mNline;
+    Type        mType;
+    string      mFile;
+    string      mKey;
+    string      mRest;
+    int         mLevel;
+    int         mNline;
 };
 
 /*******************************************************************************
@@ -56,24 +56,24 @@ public:
     typedef std::vector<SharedPtr>                  DirPtrVector;
     typedef std::vector<DirectivePart>              DirPartVect;
     typedef std::vector<DirectivePart>::iterator    DirPartVectIt;
-    typedef std::map<std::string, DirPtrVector >    NonTerminalMap;
-    typedef std::map<std::string, StringVector >    TerminalMap;
+    typedef std::map<string, DirPtrVector >         NonTerminalMap;
+    typedef std::map<string, StringVector >         TerminalMap;
 
-    Directive(const_string& aHostName = "global");
-    Directive(const_string& aName, DirPartVectIt& aBegin, DirPartVectIt aEnd);
-    virtual ~Directive(void);
+    Directive(const string& aHostName = "global");
+    Directive(const string& aName, DirPartVectIt& aBegin, DirPartVectIt aEnd);
+    ~Directive(void);
 
     void             copyMatchingAttributes(const SharedPtr httpDir);
     void             push(DirPartVectIt& aDirIter, DirPartVectIt aDirEnd);
-    StringVector     getTerminal(const_string& aDirectiveKey) const;
-    DirPtrVector     getNonTerminal(const_string& aDirectiveKey) const;
+    StringVector     getTerminal(const string& aDirectiveKey) const;
+    DirPtrVector     getNonTerminal(const string& aDirectiveKey) const;
 
 private:
     // Static members :
     static int          sCurrentLevel;
 
     // Members Variables:
-    std::string         mHostName;
+    string              mHostName;
     NonTerminalMap      mNonTerminal;
     TerminalMap         mTerminal;
 
@@ -89,12 +89,12 @@ private:
 class Directive::Exception : public std::exception
 {
 public:
-    Exception(const_string& aMessage, const_string& aFile, int aNline);
+    Exception(const string& aMessage, const string& aFile, int aNline);
     virtual ~Exception(void) throw();
 
     const char* what(void) const throw();
 private:
-    std::string     mMessage;
+    string     mMessage;
 };
 
 #endif /* __DIRECTIVE_HPP__ */

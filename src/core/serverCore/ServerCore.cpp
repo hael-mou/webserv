@@ -51,6 +51,7 @@ void ServerCore::setup(Directive::SharedPtr aGlobalDir)
         _setupProtocol(it->first, it->second, aGlobalDir);
         ++it;
     }
+    // can add log here
 }
 
 //===[ Method: run Start Servers Handler ]======================================
@@ -74,7 +75,7 @@ void	ServerCore::stop(void)
 *******************************************************************************/
 
 //===[ Method: setup Protocol ]================================================
-void ServerCore::_setupProtocol(const std::string& aProtocolName,
+void ServerCore::_setupProtocol(const string& aProtocolName,
                                IProtocolFactoryPtr aProtocolFactory,
                                Directive::SharedPtr aGlobalDir)
 {
@@ -98,6 +99,6 @@ void ServerCore::_setupProtocol(const std::string& aProtocolName,
     }
     catch(const std::exception& e)
     {
-        Logger::log("error", e.what(), 2);
+        Logger::log("error  ", e.what(), 2);
     }
 }

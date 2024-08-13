@@ -27,7 +27,7 @@ class SelectMultiplexer : public IMultiplexer
 {
 public:
     SelectMultiplexer(void);
-    virtual ~SelectMultiplexer(void);
+    ~SelectMultiplexer(void);
 
     HandleQueue		waitEvent(long long aTimeout_ms);
     void			registerHandle(const Handle& aHandle, Mode aMode);

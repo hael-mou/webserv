@@ -24,7 +24,6 @@ http::RawResponse::RawResponse(void)
 	  misConverted(false),
 	  misTemplate(false)
 {
-	setHeader("Content-Length", "0");
 }
 
 //===[ Destructor: RawResponse ]===============================================
@@ -35,13 +34,12 @@ http::RawResponse::~RawResponse(void) {}
 *******************************************************************************/
 
 //===[ Methode : set Body ]====================================================
-void		http::RawResponse::setBody(const_string& aBody)
+void		http::RawResponse::setBody(const string& aBody)
 {
 	mBody = aBody;
 
 	if (misTemplate == true)
 	{
-		str::replace(mBody, "$(STATUS_CODE)", str::to_string(mStatusCode));
 		str::replace(mBody, "$(MESSAGE)", mStatusline);
 		str::replace(mBody, "$(SERVER)", getHeader("Server"));
 	}

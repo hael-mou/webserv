@@ -33,7 +33,7 @@
 # define CUSTOM_ERROR_PAGE "\
     <!DOCTYPE html>\n\
             <head>\n\
-                <title>$(STATUS_CODE)</title>\n\
+                <title>[ $(MESSAGE) ]</title>\n\
                 <style>\n\
                     body {\n\
                         font-family: Arial, sans-serif;\n\
@@ -63,10 +63,10 @@ namespace http
     {
     public:
         ErrorPages(void);
-        ErrorPages(const StringVector& aErrorPages, const_string& aRoot);
+        ErrorPages(const StringVector& aErrorPages, const string& aRoot);
         virtual ~ErrorPages(void);
 
-        void			      setErrorPage(u_int aCode, const_string& aPath);
+        void			      setErrorPage(u_int aCode, const string& aPath);
         IResponse::SharedPtr  build(u_int aCode) const;
 
     private:

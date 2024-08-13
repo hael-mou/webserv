@@ -25,28 +25,19 @@ http::Cluster::ServerMap http::Cluster::mServers;
 //===[ Constructor: Cluster ]===================================================
 http::Cluster::Cluster(Directive::SharedPtr aHttpDir)
 {
+
     DirPtrVector serverDir = aHttpDir->getNonTerminal("server");
     if (serverDir.size() == 0)
         throw (std::invalid_argument("HTTP: No server directive found"));
 
-    for (size_t i = 0; i < serverDir.size(); ++i)
+    for (size_t index = 0; index < serverDir.size(); ++index)
     {
-        serverDir[i]->copyMatchingAttributes(aHttpDir);
-        http::IServer::SharedPtr server = http::Factory::createServer(serverDir[i]);
-        StringVector listenSet = server->getListens();
-        for (size_t index = 0; index < listenSet.size(); ++index)
-        {
-            std::string listen = listenSet[index];
-            if (_isSocketReadyCreated(listen) == false)
-            {
-                Handle socketfd = 0;
-                if ((socketfd = http::Factory::createSocket(listen)) == -1)
-                    continue;
-                mSockets[listen] = socketfd;
-            }
-            mServers[mSockets[listen]].push_back(server);
-        }
+        serverDir[index]->copyMatchingAttributes(aHttpDir);
+        _buildServer(serverDir[index]);
     }
+
+    StringVector tmpDir =  aHttpDir->getTerminal("tmp_dir");
+    http::tmpDir((tmpDir.size() != 0) ? tmpDir[0] : "/tmp");
 }
 
 //===[ Destructor: Cluster ]====================================================
@@ -59,17 +50,19 @@ http::Cluster::~Cluster(void) {}
 //===[ QueueOfHandler: Cluster ]================================================
 IEventHandler::IEventHandlerQueue http::Cluster::createHandlers(void)
 {
-    IEH::IEventHandlerQueue Handlers;
-    ServerMap::iterator it = mServers.begin();
+    IEH::IEventHandlerQueue     Handlers;
+    ServerMap::iterator         it = mServers.begin();
     while (it != mServers.end())
     {
-        Handlers.push(
-                http::Factory::createAcceptHandler(it->first)
-        );
+        Handlers.push(http::Factory::createAcceptHandler(it->first));
         ++it;
     }
     return (Handlers);
 }
+
+/*******************************************************************************
+    * Static Methods :
+*******************************************************************************/
 
 //===[ Method: get Servers ]====================================================
 const http::Cluster::ServerVector& http::Cluster::getServers(Handle aSocket)
@@ -94,7 +87,26 @@ void http::Cluster::eraseServers(Handle aSocket)
 *******************************************************************************/
 
 //===[ Method: Check if socket is created ]====================================
-bool http::Cluster::_isSocketReadyCreated(const_string& aListen) const
+bool http::Cluster::_isSocketReadyCreated(const string& aListen) const
 {
     return (mSockets.find(aListen) != mSockets.end());
+}
+
+//===[ Method: Register Server ]===============================================
+void http::Cluster::_buildServer(Directive::SharedPtr aServerDir)
+{
+    http::IServer::SharedPtr server = http::Factory::createServer(aServerDir);
+    StringVector listenSet = server->getListens();
+    for (size_t index = 0; index < listenSet.size(); ++index)
+    {
+        std::string listen = listenSet[index];
+        if (_isSocketReadyCreated(listen) == false)
+        {
+            Handle socketfd = 0;
+            if ((socketfd = http::Factory::createSocket(listen)) == -1)
+                continue;
+            mSockets[listen] = socketfd;
+        }
+        mServers[mSockets[listen]].push_back(server);
+    }
 }

@@ -22,9 +22,15 @@
 # include "Utils.hpp"
 
 # include "HttpAResponse.hpp"
+# include "HttpException.hpp"
 
 # include <iostream>
 # include <fstream>
+
+/*******************************************************************************
+    * Defines :
+*******************************************************************************/
+# define READ_BUFFER_SIZE  10240
 
 /*******************************************************************************
     * FileResponse Class :
@@ -37,20 +43,20 @@ namespace http
         FileResponse(void);
         virtual ~FileResponse(void);
 
-        void            setPath(const_string& aFilePath);
-        std::string     toRaw(void);
-        void            removeBytesSent(size_t aBytesSent);
-        bool            eof(void) const;
-        void            display(void) const;
-    
-    private:
-        std::string		mFilePath;
+        virtual void   setPath(const string& aFilePath);
+        virtual string toRaw(void);
+        virtual void   removeBytesSent(size_t aBytesSent);
+        virtual bool   eof(void) const;
+        virtual void   display(void) const;
+
+    protected:
+        string		    mFilePath;
         std::fstream	mFileStream;
-        std::string		mReadBuffer;
+        string		    mReadBuffer;
         bool			misConverted;
 
-        std::string		_readFromFile(size_t aSize);
-        std::string		_fileSize(void);
+        string		_readFromFile(size_t aSize);
+        string		_fileSize(void);
 
     };
 }
