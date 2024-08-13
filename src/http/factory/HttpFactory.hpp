@@ -58,11 +58,11 @@ namespace http
         static IReader*  createReader(IRequest::SharedPtr aRequest);
 
         // Handlers Factory :
-        static IEventHandler*     createAcceptHandler(Handle aSocket);
-        static IEventHandler*     createRecvHandler(IClient::SharedPtr aClient);
-        static IEventHandler*     createProcessHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
-        static IEventHandler*     createSendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
-
+        static IEventHandler*  createAcceptHandler(Handle aSocket);
+        static IEventHandler*  createRecvHandler(IClient::SharedPtr aClient);
+        static IEventHandler*  createProcessHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
+        static IEventHandler*  createSendHandler(IClient::SharedPtr aClient, IResponse::SharedPtr aResponse);
+        static IEventHandler*  createCgiHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
     };
 };
 

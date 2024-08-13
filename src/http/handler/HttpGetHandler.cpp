@@ -119,13 +119,14 @@ http::AResponse::SharedPtr    http::GetHandler::_generateResponse(void)
 // ===[ Method : Handle File ]==================================================
 http::AResponse::SharedPtr  http::GetHandler::_handleFile(const string& aPath)
 {
-    std::string  extension = file::getExtension(aPath);
-    const string contentType = mRequest->getMatchedServer()
-                                       .getMimeType(extension);
+    const Location& location     = mRequest->getMatchedLocation();
+    std::string   extension      = file::getExtension(aPath);
+    const string  contentType    = mRequest->getMatchedServer()
+                                        .getMimeType(extension);
 
-    // if (http::isCgiPath(extension) == true){
-    //     throw (http::Factory::createCgiHandler(mClient, mRequest));
-    // }
+    if (http::isCgiPath("." + extension, location.getCgiExt())) {
+        throw (http::Factory::createCgiHandler(mClient, mRequest));
+    }
 
     http::FileResponse* response = new http::FileResponse();
     response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());

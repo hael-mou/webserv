@@ -25,10 +25,12 @@
 # include "IRequest.hpp"
 # include "IClient.hpp"
 
+# include "HttpCgiResponse.hpp"
 # include "HttpFactory.hpp"
 
-#include <unistd.h>
-#include <sys/wait.h>
+# include <unistd.h>
+# include <sys/wait.h>
+# include <signal.h>
 
 /*******************************************************************************
     * class : CgiHandler :
@@ -41,32 +43,31 @@ namespace http
         typedef IEventHandlerQueue (CgiHandler::*Operation)(void);
 
         CgiHandler(IClient::SharedPtr aClient, IRequest::SharedPtr aRequest);
-        virtual ~CgiHandler();
+        virtual ~CgiHandler(void);
 
-        const Handle&           getHandle(void) const;
-        IMultiplexer::Mode      getMode(void) const;
-        IEventHandlerQueue      handleEvent(void);
-        bool                    isTerminated(void) const;
+        const Handle&        getHandle(void) const;
+        IMultiplexer::Mode   getMode(void) const;
+        IEventHandlerQueue   handleEvent(void);
+        bool                 isTerminated(void) const;
+        void                 cleanHandler(void);
 
     private:
-        IClient::SharedPtr      mClient;
-        IRequest::SharedPtr     mRequest;
-        std::string             mRessourcePath;
-        std::string             mOutPath;
-        fd_t                    mOutFd;
-        int                     mCgiProcess;
-        Operation               mCurrentOperation;
-        time_t                  mCgiLastActiveTime;
+        IClient::SharedPtr  mClient;
+        IRequest::SharedPtr mRequest;
+        fd_t                mOutFd;
+        std::string         mOutPath;
+        int                 mCgiPid;
+        Operation           mCurrentOperation;
+        time_t              mCgiLastActiveTime;
     
-        // StringVector            _buildCgiEnv(void) const;
-        void                    _cleanHandler(void);
-        void                    _checkUploadPermission(void);
-        void                    _createCgiProcess(void);
-        void                    _setupCgiIo(void);
-        string                  _getAbsoluteCgiPath(void) const;
+        StringVector _buildCgiEnv(void);
+        void         _checkScriptAccess(const std::string& aPath);
+        void         _setupCgiIo(void);
+        string       _getAbsoluteCgiPath(void);
 
-        IEventHandlerQueue      _setupCgi(void);
-        IEventHandlerQueue      _waitCgiToFinish(void);
+        IEventHandlerQueue _setupCgi(void);
+        IEventHandlerQueue _waitCgiToFinish(void);
+        IEventHandlerQueue _createResponse(void);
 
     };
 };

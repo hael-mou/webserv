@@ -50,7 +50,7 @@ namespace http
         string          getMethod(void) const;
         string          getUriPath(void) const;
         const string&   getHeader(string const& key) const;
-        StringMap       getUriQuery(void) const;
+        string          getUriQuery(void) const;
         const IServer&  getMatchedServer(void) const;
         const Location& getMatchedLocation(void) const;
         const string&   getBodyPath(void) const;
@@ -64,7 +64,7 @@ namespace http
         string		        mMethod;
         string		        mUri;	
         StringMap		    mHeaders;
-        StringMap		    mQuery;
+        string		        mQuery;
         string              mBodyPath;
     
         bool _isInnerPath(const std::string& uri, const std::string& requestUri);

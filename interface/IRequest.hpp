@@ -45,7 +45,7 @@ namespace http
         virtual string            getVersion(void) const = 0;
         virtual string		      getMethod(void) const = 0;
         virtual string		      getUriPath(void) const = 0;
-        virtual StringMap		  getUriQuery(void) const = 0;
+        virtual string	          getUriQuery(void) const = 0;
         virtual const string&     getHeader(string const& key) const = 0;
         virtual const IServer&    getMatchedServer(void) const = 0;
         virtual const Location&   getMatchedLocation(void) const = 0;
