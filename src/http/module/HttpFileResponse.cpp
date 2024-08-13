@@ -103,13 +103,6 @@ std::string http::FileResponse::_readFromFile(size_t aSize)
 //===[ _fileSize: get file size ]==============================================
 std::string http::FileResponse::_fileSize(void)
 {
-    // long size = 0;
-    // mFileStream.seekg(0, std::ios::end);
-    // size = mFileStream.tellg();
-    // mFileStream.seekg(0, std::ios::beg);
-
-    // return (str::to_string(size));
-
     std::streampos pos = mFileStream.tellg();
     mFileStream.seekg(0, std::ios::end);
     size_t size = mFileStream.tellg() - pos;

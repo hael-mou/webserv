@@ -60,20 +60,22 @@ void	http::ErrorPages::setErrorPage(u_int aCode, const string& aPath)
 //===[ Method: build error page ]===============================================
 http::IResponse::SharedPtr http::ErrorPages::build(u_int aCode) const
 {
+    http::FileResponse* fileRes = new http::FileResponse();
+    
     try
     {
         std::string path = mErrorPages.at(aCode);
-        http::FileResponse* response = new http::FileResponse();
-        response->setHeader("Connection", "close");
-        response->setHeader("Content-Type", "text/html");
-        response->setStatusCode(aCode);
-        response->setToErrorMode();
-        response->setPath(path);
-        return (response);
+        fileRes->setHeader("Connection", "close");
+        fileRes->setHeader("Content-Type", "text/html");
+        fileRes->setStatusCode(aCode);
+        fileRes->setToErrorMode();
+        fileRes->setPath(path);
+        return (fileRes);
     }
     catch (...)
     {
-        http::RawResponse* response = new http::RawResponse();
+        delete (fileRes);
+        RawResponse* response = new http::RawResponse();
         response->setTemplateOn();
         response->setToErrorMode();
         response->setStatusCode(aCode);

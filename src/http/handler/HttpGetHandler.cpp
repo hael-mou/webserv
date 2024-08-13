@@ -128,13 +128,17 @@ http::AResponse::SharedPtr  http::GetHandler::_handleFile(const string& aPath)
         throw (http::Factory::createCgiHandler(mClient, mRequest));
     }
 
-    http::FileResponse* response = new http::FileResponse();
-    response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
-    response->setVersion(mRequest->getVersion());
-    response->setHeader("Content-Type", contentType);
-    response->setHeader("Connection", mRequest->getHeader("Connection"));
-    response->setStatusCode(http::OK);
-    response->setPath(aPath);
+    FileResponse* response = new http::FileResponse();
+    try {
+        response->setSendTimeout(mRequest->getMatchedServer().getSendTimeout());
+        response->setVersion(mRequest->getVersion());
+        response->setHeader("Content-Type", contentType);
+        response->setHeader("Connection", mRequest->getHeader("Connection"));
+        response->setStatusCode(http::OK);
+        response->setPath(aPath);
+    } catch (std::exception& e) {
+        delete (response); throw e;
+    }
     return (response);
 }
 
@@ -143,10 +147,10 @@ http::AResponse::SharedPtr  http::GetHandler::_handleDirectory(void)
 {
     const http::IServer&    matchedServer     = mRequest->getMatchedServer();
     const http::Location&   matchedlocation   = mRequest->getMatchedLocation();
-    http::RawResponse*      response          = new http::RawResponse();
 
     if (mRessourcePath[mRessourcePath.length() - 1] != '/')
     {
+        RawResponse*  response = new http::RawResponse();
         response->setStatusCode(http::MOVED_PERMANENTLY);
         response->setSendTimeout(matchedServer.getSendTimeout());
         response->setVersion(mRequest->getVersion());
@@ -173,6 +177,7 @@ http::AResponse::SharedPtr  http::GetHandler::_handleDirectory(void)
         DIR* dir = opendir(mRessourcePath.c_str());
         if (dir != NULL)
         {
+            RawResponse*  response = new http::RawResponse();
             response->setStatusCode(http::OK);
             response->setSendTimeout(matchedServer.getSendTimeout());
             response->setVersion(mRequest->getVersion());
