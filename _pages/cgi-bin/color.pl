@@ -8,14 +8,15 @@ use CGI;
 my $cgi = CGI->new();
 
 # get Cookies:
-my $color = $cgi->cookie('color') || '#223836';
-if (!$cgi->cookie('color'))
+my $color = $cgi->cookie('color');
+unless ($cgi->cookie('color'))
 {
+	$color = 'yellow';
 	print $cgi->header(
 		-type => 'text/html',
 		-cookie => $cgi->cookie(-name => 'color',
 							    -value => $color,
-								-path => '/cgi-bin/cookie.pl'
+								-path => '/cgi-bin/color.pl'
 					)
 	);
 }
@@ -46,7 +47,7 @@ print <<HTML;
 	<script>
 		function changeColor(color) {
 			document.body.style.backgroundColor = color;
-			document.cookie = "color=" + color + "; path=/cgi-bin/cookie.pl";
+			document.cookie = "color=" + color + "; path=/cgi-bin/color.pl";
 		}
 	</script>
 </head>
