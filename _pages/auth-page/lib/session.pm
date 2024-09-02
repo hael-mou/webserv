@@ -62,7 +62,7 @@ sub generate_cookie {
     my $cookie = CGI->new->cookie(
         -name    => 'session_id',
         -value   => $self->{id},
-        -path    => '/web/',
+        -path    => '/',
         -expires => $self->{data}{expire},
     );
 

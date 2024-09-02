@@ -11,12 +11,12 @@ my $cgi = CGI->new();
 my $color = $cgi->cookie('color');
 unless ($cgi->cookie('color'))
 {
-	$color = 'yellow';
+	$color = '#4f2ea1';
 	print $cgi->header(
 		-type => 'text/html',
 		-cookie => $cgi->cookie(-name => 'color',
 							    -value => $color,
-								-path => '/cgi-bin/color.pl'
+								-path => '/cookie/'
 					)
 	);
 }
@@ -32,8 +32,8 @@ print <<HTML;
 	<title> hello World </title>
 	<style>
 		body
-		{ 
-			background-color: $color; 
+		{
+			background-color: $color;
 			display: flex;
   			justify-content: center;
   			align-items: center;
@@ -47,7 +47,7 @@ print <<HTML;
 	<script>
 		function changeColor(color) {
 			document.body.style.backgroundColor = color;
-			document.cookie = "color=" + color + "; path=/cgi-bin/color.pl";
+			document.cookie = "color=" + color + "; path=/cookie/";
 		}
 	</script>
 </head>

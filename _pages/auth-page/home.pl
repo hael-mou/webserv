@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-use lib '/Users/hael-mou/Desktop/webserv/_pages/cgi-bin/auth/lib';
+use lib '/Users/hael-mou/Desktop/webserv/_pages/auth-page/lib';
 use strict;
 use warnings;
 use CGI;
@@ -12,7 +12,7 @@ my $session_id = $cgi->cookie('session_id');
 unless ($session_id)
 {
 	print $cgi->redirect(
-		-url     => '/web/sign_in.pl',
+		-url     => '/sign_in.pl',
 		-status  => '302 Temporary Redirect',
 	);
 }
@@ -25,8 +25,8 @@ if ($ENV{'REQUEST_METHOD'} eq 'DELETE')
 	my $cookie = CGI::Cookie->new(
 		-name    => 'session_id',
 		-value   => '',
-		-path    => '/web/',
-		-expires => 'Thu, 01 Jan 1970 00:00:00 GMT'	
+		-path    => '/',
+		-expires => 'Thu, 01 Jan 1970 00:00:00 GMT'
 	);
 
 	$session->delete_session();
@@ -48,12 +48,12 @@ if ($username && $password && $expires && $expires > time())
 my $cookie = CGI::Cookie->new(
 	-name    => 'session_id',
 	-value   => '',
-	-path    => '/web/',
-	-expires => 'Thu, 01 Jan 1970 00:00:00 GMT'	
+	-path    => '/',
+	-expires => 'Thu, 01 Jan 1970 00:00:00 GMT'
 );
 
 print $cgi->redirect(
-	-url     => '/web/sign_in.pl',
+	-url     => '/sign_in.pl',
 	-status  => '302 Temporary Redirect',
 	-cookie  => $cookie,
 );

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-use lib '/Users/hael-mou/Desktop/webserv/_pages/cgi-bin/auth/lib';
+use lib '/Users/hael-mou/Desktop/webserv/_pages/auth-page/lib';
 use strict;
 use warnings;
 use CGI;
@@ -11,12 +11,13 @@ my $method = $ENV{'REQUEST_METHOD'} || 'GET';
 my $session_id = $cgi->cookie('session_id');
 my %users = (
 	'admin' => 'admin',
+    'oussama' => '1234'
 );
 
 if ($session_id)
 {
 	print $cgi->redirect(
-		-url => '/web/home.pl',
+		-url => '/home.pl',
 		-status => '302 Temporary Redirect',
 	);
 	exit;
@@ -43,7 +44,7 @@ $session->set('username', $username);
 $session->set('password', $password);
 
 print $cgi->redirect(
-	-url => '/web/home.pl',
+	-url => '/home.pl',
 	-status => '302 Temporary Redirect',
 	-cookie => $session->generate_cookie(),
 );

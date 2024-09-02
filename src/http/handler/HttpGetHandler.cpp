@@ -43,7 +43,8 @@ IEventHandler::IEventHandlerQueue http::GetHandler::handleEvent(void)
         if (mRequest->getMethod() != "GET") {
             throw (http::Exception("Unknown Method", http::FORBIDDEN));
         }
-        if (mRequest->getMatchedLocation().isAllowedMethod("GET") == false) {
+        if (mRequest->getMatchedLocation().isAllowedMethod("GET") == false)
+        {
             string msg = "Method Not Allowed";
             throw (http::Exception(msg, http::METHOD_NOT_ALLOWED));
         }
@@ -71,7 +72,7 @@ IEventHandler::IEventHandlerQueue http::GetHandler::handleEvent(void)
     }
     catch (IEventHandler* aSwitcher)
     {
-        eventHandlers.push(aSwitcher);  
+        eventHandlers.push(aSwitcher);
     }
 
     return (eventHandlers);

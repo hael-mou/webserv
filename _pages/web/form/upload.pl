@@ -15,10 +15,9 @@ my $upload_dir = $ENV{'UPLOAD_DIR'} . '/';
 
 if (!$upload_dir || $upload_dir eq '')
 {
-    print STDERR "upload not Forbidden\n";
+    print STDERR "upload Forbidden\n";
     exit 1;
 }
-print STDERR "UPLOAD_DIR: $upload_dir\n";
 
 # Process each file upload
 foreach my $key ($cgi->param()) {

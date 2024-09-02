@@ -36,7 +36,7 @@ http::CgiHandler::CgiHandler(IClient::SharedPtr aClient,
 //===[ Destructor: CgidHandler ]================================================
 http::CgiHandler::~CgiHandler(void)
 {
-    file::closeFile(mOutFd); 
+    file::closeFile(mOutFd);
 }
 
 /*******************************************************************************
@@ -50,6 +50,13 @@ IEventHandler::IEventHandlerQueue http::CgiHandler::handleEvent(void)
 
     try
     {
+        std::string method = mRequest->getMethod();
+        if (mRequest->getMatchedLocation().isAllowedMethod(method) == false)
+        {
+            string msg = "Method Not Allowed";
+            throw (http::Exception(msg, http::METHOD_NOT_ALLOWED));
+        }
+
         eventHandlers = (this->*mCurrentOperation)();
     }
     catch(http::Exception& aException)
@@ -113,7 +120,7 @@ IEventHandler::IEventHandlerQueue http::CgiHandler::_setupCgi(void)
     {
         StringVector env  = _buildCgiEnv();
         string       path = _getAbsoluteCgiPath();
-        
+
         StringVector args ;
         args.push_back(path);
 
@@ -145,7 +152,7 @@ IEventHandler::IEventHandlerQueue http::CgiHandler::_waitCgiToFinish(void)
     if (waitpid(mCgiPid, &waitStatus, WNOHANG) != 0)
     {
 
-        if (WEXITSTATUS(waitStatus) != 0)  
+        if (WEXITSTATUS(waitStatus) != 0)
         {
           throw http::Exception("CgiScript failed",http::INTERNAL_SERVER_ERROR);
         }
@@ -174,7 +181,7 @@ IEventHandler::IEventHandlerQueue http::CgiHandler::_createResponse(void)
     return (eventHandlers);
 }
 
-/** *************************************************************************** 
+/** ***************************************************************************
     * Private Methods :
 *******************************************************************************/
 
@@ -183,7 +190,7 @@ StringVector http::CgiHandler::_buildCgiEnv(void)
 {
     StringVector env;
     StringPair ServerInfo = str::lineToPair(mClient->getInfo(), ':');
- 
+
     env.push_back("GATEWAY_INTERFACE=" + CgiVersion);
     env.push_back("SERVER_SOFTWARE=" + ServerVersion);
     env.push_back("SERVER_PROTOCOL=" + mRequest->getVersion());
