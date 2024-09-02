@@ -18,7 +18,7 @@
 *******************************************************************************/
 
 //===[ Constructor : ]========================================================
-Reactor::Reactor(IMultiplexer *aMultiplexer) 
+Reactor::Reactor(IMultiplexer *aMultiplexer)
     : mMultiplexer(aMultiplexer)
 {
     if (aMultiplexer == NULL)
@@ -63,7 +63,7 @@ void Reactor::registerEventHandler(IEventHandlerQueue& aHandlers)
 }
 
 //===[ Method : unregister event handler ]=====================================
-IEventHandler::SharedPtr 
+IEventHandler::SharedPtr
 Reactor::unregisterEventHandler(IEH::SharedPtr aHandler)
 {
     if (aHandler.get() != NULL)
@@ -105,5 +105,6 @@ void Reactor::handleEvents(long long aTimeout_ms)
         IEventHandlerQueue newHandlers = mEventHandlers[handle]->handleEvent();
         registerEventHandler(newHandlers);
         readyHandles.pop();
+        usleep(500);
     }
 }

@@ -25,7 +25,7 @@ ServerCore::SharedPtr  ServerCore::getInstance(void)
 }
 
 //===[ Constructor: ServerCore ]================================================
-ServerCore::ServerCore(void) 
+ServerCore::ServerCore(void)
 {
     IMultiplexer* multiplexer = new SelectMultiplexer();
     mReactor = new Reactor(multiplexer);
@@ -51,7 +51,6 @@ void ServerCore::setup(Directive::SharedPtr aGlobalDir)
         _setupProtocol(it->first, it->second, aGlobalDir);
         ++it;
     }
-    // can add log here
 }
 
 //===[ Method: run Start Servers Handler ]======================================
@@ -84,7 +83,7 @@ void ServerCore::_setupProtocol(const string& aProtocolName,
         DirPtrVector protocolDir = aGlobalDir->getNonTerminal(aProtocolName);
         if (protocolDir.size() > 1)
         {
-            Logger::log("warning", aProtocolName + ": Just first " 
+            Logger::log("warning", aProtocolName + ": Just first "
                 + aProtocolName + " directive is used", 2);
         }
         if (protocolDir.size() == 0)

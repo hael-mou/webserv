@@ -67,7 +67,7 @@ OBJ_FILES	:=	$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 #=== Commands : ==============================================================
 CPP			:=	c++
 RM			:=	rm -rf
-CFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
+CFLAGS		:=	-Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
 INCLUDE		:=	$(addprefix -I , $(INC_DIR))
 
 #=== Variables : =============================================================
@@ -84,7 +84,7 @@ PURPLE		:=	\033[3;35m
 YELLOW		:=	\033[3;93m
 
 #=== Pattern rules : =========================================================
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_FILES) 
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_FILES)
 	@mkdir -p $(dir $@)
 	@$(CPP) $(CFLAGS) $(INCLUDE) -c $< -o $@
 	@printf "$(GREEN) [OK]	$(PURPLE)Compiling ==> $(DEF)%5s\n" $<

@@ -24,6 +24,7 @@
 # include "IMultiplexer.hpp"
 
 # include <stdexcept>
+# include <unistd.h>
 
 /*******************************************************************************
     * Class Reactor :
